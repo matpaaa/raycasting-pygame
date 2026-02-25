@@ -1,11 +1,7 @@
-
-
 import math
 from typing import List
-
 from pygame import Surface
 import pygame
-
 from user import User
 
 

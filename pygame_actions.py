@@ -28,4 +28,4 @@ class PygameActions:
             if event.key == pygame.K_UP:
                 self.user_move_up()
             if event.key == pygame.K_DOWN:
-                self.user_move_right()
+                self.user_move_down()
