@@ -7,7 +7,7 @@ from typing import List
 class User:
 
     _rotate_rad = math.pi / 8
-    _velocity: float = 0.1
+    _velocity: float = 0.3
     _fov: int = math.pi / 3
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]]):
