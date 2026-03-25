@@ -57,11 +57,11 @@ class RayCasting:
 
                     break
 
-            y1 = self.screen.get_width()/2 - height/2
-            y2 = self.screen.get_width()/2 + height/2
+            y1 = self.screen.get_height()/2 - height/2
+            y2 = self.screen.get_height()/2 + height/2
 
-            floor = self.screen.get_width()/2 + height/2
-            cell = self.screen.get_width()/2 - height/2
+            # floor = self.screen.get_width()/2 + height/2
+            # cell = self.screen.get_width()/2 - height/2
 
             pygame.draw.line(self.screen, color, (i, y1), (i, y2))
             # self.paint_floor_or_cell(i, floor, self.screen.get_height())

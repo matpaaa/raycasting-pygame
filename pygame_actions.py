@@ -20,12 +20,12 @@ class PygameActions:
         self.user.move_down()
 
     def actions(self, event: Event):
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                self.user_move_left()
-            if event.key == pygame.K_RIGHT:
-                self.user_move_right()
-            if event.key == pygame.K_UP:
-                self.user_move_up()
-            if event.key == pygame.K_DOWN:
-                self.user_move_down()
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_LEFT]:
+            self.user_move_left()
+        if keys[pygame.K_RIGHT]:
+            self.user_move_right()
+        if keys[pygame.K_UP]:
+            self.user_move_up()
+        if keys[pygame.K_DOWN]:
+            self.user_move_down()
