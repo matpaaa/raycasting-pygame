@@ -9,24 +9,20 @@ class RayCasting:
 
     _step: float = 0.03
 
-    def __init__(self, screen: Surface, map: List[List[int]]):
+    def __init__(self, screen: Surface, map: List[List[int]], user: User):
         self.screen = screen
         self.map = map
+        self.user = user
+        self.textures = {
+            0: pygame.image.load('assets/cell.png').convert(),
+            1: pygame.image.load('assets/sky.png').convert(),
+        }
 
     def width_map_ratio(self, width: int) -> int:
         return width * len(self.map[0]) / self.screen.get_width()
     
     def height_map_ratio(self, height: int) -> int:
         return height * len(self.map[0]) / self.screen.get_height()
-
-    def paint_floor_or_cell(self, col: int, min_height: int, max_height: int):
-        width_ratio = self.width_map_ratio(col)
-        for i in range(int(min_height), int(max_height)):
-            height_ratio = self.height_map_ratio(i)
-            if (int(width_ratio) + int(height_ratio)) % 2 == 0:
-                pygame.draw.line(self.screen, 'white', (col, i), (col, i))
-            else:
-                pygame.draw.line(self.screen, 'black', (col, i), (col, i))
 
     def launch_fucking_rays(self, user: User):
         for i in range (self.screen.get_width()):
@@ -60,9 +56,17 @@ class RayCasting:
             y1 = self.screen.get_height()/2 - height/2
             y2 = self.screen.get_height()/2 + height/2
 
-            # floor = self.screen.get_width()/2 + height/2
-            # cell = self.screen.get_width()/2 - height/2
+            floor = self.screen.get_width()/2 + height/2
+            cell = self.screen.get_width()/2 - height/2
 
             pygame.draw.line(self.screen, color, (i, y1), (i, y2))
-            # self.paint_floor_or_cell(i, floor, self.screen.get_height())
-            # self.paint_floor_or_cell(i, 0, cell)
+
+            # texture = pygame.transform.scale(self.textures[0], (1, 100))
+            # self.screen.blit(texture, (i, self.screen.get_height() - floor))
+
+            # sky_offset = -10 * math.degrees(self.player.angle) % WIDTH
+            # self.sc.blit(self.textures['S'], (sky_offset, 0))
+            # self.sc.blit(self.textures['S'], (sky_offset - WIDTH, 0))
+            # self.sc.blit(self.textures['S'], (sky_offset + WIDTH, 0))
+            # pygame.draw.rect(self.sc, DARKGRAY, (0, HALF_HEIGHT, WIDTH, HALF_HEIGHT))
+

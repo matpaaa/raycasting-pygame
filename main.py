@@ -4,11 +4,9 @@ import math
 from pygame_actions import PygameActions
 from ray_casting import RayCasting
 from minimap import Minimap
+from settings import DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, FPS, SCREEN_BACKGROUND, SCREEN_HEIGHT, SCREEN_WIDTH
 from user import User
 
-
-SCREEN_WIDTH = 700
-SCREEN_HEIGHT = 700
 
 def main():
     pygame.init()
@@ -17,9 +15,8 @@ def main():
     clock = pygame.time.Clock()
     running = True
 
-
-    user = User(1, 1, math.pi / 4, MAP)
-    ray_casting = RayCasting(screen, MAP)
+    user = User(DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, MAP)
+    ray_casting = RayCasting(screen, MAP, user)
     minimap = Minimap(screen, MAP, user)
     pygame_actions = PygameActions(user)
 
@@ -30,12 +27,12 @@ def main():
 
         pygame_actions.actions(event)
 
-        screen.fill("black")
+        screen.fill(SCREEN_BACKGROUND)
         ray_casting.launch_fucking_rays(user)
         minimap.draw()
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(FPS)
 
     pygame.quit()
 
