@@ -41,47 +41,33 @@ class RayCasting:
 
                 if pos != 0:
                     distance = self._step * n
-                    # Correction fish-eye
                     distance *= math.cos(user.get_rot - rot_i)
                     wall_height = screen_height / distance
 
-                    # --- Calcul de la coordonnée U dans la texture ---
-                    # On regarde si le rayon a touché un côté vertical (x entier)
-                    # ou horizontal (y entier) en regardant la partie fractionnaire
-                    frac_x = x - map_x  # entre 0 et 1
-                    frac_y = y - map_y  # entre 0 et 1
+                    frac_x = x - map_x
+                    frac_y = y - map_y
 
-                    # On choisit le côté avec la plus petite partie fractionnaire
-                    # (le plus proche d'un bord de cellule = le mur touché)
                     if min(frac_x, 1 - frac_x) < min(frac_y, 1 - frac_y):
-                        # Côté vertical (gauche/droite), U = position en Y
                         tex_u = frac_y
                     else:
-                        # Côté horizontal (haut/bas), U = position en X
                         tex_u = frac_x
 
-                    # --- Rendu de la colonne texturée ---
+                    # Render col with texture
                     texture = self.textures.get(pos)
                     if texture:
                         tex_width = texture.get_width()
                         tex_height = texture.get_height()
 
-                        # Colonne de pixels à extraire dans la texture
                         tex_x = int(tex_u * tex_width) % tex_width
-
-                        # Extraire une colonne de 1px de large sur toute la hauteur
                         tex_column = texture.subsurface(pygame.Rect(tex_x, 0, 1, tex_height))
 
-                        # Étirer cette colonne à la hauteur du mur calculée
                         wall_h = int(wall_height)
                         scaled_column = pygame.transform.scale(tex_column, (1, max(1, wall_h)))
 
-                        # Position Y centrée à l'écran
                         y1 = int(screen_height / 2 - wall_h / 2)
                         self.screen.blit(scaled_column, (i, y1))
                     else:
-                        # Fallback couleur si pas de texture
-                        color = 'red' if pos == 2 else 'gray'
+                        color = 'red'
                         y1 = screen_height / 2 - wall_height / 2
                         y2 = screen_height / 2 + wall_height / 2
                         pygame.draw.line(self.screen, color, (i, y1), (i, y2))
