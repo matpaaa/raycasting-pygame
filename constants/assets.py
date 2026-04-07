@@ -6,6 +6,7 @@ class Assets:
     logo = None
     home_title = None
     screen_title = None
+    window = None
 
     @staticmethod
     def load():
@@ -14,3 +15,4 @@ class Assets:
         Assets.logo = pygame.image.load('./assets/screens/logo.png').convert_alpha()
         Assets.screen_title = pygame.image.load('./assets/screens/screen-title.png').convert_alpha()
         Assets.home_title = pygame.image.load('./assets/screens/home-title.png').convert_alpha()
+        Assets.window = pygame.image.load('./assets/screens/window.png').convert_alpha()

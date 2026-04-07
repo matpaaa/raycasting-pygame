@@ -4,6 +4,10 @@ from settings import *
 from constants.assets import *
 from screens.home_screen import *
 from screens.login_screen import *
+from screens.register_screen import *
+from screens.forgot_password_screen import *
+from screens.forgot_password_code_screen import *
+from screens.new_password_screen import *
 from constants.fonts import *
 from ui.button import *
 import global_var
@@ -19,8 +23,12 @@ Fonts.load()
 
 home_screen = HomeScreen(screen)
 login_screen = LoginScreen(screen)
+register_screen = RegisterScreen(screen)
+forgot_password_screen = ForgotPasswordScreen(screen)
+forgot_password_code_screen = ForgotPasswordCodeScreen(screen)
+new_password_screen = NewPasswordScreen(screen)
 
-routing = Routing(home_screen, login_screen)
+routing = Routing(home_screen, login_screen, register_screen, forgot_password_screen, forgot_password_code_screen, new_password_screen)
 
 
 pygame.mixer.music.load('./assets/sounds/home-music.mp3')
@@ -37,8 +45,7 @@ while global_var.running:
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             global_var.running = False
 
-        home_screen.handle_event(event)
-        login_screen.handle_event(event)
+        routing.handle_event(event)
 
     routing.route()
 

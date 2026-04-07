@@ -3,6 +3,7 @@ from settings import *
 from constants.assets import *
 from ui.button import *
 import global_var
+from sounds import *
 
 btn_connect = Button('SE CONNECTER', 650, SCREEN_HEIGHT-150, 460, 50)
 btn_quit = Button('QUITTER LE JEU', 650, SCREEN_HEIGHT-150 + 62 , 460, 50, 'danger')
@@ -14,9 +15,11 @@ class HomeScreen:
 
     def handle_event(self, event):
         if btn_connect.is_clicked(event):
+            Sounds.click()
             global_var.current_page = 'login'
 
         if btn_quit.is_clicked(event):
+            Sounds.click()
             global_var.running = False
 
     def draw(self):

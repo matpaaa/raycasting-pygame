@@ -5,6 +5,7 @@ from ui.input import Input
 from ui.button import *
 import global_var
 from ui.line import *
+from sounds import *
 
 class LoginScreen:
 
@@ -28,15 +29,24 @@ class LoginScreen:
 
         self.line = Line(100, self._get_y(3), SEPARATOR_LINE_WIDTH)
 
-        self.btn_forgot_password = Button('RECUPERER VOTRE MOT DE PASSE', 100, self._get_y(4), ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'MOT DE PASSE OUBLIE')
-        self.btn_create_account = Button('CREER VOTRE COMPTE', 100, self._get_y(5), ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'VOUS ETES NOUVEAU ?')
+        self.btn_forgot_password = Button('RECUPERER VOTRE MOT DE PASSE', 100, self._get_y(3) + GAP_BETWEEN_ELEMENT, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'MOT DE PASSE OUBLIE')
+        self.btn_create_account = Button('CREER VOTRE COMPTE', 100, self._get_y(4) + GAP_BETWEEN_ELEMENT, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'VOUS ETES NOUVEAU ?')
 
     def handle_event(self, event):
         self.username_input.handle_event(event)
         self.input_password.handle_event(event)
 
         if self.btn_back.is_clicked(event):
+            Sounds.click()
             global_var.current_page = 'home'
+
+        if self.btn_forgot_password.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'forgot_password'
+
+        if self.btn_create_account.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'register'
 
     def _get_y(self, num):
         return 164 + ELEMENT_HEIGHT*num + GAP_BETWEEN_ELEMENT*num
@@ -53,7 +63,7 @@ class LoginScreen:
         self.btn_back.draw(self.screen)
         self.btn_connect.draw(self.screen)
 
-        # self.line.draw(self.screen)
+        self.line.draw(self.screen)
 
         self.btn_forgot_password.draw(self.screen)
         self.btn_create_account.draw(self.screen)
