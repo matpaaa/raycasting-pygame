@@ -14,7 +14,7 @@ class RayCasting:
         self.map = map
         self.user = user
         self.textures = {
-            1: pygame.image.load('assets/textures/sky.png').convert(),
+            1: pygame.image.load('assets/textures/wall.png').convert(),
             2: pygame.image.load('assets/textures/sky.png').convert(),
         }
 

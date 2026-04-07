@@ -1,7 +1,6 @@
 import math
 from typing import List
 
-
 class User:
 
     _rotate_rad = math.pi / 48

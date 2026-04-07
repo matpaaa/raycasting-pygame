@@ -1,9 +1,14 @@
 import pygame
-
+from sounds import *
 from user import User
 from pygame.event import Event
+from sounds import *
 
 class PygameActions:
+
+    _walk_sound = None
+    _moving = False
+
     def __init__(self, user: User):
         self.user = user
 
@@ -19,13 +24,22 @@ class PygameActions:
     def user_move_down(self):
         self.user.move_down()
 
-    def actions(self, event: Event):
+    def actions(self):
         keys = pygame.key.get_pressed()
+        self._moving = False
         if keys[pygame.K_LEFT]:
             self.user_move_left()
         if keys[pygame.K_RIGHT]:
             self.user_move_right()
         if keys[pygame.K_UP]:
             self.user_move_up()
+            self._moving = True
         if keys[pygame.K_DOWN]:
             self.user_move_down()
+            self._moving = True
+
+        if self._moving and self._walk_sound is None:
+            self._walk_sound = Sounds.walk()
+        elif not self._moving and self._walk_sound is not None:
+            self._walk_sound.stop()
+            self._walk_sound = None

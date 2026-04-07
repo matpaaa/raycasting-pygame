@@ -8,13 +8,15 @@ from screens.register_screen import *
 from screens.forgot_password_screen import *
 from screens.forgot_password_code_screen import *
 from screens.new_password_screen import *
+from game import *
 from constants.fonts import *
 from ui.button import *
 import global_var
 from routing import *
 
 pygame.init()
-pygame.mixer.init()
+Sounds.init()
+
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Infected Prison")
 
@@ -27,12 +29,18 @@ register_screen = RegisterScreen(screen)
 forgot_password_screen = ForgotPasswordScreen(screen)
 forgot_password_code_screen = ForgotPasswordCodeScreen(screen)
 new_password_screen = NewPasswordScreen(screen)
+game = Game(screen)
 
-routing = Routing(home_screen, login_screen, register_screen, forgot_password_screen, forgot_password_code_screen, new_password_screen)
+routing = Routing(
+    home_screen,
+    login_screen,
+    register_screen,
+    forgot_password_screen,
+    forgot_password_code_screen,
+    new_password_screen,
+    game
+)
 
-
-pygame.mixer.music.load('./assets/sounds/home-music.mp3')
-pygame.mixer.music.play(loops=-1)
 
 clock = pygame.time.Clock()
 

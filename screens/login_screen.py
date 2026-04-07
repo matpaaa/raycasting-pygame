@@ -40,6 +40,10 @@ class LoginScreen:
             Sounds.click()
             global_var.current_page = 'home'
 
+        if self.btn_connect.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'game'
+
         if self.btn_forgot_password.is_clicked(event):
             Sounds.click()
             global_var.current_page = 'forgot_password'
