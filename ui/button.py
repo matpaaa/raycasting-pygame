@@ -1,16 +1,26 @@
 import pygame
 from constants.color import *
 from constants.fonts import *
+from ui.label import *
 
 class Button:
-    def __init__(self, text, x, y, w, h, variant='default'):
+    def __init__(self, text, x, y, w, h, variant='default', label=None):
         self.text = text
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.variant = variant
-        self.rect = pygame.Rect(x, y, w, h)
+
+        self.label = label
+
+        if label != None:
+            self.label_rect = Label(label, x + 4, y, h)
+            self.input_rect = pygame.Rect(x + self.label_rect.label_w + 4, y, w, h)
+            self.rect = pygame.Rect(self.input_rect.width + GAP_BETWEEN_ELEMENT_LABEL, y, w, h)
+        else:
+            self.input_rect = pygame.Rect(x + 4, y, w, h)
+            self.rect = pygame.Rect(x, y, w, h)
 
     def draw(self, surface):
         pygame.draw.rect(surface, BUTTON_BACKGROUND, self.rect, border_radius=4)
@@ -24,6 +34,9 @@ class Button:
         lx = self.rect.centerx - label.get_width()  // 2
         ly = self.rect.centery - label.get_height() // 2
         surface.blit(label, (lx, ly))
+
+        if self.label != None:
+            self.label_rect.draw(surface)
 
     def is_clicked(self, event):
         return (event.type == pygame.MOUSEBUTTONDOWN
