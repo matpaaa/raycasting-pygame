@@ -7,6 +7,6 @@ class Fonts:
 
     @staticmethod
     def load():
-        Fonts.font_title           = pygame.font.SysFont("couriernew", 32, bold=True)
-        Fonts.font_subtitle        = pygame.font.SysFont("couriernew", 18, bold=True)
-        Fonts.font_btn        = pygame.font.SysFont("couriernew", 28, bold=True)
+        Fonts.font_title    = pygame.font.Font("./assets/fonts/pixel.otf", 32)
+        Fonts.font_subtitle = pygame.font.Font("./assets/fonts/pixel.otf", 18)
+        Fonts.font_btn      = pygame.font.Font("./assets/fonts/pixel.otf", 20)
