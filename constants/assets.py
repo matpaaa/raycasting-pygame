@@ -8,7 +8,17 @@ class Assets:
     screen_title = None
     window = None
 
+    vodka = None
+    ammo = None
+    code = None
+    key = None
+    slot = None
+    slot_selected = None
+
     health = {}
+
+    item_size = 75
+    slot_selected_size = 85
 
     @staticmethod
     def load():
@@ -18,6 +28,36 @@ class Assets:
         Assets.screen_title = pygame.image.load('./assets/screens/screen-title.png').convert_alpha()
         Assets.home_title = pygame.image.load('./assets/screens/home-title.png').convert_alpha()
         Assets.window = pygame.image.load('./assets/screens/window.png').convert_alpha()
+
+        Assets.vodka = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/vodka.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+
+        Assets.ammo = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/ammo.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+
+        Assets.code = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/code.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+
+        Assets.key = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/key.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+
+        Assets.slot = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/slot.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+
+        Assets.slot_selected = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/slot.png').convert_alpha(),
+            (Assets.slot_selected_size, Assets.slot_selected_size)
+        )
 
         Assets.health = {
             '1': pygame.transform.scale(pygame.image.load('./assets/game/health/h-1.png').convert_alpha(), (300, 50)),

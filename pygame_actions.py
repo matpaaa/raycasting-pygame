@@ -49,3 +49,15 @@ class PygameActions:
 
         if keys[pygame.K_c]:
             self.user.heal(10)
+
+        if keys[pygame.K_1]:
+            self.user.handle_select_slot(0)
+
+        if keys[pygame.K_2]:
+            self.user.handle_select_slot(1)
+
+        if keys[pygame.K_3]:
+            self.user.handle_select_slot(2)
+
+        if keys[pygame.K_4]:
+            self.user.handle_select_slot(3)

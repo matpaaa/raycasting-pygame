@@ -1,5 +1,6 @@
 import math
 from typing import List
+from settings import *
 
 class User:
 
@@ -8,6 +9,7 @@ class User:
     _fov: int = math.pi / 3
     _max_health = 160
     _health = _max_health
+    _slot_select = 0
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]]):
         self.pos_x = pos_x
@@ -56,6 +58,10 @@ class User:
         else:
             self._health += heal
 
+    def handle_select_slot(self, slot_num):
+        if slot_num < 0 or slot_num > MAX_ITEM_SLOTS or slot_num == self._slot_select: return
+        self._slot_select = slot_num
+
     @property
     def get_fov(self) -> int:
         return self._fov
@@ -79,3 +85,7 @@ class User:
     @property
     def health(self) -> int:
         return self._health
+    
+    @property
+    def slot_select(self) -> int:
+        return self._slot_select
