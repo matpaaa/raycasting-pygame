@@ -7,6 +7,7 @@ class Assets:
     home_title = None
     screen_title = None
     window = None
+    danger = None
 
     vodka = None
     ammo = None
@@ -28,6 +29,10 @@ class Assets:
         Assets.screen_title = pygame.image.load('./assets/screens/screen-title.png').convert_alpha()
         Assets.home_title = pygame.image.load('./assets/screens/home-title.png').convert_alpha()
         Assets.window = pygame.image.load('./assets/screens/window.png').convert_alpha()
+        Assets.danger = pygame.transform.scale(
+            pygame.image.load('./assets/screens/danger.png').convert_alpha(),
+            (32, 32)
+        )
 
         Assets.vodka = pygame.transform.scale(
             pygame.image.load('./assets/game/items/vodka.png').convert_alpha(),
