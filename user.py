@@ -1,6 +1,7 @@
 import math
 from typing import List
 from settings import *
+from sounds import *
 
 class User:
 
@@ -18,7 +19,10 @@ class User:
         self.map = map
 
     def _is_collision(self, pos_x: float, pos_y: float):
-        return self.map[int(pos_y)][int(pos_x)] != 0
+        is_collision = self.map[int(pos_y)][int(pos_x)] != 0
+        if is_collision:
+            Sounds.hurt()
+        return is_collision
 
     def move_up(self):
         new_pos_x = self.pos_x + self._velocity * math.cos(self.rot)

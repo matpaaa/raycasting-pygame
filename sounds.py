@@ -15,6 +15,12 @@ class Sounds:
         sound.set_volume(0.1)
 
     @staticmethod
+    def hurt():
+        sound = pygame.mixer.Sound('./assets/sounds/hurt.mp3')
+        sound.play()
+        sound.set_volume(0.5)
+
+    @staticmethod
     def walk():
         sound = pygame.mixer.Sound('./assets/sounds/walk.mp3')
         sound.play()
