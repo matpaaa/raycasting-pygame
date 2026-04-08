@@ -43,3 +43,9 @@ class PygameActions:
         elif not self._moving and self._walk_sound is not None:
             self._walk_sound.stop()
             self._walk_sound = None
+
+        if keys[pygame.K_x]:
+            self.user.damage(10)
+
+        if keys[pygame.K_c]:
+            self.user.heal(10)

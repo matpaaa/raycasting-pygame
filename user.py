@@ -6,6 +6,8 @@ class User:
     _rotate_rad = math.pi / 48
     _velocity: float = 0.03
     _fov: int = math.pi / 3
+    _max_health = 160
+    _health = _max_health
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]]):
         self.pos_x = pos_x
@@ -42,6 +44,18 @@ class User:
     def move_right(self):
         self.rot += self._rotate_rad
 
+    def damage(self, dmg):
+        if self._health - dmg <= 0:
+            self._health = 10
+        else:
+            self._health -= dmg
+
+    def heal(self, heal):
+        if self._health + heal > self._max_health:
+            self._health = self._max_health
+        else:
+            self._health += heal
+
     @property
     def get_fov(self) -> int:
         return self._fov
@@ -61,3 +75,7 @@ class User:
     @property
     def get_pos_y(self) -> float:
         return self.pos_y
+    
+    @property
+    def health(self) -> int:
+        return self._health
