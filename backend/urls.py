@@ -7,4 +7,6 @@ urlpatterns = [
     path('api/register/', register),
     path('api/login/', login),
     path('api/verifyCode/', verify_code),
+    path('api/forgetPassword/', forget_password),
+    path('api/resetPassword/', reset_password),
 ]
