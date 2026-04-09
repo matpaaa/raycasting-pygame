@@ -24,6 +24,9 @@ def register(request):
 
         if account.objects.filter(email=email).exists():
             return JsonResponse({"error": "Email déjà utilisé"}, status=400)
+        
+        elif account.objects.filter(name=name).exists():
+            return JsonResponse({"error": "Nom d'utilisateur déjà utilisé"}, status=400) 
 
         code = str(random.randint(100000, 999999))
 

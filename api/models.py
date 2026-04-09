@@ -4,7 +4,7 @@ from django.utils.timezone import now
 # Create your models here.
 class account(models.Model):
     id_account = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=16)
+    name = models.CharField(max_length=16, unique=True)
     password = models.CharField(max_length=128)
     is_verified = models.BooleanField(default=False)
     verification_code = models.CharField(max_length=6, null=True, blank=True)
