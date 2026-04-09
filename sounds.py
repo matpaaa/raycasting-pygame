@@ -44,3 +44,9 @@ class Sounds:
         sound = pygame.mixer.Sound('./assets/sounds/damage.mp3')
         sound.play()
         sound.set_volume(0.5)
+
+    @staticmethod
+    def eat():
+        sound = pygame.mixer.Sound('./assets/sounds/eat.mp3')
+        sound.play()
+        sound.set_volume(0.5)
