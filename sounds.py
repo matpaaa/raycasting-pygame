@@ -38,3 +38,9 @@ class Sounds:
         pygame.mixer.music.fadeout(500)
         pygame.mixer.music.load('./assets/sounds/game-music.mp3')
         pygame.mixer.music.play(loops=-1, fade_ms=5000)
+
+    @staticmethod
+    def damage():
+        sound = pygame.mixer.Sound('./assets/sounds/damage.mp3')
+        sound.play()
+        sound.set_volume(0.5)
