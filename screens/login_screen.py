@@ -1,0 +1,73 @@
+from constants.ui import *
+from settings import *
+from constants.assets import *
+from ui.input import Input
+from ui.button import *
+import global_var
+from ui.line import *
+from sounds import *
+
+class LoginScreen:
+
+    def __init__(self, screen):
+        self.screen = screen
+        self.username_input = Input(
+            placeholder="VOTRE NOM D'UTILISATEUR",
+            x=100, y=self._get_y(0),
+            input_w=ELEMENT_WIDTH_LARGE, h=ELEMENT_HEIGHT,
+            label="NOM D'UTILISATEUR"
+        )
+        self.input_password = Input(
+            placeholder="VOTRE MOT DE PASSE",
+            x=100, y=self._get_y(1),
+            input_w=ELEMENT_WIDTH_LARGE, h=ELEMENT_HEIGHT,
+            label="MOT DE PASSE"
+        )
+
+        self.btn_back = Button('RETOUR', ELEMENT_WIDTH_LARGE + GAP_BETWEEN_ELEMENT_LABEL, self._get_y(2), ELEMENT_WIDTH_SMALL, ELEMENT_HEIGHT, 'danger')
+        self.btn_connect = Button('CONNEXION', ELEMENT_WIDTH_LARGE + GAP_BETWEEN_ELEMENT_LABEL + ELEMENT_WIDTH_SMALL + GAP_BETWEEN_ELEMENT, self._get_y(2), ELEMENT_WIDTH_SMALL, ELEMENT_HEIGHT)
+
+        self.line = Line(100, self._get_y(3), SEPARATOR_LINE_WIDTH)
+
+        self.btn_forgot_password = Button('RECUPERER VOTRE MOT DE PASSE', 100, self._get_y(3) + GAP_BETWEEN_ELEMENT, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'MOT DE PASSE OUBLIE')
+        self.btn_create_account = Button('CREER VOTRE COMPTE', 100, self._get_y(4) + GAP_BETWEEN_ELEMENT, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'VOUS ETES NOUVEAU ?')
+
+    def handle_event(self, event):
+        self.username_input.handle_event(event)
+        self.input_password.handle_event(event)
+
+        if self.btn_back.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'home'
+
+        if self.btn_connect.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'game'
+
+        if self.btn_forgot_password.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'forgot_password'
+
+        if self.btn_create_account.is_clicked(event):
+            Sounds.click()
+            global_var.current_page = 'register'
+
+    def _get_y(self, num):
+        return 164 + ELEMENT_HEIGHT*num + GAP_BETWEEN_ELEMENT*num
+
+    def draw(self):
+        self.screen.fill((0, 0, 0))
+        self.screen.blit(Assets.background, (0, 0))
+        self.screen.blit(Assets.screen_title, (100, 64))
+        self.screen.blit(Assets.logo, (SCREEN_WIDTH/2 - Assets.logo.get_width()/2, SCREEN_HEIGHT/2 - Assets.logo.get_height()/2))
+
+        self.username_input.draw(self.screen)
+        self.input_password.draw(self.screen)
+
+        self.btn_back.draw(self.screen)
+        self.btn_connect.draw(self.screen)
+
+        self.line.draw(self.screen)
+
+        self.btn_forgot_password.draw(self.screen)
+        self.btn_create_account.draw(self.screen)

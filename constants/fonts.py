@@ -1,17 +1,12 @@
 import pygame
 
 class Fonts:
-    font_title_big = None
-    font_title_small = None
+    font_title = None
+    font_subtitle = None
     font_btn = None
 
     @staticmethod
     def load():
-        try:
-            Fonts.font_title_big  = pygame.font.SysFont("couriernew", 90, bold=True)
-            Fonts.font_title_small= pygame.font.SysFont("couriernew", 72, bold=True)
-            Fonts.font_btn        = pygame.font.SysFont("couriernew", 28, bold=True)
-        except:
-            Fonts.font_title_big  = pygame.font.SysFont(None, 90, bold=True)
-            Fonts.font_title_small= pygame.font.SysFont(None, 72, bold=True)
-            Fonts.font_btn        = pygame.font.SysFont(None, 28, bold=True)
+        Fonts.font_title    = pygame.font.Font("./assets/fonts/pixel.otf", 32)
+        Fonts.font_subtitle = pygame.font.Font("./assets/fonts/pixel.otf", 18)
+        Fonts.font_btn      = pygame.font.Font("./assets/fonts/pixel.otf", 20)
