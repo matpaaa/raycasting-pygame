@@ -51,6 +51,7 @@ class User:
         self.rot += self._rotate_rad
 
     def damage(self, dmg):
+        Sounds.damage()
         if self._health - dmg <= 0:
             self._health = 10
         else:
