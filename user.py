@@ -58,6 +58,7 @@ class User:
             self._health -= dmg
 
     def heal(self, heal):
+        Sounds.eat()
         if self._health + heal > self._max_health:
             self._health = self._max_health
         else:
