@@ -96,3 +96,62 @@ def login(request):
             return JsonResponse({"error": "Mot de passe incorrect"}, status=400)
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+@csrf_exempt
+def forget_password(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except:
+            return JsonResponse({"error": "JSON invalide"}, status=400)
+        
+        email = data.get("email")
+        if not email:
+            return JsonResponse({"error": "Champ manquant"})
+        
+        try:
+            user = account.objects.get(email=email)
+        except account.DoesNotExist:
+            return JsonResponse({"error": "Utilisateur introuvable"}, status=404)
+        
+        code = str(random.randint(100000, 999999))
+        user.verification_code = code
+        user.save()
+
+        send_mail(
+            "Code de vérification",
+            f"Ton code est : {code}",
+            "infectedPrison",
+            [email],
+            fail_silently=False,
+        )
+        return JsonResponse({"message": "code envoyer"})
+
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+@csrf_exempt
+def reset_password(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except:
+            return JsonResponse({"error": "JSON invalide"}, status=400)
+        
+        email = data.get("email")
+        password = data.get("password")
+
+        if not password:
+            return JsonResponse({"error": "Champ manquant"})
+        
+        try:
+            user = account.objects.get(email=email)
+        except account.DoesNotExist:
+            return JsonResponse({"error": "Utilisateur introuvable"}, status=404)
+        
+        user.password = make_password(password)
+        user.save()
+
+        return JsonResponse({"message": "Mots de passe changer"})
+
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+            
