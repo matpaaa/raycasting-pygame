@@ -6,6 +6,8 @@ from ui.button import *
 import global_var
 from ui.line import *
 from sounds import *
+from requestsApi.auth_api import *
+from error_bubble import *
 
 class LoginScreen:
 
@@ -32,9 +34,12 @@ class LoginScreen:
         self.btn_forgot_password = Button('RECUPERER VOTRE MOT DE PASSE', 100, self._get_y(3) + GAP_BETWEEN_ELEMENT, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'MOT DE PASSE OUBLIE')
         self.btn_create_account = Button('CREER VOTRE COMPTE', 100, self._get_y(4) + GAP_BETWEEN_ELEMENT, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT, 'default', 'VOUS ETES NOUVEAU ?')
 
+        self.error_bubble = ErrorBubble(self.screen)
+
     def handle_event(self, event):
         self.username_input.handle_event(event)
         self.input_password.handle_event(event)
+        self.error_bubble.handle_event(event)
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
@@ -43,6 +48,16 @@ class LoginScreen:
         if self.btn_connect.is_clicked(event):
             Sounds.click()
             global_var.current_page = 'game'
+
+            # data = {
+            #     "name": self.username_input.value,
+            #     "password": self.input_password.value
+            # }
+            # res = AuthApi.login(data)
+            # if res.status_code == 200:
+            #     global_var.current_page = 'game'
+            # else:
+            #     self.error_bubble.set_content('Username ou mot de passe invalide')
 
         if self.btn_forgot_password.is_clicked(event):
             Sounds.click()
@@ -71,3 +86,5 @@ class LoginScreen:
 
         self.btn_forgot_password.draw(self.screen)
         self.btn_create_account.draw(self.screen)
+
+        self.error_bubble.draw()

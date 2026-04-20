@@ -23,6 +23,7 @@ class Game:
         self.pygame_actions.actions()
         self.screen.fill(SCREEN_BACKGROUND)
         self.ray_casting.launch_fucking_rays(self.user)
+        self.ray_casting.draw_sprites(self.user)
         self.minimap.draw()
         self.health.draw()
         self.inventory.draw()

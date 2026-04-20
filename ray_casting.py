@@ -17,6 +17,11 @@ class RayCasting:
             1: pygame.image.load('assets/textures/wall.png').convert(),
             2: pygame.image.load('assets/textures/sky.png').convert(),
         }
+        
+        self.z_buffer = [float('inf')] * screen.get_width()
+        self.sprites = [
+            {'x': 7.5, 'y': 2, 'texture': pygame.image.load('assets/textures/epstein.png').convert_alpha()},
+        ]
 
     def launch_fucking_rays(self, user: User):
         screen_width = self.screen.get_width()
@@ -72,4 +77,66 @@ class RayCasting:
                         y2 = screen_height / 2 + wall_height / 2
                         pygame.draw.line(self.screen, color, (i, y1), (i, y2))
 
+                    self.z_buffer[i] = distance
                     break
+                
+    def draw_sprites(self, user: User):
+        screen_width = self.screen.get_width()
+        screen_height = self.screen.get_height()
+
+        sorted_sprites = sorted(
+            self.sprites,
+            key=lambda s: math.hypot(s['x'] - user.get_pos_x, s['y'] - user.get_pos_y),
+            reverse=True
+        )
+
+        for sprite in sorted_sprites:
+            dx = sprite['x'] - user.get_pos_x
+            dy = sprite['y'] - user.get_pos_y
+            distance = math.hypot(dx, dy)
+
+            if distance < 0.1:
+                continue
+
+            sprite_angle = math.atan2(dy, dx)
+            angle_diff = sprite_angle - user.get_rot
+
+            while angle_diff > math.pi:  angle_diff -= 2 * math.pi
+            while angle_diff < -math.pi: angle_diff += 2 * math.pi
+
+            half_fov = user.get_fov / 2
+
+            if abs(angle_diff) > half_fov + 0.3:
+                continue
+
+            sprite_height = int(screen_height / distance)
+            sprite_width = sprite_height
+
+            center_x = int((0.5 + angle_diff / user.get_fov) * screen_width)
+
+            x_start = center_x - sprite_width // 2
+            x_end   = center_x + sprite_width // 2
+
+            texture = sprite['texture']
+            tex_w = texture.get_width()
+            tex_h = texture.get_height()
+
+            y_start = screen_height // 2 - sprite_height // 2
+
+            # 6. Dessiner colonne par colonne
+            for col in range(x_start, x_end):
+                if col < 0 or col >= screen_width:
+                    continue
+
+                # Z-test : ne pas dessiner si derrière un mur
+                if distance >= self.z_buffer[col]:
+                    continue
+
+                # Colonne de texture correspondante
+                tex_x = int((col - x_start) / sprite_width * tex_w)
+                tex_x = max(0, min(tex_x, tex_w - 1))
+
+                tex_col = texture.subsurface(pygame.Rect(tex_x, 0, 1, tex_h))
+                scaled_col = pygame.transform.scale(tex_col, (1, max(1, sprite_height)))
+
+                self.screen.blit(scaled_col, (col, y_start))

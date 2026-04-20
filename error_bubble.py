@@ -36,8 +36,8 @@ class ErrorBubble:
         if self.content is None: return
         pygame.draw.rect(self.screen, BUTTON_BACKGROUND, self.rect, border_radius=4)
         pygame.draw.rect(self.screen, DANGER, self.rect, 2, border_radius=4)
-        label = Fonts.font_subtitle.render(self.content, True, WHITE)
-        lx = self.rect.centerx - label.get_width()  // 2
+        label = Fonts.font_error_bubble.render(self.content, True, WHITE)
+        lx = self.rect.x + 32 + SCREEN_PADDING
         ly = self.rect.centery - label.get_height() // 2
         self.screen.blit(label, (lx, ly))
         self.screen.blit(Assets.danger, ((SCREEN_WIDTH - ELEMENT_WIDTH_LARGE)/2 + SCREEN_PADDING, self.rect.centery - 16))
