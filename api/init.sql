@@ -2,6 +2,7 @@
 -- Script PostgreSQL pour MCD
 -- ----------------------------------------------------------
 
+
 -- ----------------------------
 -- Table: item_type
 -- ----------------------------
@@ -32,6 +33,8 @@ CREATE TABLE IF NOT EXISTS account (
     password VARCHAR(60) NOT NULL,
     created_at TIMESTAMP NOT NULL,
     email VARCHAR(320) NOT NULL,
+    is_verified BOOLEAN NOT NULL,
+    verification_code VARCHAR(6) NOT NULL,
     CONSTRAINT account_pk PRIMARY KEY (id_account)
 );
 
@@ -46,8 +49,9 @@ CREATE TABLE IF NOT EXISTS save (
     health SMALLINT NOT NULL,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
-    id_account INT NOT NULL,
-    id_map INT NOT NULL,
+    duration INTEGER NOT NULL,
+    id_account INTEGER NOT NULL,
+    id_map INTEGER NOT NULL,
     CONSTRAINT save_pk PRIMARY KEY (id_save),
     CONSTRAINT save_id_account_fk 
         FOREIGN KEY (id_account) 
@@ -64,7 +68,7 @@ CREATE TABLE IF NOT EXISTS save (
 CREATE TABLE IF NOT EXISTS item_possessed (
     id_item_possessed SERIAL NOT NULL,
     created_at TIMESTAMP NOT NULL,
-    id_save INT NOT NULL,
+    id_save INTEGER NOT NULL,
     CONSTRAINT item_possessed_pk PRIMARY KEY (id_item_possessed),
     CONSTRAINT item_possessed_id_save_fk 
         FOREIGN KEY (id_save) 
@@ -80,7 +84,7 @@ CREATE TABLE IF NOT EXISTS item (
     name VARCHAR(16) NOT NULL,
     value NUMERIC(10,2) NOT NULL,
     id_item_type VARCHAR(16) NOT NULL,
-    id_item_possessed INT NOT NULL,
+    id_item_possessed INTEGER NOT NULL,
     CONSTRAINT item_pk PRIMARY KEY (id_item),
     CONSTRAINT item_id_item_type_fk 
         FOREIGN KEY (id_item_type) 
@@ -88,4 +92,23 @@ CREATE TABLE IF NOT EXISTS item (
     CONSTRAINT item_id_item_possessed_fk 
         FOREIGN KEY (id_item_possessed) 
         REFERENCES item_possessed (id_item_possessed)
+);
+
+
+-- ----------------------------
+-- Table: puzzle
+-- ----------------------------
+CREATE TABLE IF NOT EXISTS puzzle (
+    puzzle_id INTEGER NOT NULL,
+    title VARCHAR(128) NOT NULL,
+    content VARCHAR(128) NOT NULL,
+    id_map INTEGER,
+    id_item VARCHAR(16),
+    CONSTRAINT puzzle_pk PRIMARY KEY (puzzle_id),
+    CONSTRAINT puzzle_id_map_fk 
+        FOREIGN KEY (id_map) 
+        REFERENCES map (id_map),
+    CONSTRAINT puzzle_id_item_fk 
+        FOREIGN KEY (id_item) 
+        REFERENCES item (id_item)
 );
