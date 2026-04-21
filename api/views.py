@@ -173,14 +173,18 @@ def get_maps(request):
 
 def get_saves(request):
     if request.method == "GET":
-        saves = save.objects.all()
+        user_id = request.session.get('user_id')
 
-        data = []
+        if not user_id:
+            return JsonResponse({"error": "Non connecté"}, status=401)
+
+        saves = save.objects.filter(id_account=user_id)
+        data=[]
         for save_item in saves:
             data.append({
                 "id": save_item.id_save,
                 "pos_y": save_item.pos_y,
-                "pox_x": save_item.pox_x,
+                "pos_x": save_item.pox_x,
                 "health": save_item.health,
                 "created_at": save_item.created_at,
                 "updated_at": save_item.updated_at,
@@ -190,3 +194,21 @@ def get_saves(request):
         return JsonResponse({"saves": data})
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+def get_info(request):
+    if request.method == "GET":
+        user_id = request.session.get('user_id')
+
+        if not user_id:
+            return JsonResponse({"error": "Non connecté"}, status=401)
+        
+    try:
+        user = account.objects.get(id_account=user_id)
+    except account.DoesNotExist:
+        return JsonResponse({"error": "Utilisateur introuvable"}, status=404)
+
+    return JsonResponse({
+        "id": user.id_account,
+        "name": user.name,
+        "email": user.email
+    })
