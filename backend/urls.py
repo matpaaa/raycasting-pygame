@@ -11,4 +11,5 @@ urlpatterns = [
     path('api/reset-password/', reset_password),
     path('api/get-maps/', get_maps),
     path('api/get-saves/', get_saves),
+    path('api/get-info/', get_info),
 ]
