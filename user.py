@@ -77,16 +77,16 @@ class User:
         self._slot_select = slot_num
 
     def add_item(self, item: Item):
-        if len(self._items) >= MAX_ITEM_SLOTS: return
+        if len(self.inventory_items) >= MAX_ITEM_SLOTS: return
         self._items.append(item)
 
     def drop_item(self):
-        item_deleted = self._items.pop(self.slot_select)
+        item_deleted = self.inventory_items.pop(self.slot_select)
         return item_deleted
     
     def get_item(self, index: int) -> Item | None:
-        if len(self._items)-1 < index: return None
-        return self._items[index]
+        if len(self.inventory_items)-1 < index: return None
+        return self.inventory_items[index]
 
     def sprite_interaction(self) -> Sprite | None:
         for sprite in self.sprites:
@@ -98,9 +98,9 @@ class User:
                 sprite.is_interact = False
 
     def use_item(self):
-        if len(self._items)-1 < self.slot_select: return
+        if len(self.inventory_items)-1 < self.slot_select: return
 
-        item_used = self._items.pop(self.slot_select)
+        item_used = self.inventory_items.pop(self.slot_select)
         if item_used.id_item == 'VODKA':
             self._velocity = item_used.value
             self._speed_boost_end = time.time() + EFFECT_VODKA_TIME
@@ -147,3 +147,15 @@ class User:
         if self._speed_boost_end is None: return None
         time_left = self._speed_boost_end - time.time()
         return time_left if time_left >= 0 else None
+    
+    @property
+    def items(self) -> List[Item]:
+        return self._items
+    
+    @property
+    def inventory_items(self) -> List[Item]:
+        return list(filter(lambda item: item.id_item_type != 'SECRET', self._items))
+    
+    @property
+    def secret_items(self) -> List[Item]:
+        return list(filter(lambda item: item.id_item_type == 'SECRET', self._items))

@@ -116,7 +116,7 @@ class RayCasting:
             if isinstance(sprite, ObjectSprite):
                 sprite_height = int((screen_height//6) / distance)
             else:
-                sprite_height = int(screen_height / distance)
+                sprite_height = int(screen_height//1.5 / distance)
             sprite_width = sprite_height
 
             center_x = int((0.5 + angle_diff / user.get_fov) * screen_width)
@@ -132,7 +132,7 @@ class RayCasting:
             if isinstance(sprite, ObjectSprite):
                 y_start = screen_height // 2 + sprite_height
             else:
-                y_start = screen_height // 2 - sprite_height // 2
+                y_start = screen_height // 2 - sprite_height // 4
 
             for col in range(x_start, x_end):
                 if col < 0 or col >= screen_width:

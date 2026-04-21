@@ -8,6 +8,7 @@ from constants.color import *
 class Inventory:
     
     _gap_item = 10
+    _code_size = 56
 
     def __init__(self, user: User, screen):
         self.user = user
@@ -30,10 +31,18 @@ class Inventory:
 
             self.screen.blit(slot_texture, (pos_x, pos_y))
 
-            if item is not None:
+            if item is not None and item.id_item_type != 'SECRET':
                 self.screen.blit(item.texture, (pos_x + slot_texture.get_width()//2 - item.texture.get_width()//2, pos_y + slot_texture.get_height()//2 - item.texture.get_height()//2))
 
                 if is_select and item.id_item_type == 'CONSUMABLE':
                     lx = self.label_rect.centerx - self.label_surf.get_width() // 2
                     ly = self.label_rect.centery - self.label_surf.get_height() // 2
                     self.screen.blit(self.label_surf, (lx, ly))
+
+        for i in range(len(self.user.secret_items)):
+            item = self.user.secret_items[i]
+            lx = SCREEN_WIDTH - 100
+            ly = SCREEN_HEIGHT - (100 + 64 * i+1)
+            self.screen.blit(item.texture_size(self._code_size), (lx, ly))
+            code_label = Fonts.font_btn.render(str(item.value), True, BUTTON_BACKGROUND)
+            self.screen.blit(code_label, (lx + self._code_size//3, ly + self._code_size//3))

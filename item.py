@@ -14,3 +14,9 @@ class Item:
             pygame.image.load(self.image).convert_alpha(),
             (32, 32)
         )
+    
+    def texture_size(self, size=32):
+        return pygame.transform.scale(
+            pygame.image.load(self.image).convert_alpha(),
+            (size, size)
+        )
