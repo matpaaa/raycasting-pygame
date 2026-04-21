@@ -176,18 +176,17 @@ def get_saves(request):
         saves = save.objects.all()
 
         data = []
-        for m in saves:
+        for save_item in saves:
             data.append({
-                "id": m.id_save,
-                "Y": m.pos_y,
-                "X": m.pox_x,
-                "health": m.health,
-                "created_at": m.created_at,
-                "updated_at": m.updated_at,
-                "name user": m.id_account.name,
-                "name map": m.id_map.name
+                "id": save_item.id_save,
+                "pos_y": save_item.pos_y,
+                "pox_x": save_item.pox_x,
+                "health": save_item.health,
+                "created_at": save_item.created_at,
+                "updated_at": save_item.updated_at,
+                "name_map": save_item.id_map.name
             })
 
-        return JsonResponse({"maps": data})
+        return JsonResponse({"saves": data})
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
