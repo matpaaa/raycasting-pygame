@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import account
+from .models import account,map
 import json
 import random
 
@@ -154,4 +154,19 @@ def reset_password(request):
         return JsonResponse({"message": "Mots de passe changer"})
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
-            
+
+def get_maps(request):
+    if request.method == "GET":
+        maps = map.objects.all()
+
+        data = []
+        for m in maps:
+            data.append({
+                "id": m.id_map,
+                "name": m.name,
+                "created_at": m.created_at,
+            })
+
+        return JsonResponse({"maps": data})
+
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
