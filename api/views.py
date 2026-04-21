@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import account,map
+from .models import account,map,save
 import json
 import random
 
@@ -168,5 +168,25 @@ def get_maps(request):
             })
 
         return JsonResponse({"maps": data})
+
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+def get_saves(request):
+    if request.method == "GET":
+        saves = save.objects.all()
+
+        data = []
+        for save_item in saves:
+            data.append({
+                "id": save_item.id_save,
+                "pos_y": save_item.pos_y,
+                "pox_x": save_item.pox_x,
+                "health": save_item.health,
+                "created_at": save_item.created_at,
+                "updated_at": save_item.updated_at,
+                "name_map": save_item.id_map.name
+            })
+
+        return JsonResponse({"saves": data})
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
