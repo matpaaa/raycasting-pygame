@@ -3,13 +3,13 @@ from typing import List
 from pygame import Surface
 import pygame
 from user import User
-
+from sprite.sprite import *
 
 class RayCasting:
 
-    _step: float = 0.03
+    _step: float = 0.05
 
-    def __init__(self, screen: Surface, map: List[List[int]], user: User):
+    def __init__(self, screen: Surface, map: List[List[int]], user: User, sprites: List[Sprite]):
         self.screen = screen
         self.map = map
         self.user = user
@@ -19,9 +19,7 @@ class RayCasting:
         }
         
         self.z_buffer = [float('inf')] * screen.get_width()
-        self.sprites = [
-            {'x': 7.5, 'y': 2, 'texture': pygame.image.load('assets/textures/epstein.png').convert_alpha()},
-        ]
+        self.sprites = sprites
 
     def launch_fucking_rays(self, user: User):
         screen_width = self.screen.get_width()
@@ -86,13 +84,13 @@ class RayCasting:
 
         sorted_sprites = sorted(
             self.sprites,
-            key=lambda s: math.hypot(s['x'] - user.get_pos_x, s['y'] - user.get_pos_y),
+            key=lambda s: math.hypot(s.pos_x - user.get_pos_x, s.pos_y - user.get_pos_y),
             reverse=True
         )
 
         for sprite in sorted_sprites:
-            dx = sprite['x'] - user.get_pos_x
-            dy = sprite['y'] - user.get_pos_y
+            dx = sprite.pos_x  - user.get_pos_x
+            dy = sprite.pos_y  - user.get_pos_y
             distance = math.hypot(dx, dy)
 
             if distance < 0.1:
@@ -117,22 +115,19 @@ class RayCasting:
             x_start = center_x - sprite_width // 2
             x_end   = center_x + sprite_width // 2
 
-            texture = sprite['texture']
+            texture = sprite.texture
             tex_w = texture.get_width()
             tex_h = texture.get_height()
 
             y_start = screen_height // 2 - sprite_height // 2
 
-            # 6. Dessiner colonne par colonne
             for col in range(x_start, x_end):
                 if col < 0 or col >= screen_width:
                     continue
 
-                # Z-test : ne pas dessiner si derrière un mur
                 if distance >= self.z_buffer[col]:
                     continue
 
-                # Colonne de texture correspondante
                 tex_x = int((col - x_start) / sprite_width * tex_w)
                 tex_x = max(0, min(tex_x, tex_w - 1))
 

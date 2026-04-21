@@ -1,16 +1,20 @@
 import pygame
+from pygame import Surface
 from sounds import *
 from user import User
 from pygame.event import Event
 from sounds import *
+from sprite.sprite import *
+from sprite.human_sprite import *
 
 class PygameActions:
 
     _walk_sound = None
     _moving = False
 
-    def __init__(self, user: User):
+    def __init__(self, user: User, screen: Surface):
         self.user = user
+        self.screen = screen
 
     def user_move_left(self):
         self.user.move_left()
@@ -24,7 +28,7 @@ class PygameActions:
     def user_move_down(self):
         self.user.move_down()
 
-    def actions(self):
+    def actions(self, sprite: Sprite | None):
         keys = pygame.key.get_pressed()
         self._moving = False
         if keys[pygame.K_LEFT]:
@@ -61,3 +65,7 @@ class PygameActions:
 
         if keys[pygame.K_4]:
             self.user.handle_select_slot(3)
+
+        if (sprite is not None and keys[pygame.K_e]):
+            if (isinstance(sprite, HumanSprite)):
+                sprite.handle_interaction(self.screen)

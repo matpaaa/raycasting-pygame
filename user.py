@@ -2,6 +2,8 @@ import math
 from typing import List
 from settings import *
 from sounds import *
+from sprite.sprite import *
+from sprite.human_sprite import *
 
 class User:
 
@@ -12,11 +14,12 @@ class User:
     _health = _max_health
     _slot_select = 0
 
-    def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]]):
+    def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]], sprites: List[Sprite]):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rot = rot
         self.map = map
+        self.sprites = sprites
 
     def _is_collision(self, pos_x: float, pos_y: float):
         is_collision = self.map[int(pos_y)][int(pos_x)] != 0
@@ -67,6 +70,15 @@ class User:
     def handle_select_slot(self, slot_num):
         if slot_num < 0 or slot_num > MAX_ITEM_SLOTS or slot_num == self._slot_select: return
         self._slot_select = slot_num
+
+    def sprite_interaction(self) -> Sprite | None:
+        for sprite in self.sprites:
+            if sprite.pos_x <= self.pos_x + USER_INTERACTION_AREA and sprite.pos_x >= self.pos_x - USER_INTERACTION_AREA:
+                if sprite.pos_y <= self.pos_y + USER_INTERACTION_AREA and sprite.pos_y >= self.pos_y - USER_INTERACTION_AREA:
+                    return sprite
+                
+            if isinstance(sprite, HumanSprite):
+                sprite.is_interact = False
 
     @property
     def get_fov(self) -> int:
