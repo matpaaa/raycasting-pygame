@@ -6,6 +6,7 @@ from pygame.event import Event
 from sounds import *
 from sprite.sprite import *
 from sprite.human_sprite import *
+from sprite.object_sprite import *
 
 class PygameActions:
 
@@ -66,6 +67,12 @@ class PygameActions:
         if keys[pygame.K_4]:
             self.user.handle_select_slot(3)
 
-        if (sprite is not None and keys[pygame.K_e]):
-            if (isinstance(sprite, HumanSprite)):
-                sprite.handle_interaction(self.screen)
+        if keys[pygame.K_e]:
+            if (sprite is not None):
+                if isinstance(sprite, HumanSprite):
+                    sprite.handle_interaction(self.screen)
+                elif isinstance(sprite, ObjectSprite):
+                    sprite.handle_interaction(self.user)
+
+            else:
+                self.user.use_item()

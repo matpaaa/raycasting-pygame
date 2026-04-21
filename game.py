@@ -9,6 +9,7 @@ from inventory import *
 from map.map_sprites import *
 from sprite.human_sprite import *
 from interaction import *
+from effect import *
 
 class Game:
     
@@ -26,6 +27,7 @@ class Game:
         self.minimap = Minimap(screen, MAP, self.user)
         self.pygame_actions = PygameActions(self.user, self.screen)
         self.interaction = Interaction(self.screen, self.user)
+        self.effect = Effect(self.screen, self.user)
 
         self.sprite_interact = None
 
@@ -34,7 +36,9 @@ class Game:
         self.ray_casting.launch_fucking_rays(self.user)
         self.ray_casting.draw_sprites(self.user)
         self.pygame_actions.actions(self.sprite_interact)
+        self.user.handle_effect()
         self.minimap.draw()
         self.health.draw()
         self.inventory.draw()
         self.sprite_interact = self.interaction.handle_interaction()
+        self.effect.draw()

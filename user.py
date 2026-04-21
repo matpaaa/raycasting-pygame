@@ -1,18 +1,23 @@
 import math
+import time
 from typing import List
 from settings import *
 from sounds import *
 from sprite.sprite import *
 from sprite.human_sprite import *
+from item import *
 
 class User:
 
     _rotate_rad = math.pi / 48
+    _default_velocity: float = 0.03
     _velocity: float = 0.03
     _fov: int = math.pi / 3
     _max_health = 160
     _health = _max_health
     _slot_select = 0
+    _items: List[Item] = []
+    _speed_boost_end = None
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]], sprites: List[Sprite]):
         self.pos_x = pos_x
@@ -71,6 +76,18 @@ class User:
         if slot_num < 0 or slot_num > MAX_ITEM_SLOTS or slot_num == self._slot_select: return
         self._slot_select = slot_num
 
+    def add_item(self, item: Item):
+        if len(self._items) >= MAX_ITEM_SLOTS: return
+        self._items.append(item)
+
+    def drop_item(self):
+        item_deleted = self._items.pop(self.slot_select)
+        return item_deleted
+    
+    def get_item(self, index: int) -> Item | None:
+        if len(self._items)-1 < index: return None
+        return self._items[index]
+
     def sprite_interaction(self) -> Sprite | None:
         for sprite in self.sprites:
             if sprite.pos_x <= self.pos_x + USER_INTERACTION_AREA and sprite.pos_x >= self.pos_x - USER_INTERACTION_AREA:
@@ -79,6 +96,19 @@ class User:
                 
             if isinstance(sprite, HumanSprite):
                 sprite.is_interact = False
+
+    def use_item(self):
+        if len(self._items)-1 < self.slot_select: return
+
+        item_used = self._items.pop(self.slot_select)
+        if item_used.id_item == 'VODKA':
+            self._velocity = item_used.value
+            self._speed_boost_end = time.time() + EFFECT_VODKA_TIME
+
+    def handle_effect(self):
+        if self.has_speed_boost and time.time() >= self._speed_boost_end:
+            self._velocity = self._default_velocity
+            self._speed_boost_end = None
 
     @property
     def get_fov(self) -> int:
@@ -107,3 +137,13 @@ class User:
     @property
     def slot_select(self) -> int:
         return self._slot_select
+
+    @property
+    def has_speed_boost(self) -> bool:
+        return self._velocity != self._default_velocity
+    
+    @property
+    def effect_time_remaining(self):
+        if self._speed_boost_end is None: return None
+        time_left = self._speed_boost_end - time.time()
+        return time_left if time_left >= 0 else None

@@ -1,20 +1,21 @@
 import pygame
+from pygame import Surface
 from settings import *
 
 class Assets:
-    background = None
-    logo = None
-    home_title = None
-    screen_title = None
-    window = None
-    danger = None
+    background: Surface | None = None
+    logo: Surface | None = None
+    home_title: Surface | None = None
+    screen_title: Surface | None = None
+    window: Surface | None = None
+    danger: Surface | None = None
 
-    vodka = None
-    ammo = None
-    code = None
-    key = None
-    slot = None
-    slot_selected = None
+    vodka: Surface | None = None
+    ammo: Surface | None = None
+    code: Surface | None = None
+    key: Surface | None = None
+    slot: Surface | None = None
+    slot_selected: Surface | None = None
 
     health = {}
 

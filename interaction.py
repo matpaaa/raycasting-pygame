@@ -5,7 +5,7 @@ from constants.fonts import *
 from constants.color import *
 from constants.ui import *
 from settings import *
-
+from sprite.object_sprite import *
 
 class Interaction:
 
@@ -20,7 +20,7 @@ class Interaction:
     def handle_interaction(self):
         sprite = self.user.sprite_interaction()
         if sprite is not None:
-            if isinstance(sprite, HumanSprite):
+            if isinstance(sprite, HumanSprite) or isinstance(sprite, ObjectSprite):
                 lx = self.label_rect.centerx - self.label_surf.get_width() // 2
                 ly = self.label_rect.centery - self.label_surf.get_height() // 2
                 self.screen.blit(self.label_surf, (lx, ly))

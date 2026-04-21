@@ -4,10 +4,11 @@ from pygame import Surface
 import pygame
 from user import User
 from sprite.sprite import *
+from sprite.object_sprite import *
 
 class RayCasting:
 
-    _step: float = 0.05
+    _step: float = 0.03
 
     def __init__(self, screen: Surface, map: List[List[int]], user: User, sprites: List[Sprite]):
         self.screen = screen
@@ -89,6 +90,10 @@ class RayCasting:
         )
 
         for sprite in sorted_sprites:
+
+            if isinstance(sprite, ObjectSprite) and sprite.is_added:
+                continue
+
             dx = sprite.pos_x  - user.get_pos_x
             dy = sprite.pos_y  - user.get_pos_y
             distance = math.hypot(dx, dy)
@@ -107,7 +112,11 @@ class RayCasting:
             if abs(angle_diff) > half_fov + 0.3:
                 continue
 
-            sprite_height = int(screen_height / distance)
+            sprite_height = 0
+            if isinstance(sprite, ObjectSprite):
+                sprite_height = int((screen_height//6) / distance)
+            else:
+                sprite_height = int(screen_height / distance)
             sprite_width = sprite_height
 
             center_x = int((0.5 + angle_diff / user.get_fov) * screen_width)
@@ -118,8 +127,12 @@ class RayCasting:
             texture = sprite.texture
             tex_w = texture.get_width()
             tex_h = texture.get_height()
-
-            y_start = screen_height // 2 - sprite_height // 2
+            
+            y_start = 0
+            if isinstance(sprite, ObjectSprite):
+                y_start = screen_height // 2 + sprite_height
+            else:
+                y_start = screen_height // 2 - sprite_height // 2
 
             for col in range(x_start, x_end):
                 if col < 0 or col >= screen_width:
@@ -132,6 +145,7 @@ class RayCasting:
                 tex_x = max(0, min(tex_x, tex_w - 1))
 
                 tex_col = texture.subsurface(pygame.Rect(tex_x, 0, 1, tex_h))
+                
                 scaled_col = pygame.transform.scale(tex_col, (1, max(1, sprite_height)))
 
                 self.screen.blit(scaled_col, (col, y_start))
