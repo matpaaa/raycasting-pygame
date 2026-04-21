@@ -8,7 +8,7 @@ from constants.color import *
 class Inventory:
     
     _gap_item = 10
-    _code_size = 56
+    _secret_size = 56
 
     def __init__(self, user: User, screen):
         self.user = user
@@ -39,10 +39,16 @@ class Inventory:
                     ly = self.label_rect.centery - self.label_surf.get_height() // 2
                     self.screen.blit(self.label_surf, (lx, ly))
 
-        for i in range(len(self.user.secret_items)):
-            item = self.user.secret_items[i]
+        for i in range(len(self.user.code_items)):
+            item = self.user.code_items[i]
             lx = SCREEN_WIDTH - 100
             ly = SCREEN_HEIGHT - (100 + 64 * i+1)
-            self.screen.blit(item.texture_size(self._code_size), (lx, ly))
+            self.screen.blit(item.texture_size(self._secret_size), (lx, ly))
             code_label = Fonts.font_btn.render(str(item.value), True, BUTTON_BACKGROUND)
-            self.screen.blit(code_label, (lx + self._code_size//3, ly + self._code_size//3))
+            self.screen.blit(code_label, (lx + self._secret_size//3, ly + self._secret_size//3))
+
+        for i in range(len(self.user.key_items)):
+            item = self.user.key_items[i]
+            lx = SCREEN_WIDTH - 200
+            ly = SCREEN_HEIGHT - (100 + 64 * i+1)
+            self.screen.blit(item.texture_size(self._secret_size), (lx, ly))

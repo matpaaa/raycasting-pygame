@@ -99,8 +99,11 @@ class User:
 
     def use_item(self):
         if len(self.inventory_items)-1 < self.slot_select: return
+        inventory_items = self.inventory_items
+        item_used = inventory_items.pop(self.slot_select)
 
-        item_used = self.inventory_items.pop(self.slot_select)
+        self._items = inventory_items + self.secret_items
+
         if item_used.id_item == 'VODKA':
             self._velocity = item_used.value
             self._speed_boost_end = time.time() + EFFECT_VODKA_TIME
@@ -159,3 +162,11 @@ class User:
     @property
     def secret_items(self) -> List[Item]:
         return list(filter(lambda item: item.id_item_type == 'SECRET', self._items))
+    
+    @property
+    def key_items(self) -> List[Item]:
+        return list(filter(lambda item: item.id_item == 'KEY', self._items))
+    
+    @property
+    def code_items(self) -> List[Item]:
+        return list(filter(lambda item: item.id_item == 'CODE', self._items))
