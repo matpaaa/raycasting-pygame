@@ -6,7 +6,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/register/', register),
     path('api/login/', login),
-    path('api/verifyCode/', verify_code),
-    path('api/forgetPassword/', forget_password),
-    path('api/resetPassword/', reset_password),
+    path('api/verify-code/', verify_code),
+    path('api/forget-password/', forget_password),
+    path('api/reset-password/', reset_password),
+    path('api/get-maps/', get_maps),
 ]
