@@ -14,6 +14,10 @@ class Sprite:
             'texture': pygame.image.load(self._image).convert_alpha()
         }
 
+    def set_image(self, image: str):
+        self._image = image
+        self.load()
+
     @property
     def pos_x(self):
         return self._sprite['x']
@@ -25,3 +29,4 @@ class Sprite:
     @property
     def texture(self):
         return self._sprite['texture']
+    

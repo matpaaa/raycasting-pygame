@@ -8,6 +8,8 @@ from sprite.human_sprite import *
 from item import *
 from sprite.object_sprite import *
 from sprite.door_sprite import *
+from sprite.enemie_sprite import *
+from constants.assets import *
 
 class User:
 
@@ -25,6 +27,7 @@ class User:
     _munition_sound = None
     _shoot_interval = 1
     _shoot_at = None
+    _step_gun_ray = 0.02
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]], sprites: List[Sprite]):
         self.pos_x = pos_x
@@ -160,10 +163,39 @@ class User:
             Sounds.shot()
             self._items = self.inventory_items + self.secret_items + self.ammo_items[0:len(self.ammo_items)-1]
             self._munition_sound = time.time() + 1
+            sprite_shooted = self.get_enemie_shot()
+
+            if not sprite_shooted is None:
+                sprite_shooted.receive_damage(self.item_selected.value)
+
+    def get_enemie_shot(self):
+        dx = math.cos(self.get_rot)
+        dy = math.sin(self.get_rot)
+
+        x, y = self.get_pos_x, self.get_pos_y
+
+        enemy_sprites = [s for s in self.sprites if isinstance(s, EnemieSprite)]
+
+        while True:
+            x += dx * self._step_gun_ray
+            y += dy * self._step_gun_ray
+
+            map_x, map_y = int(x), int(y)
+
+            if not (0 <= map_x < len(self.map[0]) and 0 <= map_y < len(self.map)):
+                return None
+            
+            if self.map[map_y][map_x] != 0:
+                return None
+
+            for sprite in enemy_sprites:
+                dist = math.hypot(sprite.pos_x - x, sprite.pos_y - y)
+                if dist < 0.25:
+                    return sprite
 
     def use_key(self) -> bool:
         if len(self.key_items) == 0:
-            # TODO
+            # TODO Mettre le son quand on a pas la clé
             return False
         else:
             self._items = self.inventory_items + self.code_items + self.key_items[0:len(self.key_items)-1] + self.ammo_items
@@ -174,6 +206,10 @@ class User:
             if sprite.pos_y <= pos_y + area and sprite.pos_y >= pos_y - area:
                 return True
         return False
+    
+    def draw_item_select(self, screen: Surface):
+        if self.item_selected and self.item_selected.id_item == 'GUN':
+            screen.blit(Assets.gun_selected, (0, 0))
 
     @property
     def get_fov(self) -> int:

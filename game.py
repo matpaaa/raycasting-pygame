@@ -42,6 +42,7 @@ class Game:
         self.ray_casting.draw_sprites(self.user)
         self.pygame_actions.actions(self.sprite_interact, self.event)
         self.user.handle_effect()
+        self.user.draw_item_select(self.screen)
         self.minimap.draw()
         self.health.draw()
         self.inventory.draw()

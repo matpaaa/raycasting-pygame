@@ -17,6 +17,8 @@ class Assets:
     slot: Surface | None = None
     slot_selected: Surface | None = None
 
+    gun_selected: Surface | None = None
+
     health = {}
 
     item_size = 75
@@ -83,3 +85,6 @@ class Assets:
             '15': pygame.transform.scale(pygame.image.load('./assets/game/health/h-15.png').convert_alpha(), (300, 50)),
             '16': pygame.transform.scale(pygame.image.load('./assets/game/health/h-16.png').convert_alpha(), (300, 50)),
         }
+
+        gun_selected = pygame.image.load('./assets/game/items/gun-selected.png').convert_alpha()
+        Assets.gun_selected = pygame.transform.scale(gun_selected, (SCREEN_WIDTH, SCREEN_HEIGHT))
