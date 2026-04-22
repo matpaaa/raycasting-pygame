@@ -222,6 +222,6 @@ def logout(request):
     if request.method == "POST":
         request.session.flush()  
 
-        return JsonResponse({"message": "Déconnecté ✅"})
+        return JsonResponse({},status=200)
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
