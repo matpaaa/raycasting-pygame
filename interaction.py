@@ -21,6 +21,7 @@ class Interaction:
         sprite = self.user.sprite_interaction()
         if sprite is not None:
             if isinstance(sprite, HumanSprite) or isinstance(sprite, ObjectSprite):
+                if isinstance(sprite, ObjectSprite) and sprite.is_added: return
                 lx = self.label_rect.centerx - self.label_surf.get_width() // 2
                 ly = self.label_rect.centery - self.label_surf.get_height() // 2
                 self.screen.blit(self.label_surf, (lx, ly))

@@ -29,17 +29,18 @@ class PygameActions:
     def user_move_down(self):
         self.user.move_down()
 
-    def actions(self, sprite: Sprite | None):
+    def actions(self, sprite: Sprite | None, event: Event | None):
         keys = pygame.key.get_pressed()
         self._moving = False
-        if keys[pygame.K_LEFT]:
+        
+        if keys[pygame.K_LEFT] or keys[pygame.K_q]:
             self.user_move_left()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.user_move_right()
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_UP] or keys[pygame.K_z]:
             self.user_move_up()
             self._moving = True
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_DOWN]or keys[pygame.K_s]:
             self.user_move_down()
             self._moving = True
 
@@ -55,11 +56,15 @@ class PygameActions:
         if keys[pygame.K_c]:
             self.user.heal(10)
 
-        if keys[pygame.K_1]:
+        if keys[pygame.K_1] or keys[pygame.K_AMPERSAND]:
             self.user.handle_select_slot(0)
 
         if keys[pygame.K_2]:
             self.user.handle_select_slot(1)
+
+        if event and event.type == pygame.TEXTINPUT:
+            if event.text == 'é':
+                self.user.handle_select_slot(1)
 
         if keys[pygame.K_3]:
             self.user.handle_select_slot(2)
@@ -76,3 +81,6 @@ class PygameActions:
 
             else:
                 self.user.use_item()
+
+        if keys[pygame.K_SPACE]:
+            self.user.handle_shoot()

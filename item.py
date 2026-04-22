@@ -1,4 +1,5 @@
 import pygame
+import time
 
 class Item:
     def __init__(self, id_item: str, name: str, value: int  | float| None, id_item_type: str, image: str):
@@ -7,6 +8,7 @@ class Item:
         self.value = value
         self.id_item_type = id_item_type
         self.image = image
+        self.added_at = None
 
     @property
     def texture(self):
@@ -20,3 +22,6 @@ class Item:
             pygame.image.load(self.image).convert_alpha(),
             (size, size)
         )
+    
+    def add_item_inventory(self):
+        self.added_at = time.time()

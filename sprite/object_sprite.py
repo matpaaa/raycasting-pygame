@@ -1,6 +1,5 @@
 from sprite.sprite import *
 from item import *
-from user import *
 
 class ObjectSprite(Sprite):
 
@@ -9,7 +8,9 @@ class ObjectSprite(Sprite):
         self.item = item
         self.is_added = False
 
-    def handle_interaction(self, user: User):
+    def handle_interaction(self, user):
         if self.is_added is False:
             self.is_added = True
+            
+            self.item.add_item_inventory()
             user.add_item(self.item)

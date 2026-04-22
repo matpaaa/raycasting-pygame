@@ -9,6 +9,7 @@ class Inventory:
     
     _gap_item = 10
     _secret_size = 56
+    _ammo_size = 40
 
     def __init__(self, user: User, screen):
         self.user = user
@@ -34,7 +35,7 @@ class Inventory:
             if item is not None and item.id_item_type != 'SECRET':
                 self.screen.blit(item.texture, (pos_x + slot_texture.get_width()//2 - item.texture.get_width()//2, pos_y + slot_texture.get_height()//2 - item.texture.get_height()//2))
 
-                if is_select and item.id_item_type == 'CONSUMABLE':
+                if is_select and item.id_item_type == 'CONSUMABLE' and not self.user.has_sprite_interaction:
                     lx = self.label_rect.centerx - self.label_surf.get_width() // 2
                     ly = self.label_rect.centery - self.label_surf.get_height() // 2
                     self.screen.blit(self.label_surf, (lx, ly))
@@ -52,3 +53,11 @@ class Inventory:
             lx = SCREEN_WIDTH - 200
             ly = SCREEN_HEIGHT - (100 + 64 * i+1)
             self.screen.blit(item.texture_size(self._secret_size), (lx, ly))
+
+        if len(self.user.ammo_items) > 0:
+            item = self.user.ammo_items[0]
+            lx = SCREEN_WIDTH//2 + 200
+            ly = SCREEN_HEIGHT - 75
+            self.screen.blit(item.texture_size(self._ammo_size), (lx, ly))
+            code_label = Fonts.font_ammo.render(str(len(self.user.ammo_items)), True, WHITE)
+            self.screen.blit(code_label, (lx + self._ammo_size, ly + self._ammo_size//2))

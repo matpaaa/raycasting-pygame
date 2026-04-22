@@ -15,6 +15,10 @@ class ItemFactory:
         return Item('GUN', 'Fusil', 50, 'WEAPON', './assets/game/items/gun.png')
     
     @staticmethod
+    def ammo():
+        return Item('AMMO', 'Munition', None, 'AMMO', './assets/game/items/ammo.png')
+    
+    @staticmethod
     def key():
         return Item('KEY', 'Clé', None, 'SECRET', './assets/game/items/key.png')
     

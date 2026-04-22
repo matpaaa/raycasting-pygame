@@ -10,6 +10,7 @@ from map.map_sprites import *
 from sprite.human_sprite import *
 from interaction import *
 from effect import *
+from pygame.event import Event
 
 class Game:
     
@@ -30,12 +31,16 @@ class Game:
         self.effect = Effect(self.screen, self.user)
 
         self.sprite_interact = None
+        self.event = None
+
+    def handle_event(self, event: Event):
+        self.event = event
 
     def draw(self):
         self.screen.fill(SCREEN_BACKGROUND)
         self.ray_casting.launch_fucking_rays(self.user)
         self.ray_casting.draw_sprites(self.user)
-        self.pygame_actions.actions(self.sprite_interact)
+        self.pygame_actions.actions(self.sprite_interact, self.event)
         self.user.handle_effect()
         self.minimap.draw()
         self.health.draw()

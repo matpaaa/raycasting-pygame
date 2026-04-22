@@ -80,3 +80,6 @@ class Routing:
         elif global_var.current_page == 'new_password':
             self.new_password_screen.handle_event(event)
             return
+        elif global_var.current_page == 'game':
+            self.game.handle_event(event)
+            return

@@ -21,5 +21,9 @@ MAP_SPRITES = [
     ObjectSprite(2.5, 3, ItemFactory.code(1)),
     ObjectSprite(3.5, 3, ItemFactory.code(2)),
     ObjectSprite(4.0, 3, ItemFactory.key()),
-    ObjectSprite(4.5, 3, ItemFactory.key())
+    ObjectSprite(4.5, 3, ItemFactory.key()),
+    ObjectSprite(1.5, 4, ItemFactory.canned()),
+    ObjectSprite(2.5, 4, ItemFactory.gun()),
+    ObjectSprite(3.5, 4, ItemFactory.ammo()),
+    ObjectSprite(4.5, 4, ItemFactory.ammo())
 ]

@@ -6,6 +6,7 @@ from sounds import *
 from sprite.sprite import *
 from sprite.human_sprite import *
 from item import *
+from sprite.object_sprite import *
 
 class User:
 
@@ -18,6 +19,11 @@ class User:
     _slot_select = 0
     _items: List[Item] = []
     _speed_boost_end = None
+    _min_time_user_item = 1
+    _has_sprite_interaction = False
+    _munition_sound = None
+    _shoot_interval = 1
+    _shoot_at = None
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]], sprites: List[Sprite]):
         self.pos_x = pos_x
@@ -92,26 +98,58 @@ class User:
         for sprite in self.sprites:
             if sprite.pos_x <= self.pos_x + USER_INTERACTION_AREA and sprite.pos_x >= self.pos_x - USER_INTERACTION_AREA:
                 if sprite.pos_y <= self.pos_y + USER_INTERACTION_AREA and sprite.pos_y >= self.pos_y - USER_INTERACTION_AREA:
+
+                    if isinstance(sprite, ObjectSprite):
+                        if sprite.is_added:
+                            self._has_sprite_interaction = True
+                        else:
+                            self._has_sprite_interaction = True
+
                     return sprite
                 
             if isinstance(sprite, HumanSprite):
+                self._has_sprite_interaction = False
                 sprite.is_interact = False
 
     def use_item(self):
-        if len(self.inventory_items)-1 < self.slot_select: return
+        if len(self.inventory_items)-1 < self.slot_select or self._has_sprite_interaction: return
         inventory_items = self.inventory_items
+
+        if inventory_items[self.slot_select].id_item_type != 'CONSUMABLE' or inventory_items[self.slot_select].added_at and time.time() - inventory_items[self.slot_select].added_at < self._min_time_user_item: return
+
         item_used = inventory_items.pop(self.slot_select)
 
-        self._items = inventory_items + self.secret_items
+        self._items = inventory_items + self.secret_items + self.ammo_items
 
         if item_used.id_item == 'VODKA':
             self._velocity = item_used.value
             self._speed_boost_end = time.time() + EFFECT_VODKA_TIME
 
+        if item_used.id_item == 'CANNED':
+            self.heal(item_used.value)
+
     def handle_effect(self):
         if self.has_speed_boost and time.time() >= self._speed_boost_end:
             self._velocity = self._default_velocity
             self._speed_boost_end = None
+
+        if self._munition_sound  and self._munition_sound <= time.time():
+            Sounds.ammo()
+            self._munition_sound = None
+
+    def handle_shoot(self):
+        if self._shoot_at and time.time() - self._shoot_at < self._shoot_interval: return
+        if self.item_selected is None: return
+        if self.item_selected.id_item_type != 'WEAPON': return
+    
+        self._shoot_at = time.time()
+
+        if len(self.ammo_items) == 0:
+            Sounds.no_shot()
+        else:
+            Sounds.shot()
+            self._items = self.inventory_items + self.secret_items + self.ammo_items[0:len(self.ammo_items)-1]
+            self._munition_sound = time.time() + 1
 
     @property
     def get_fov(self) -> int:
@@ -157,7 +195,7 @@ class User:
     
     @property
     def inventory_items(self) -> List[Item]:
-        return list(filter(lambda item: item.id_item_type != 'SECRET', self._items))
+        return list(filter(lambda item: item.id_item_type != 'SECRET' and item.id_item_type != 'AMMO', self._items))
     
     @property
     def secret_items(self) -> List[Item]:
@@ -170,3 +208,16 @@ class User:
     @property
     def code_items(self) -> List[Item]:
         return list(filter(lambda item: item.id_item == 'CODE', self._items))
+    
+    @property
+    def ammo_items(self) -> List[Item]:
+        return list(filter(lambda item: item.id_item_type == 'AMMO', self._items))
+    
+    @property
+    def has_sprite_interaction(self) -> bool:
+        return self._has_sprite_interaction
+    
+    @property
+    def item_selected(self) -> Item | None:
+        if len(self.inventory_items)-1 < self.slot_select: return
+        return self.inventory_items[self.slot_select]

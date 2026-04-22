@@ -50,3 +50,33 @@ class Sounds:
         sound = pygame.mixer.Sound('./assets/sounds/eat.mp3')
         sound.play()
         sound.set_volume(0.5)
+
+    @staticmethod
+    def shot():
+        sound = pygame.mixer.Sound('./assets/sounds/shot.mp3')
+        sound.play()
+        sound.set_volume(0.5)
+
+    @staticmethod
+    def no_shot():
+        sound = pygame.mixer.Sound('./assets/sounds/no-shot.mp3')
+        sound.play()
+        sound.set_volume(0.5)
+
+    @staticmethod
+    def take_gun():
+        sound = pygame.mixer.Sound('./assets/sounds/take-gun.mp3')
+        sound.play()
+        sound.set_volume(0.5)
+
+    @staticmethod
+    def take_key():
+        sound = pygame.mixer.Sound('./assets/sounds/take-key.mp3')
+        sound.play()
+        sound.set_volume(0.5)
+
+    @staticmethod
+    def ammo():
+        sound = pygame.mixer.Sound('./assets/sounds/ammo.mp3')
+        sound.play()
+        sound.set_volume(0.5)

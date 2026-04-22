@@ -83,6 +83,10 @@ class RayCasting:
             if distance == float('inf'):
                 self.z_buffer[i] = float('inf')
                 continue
+
+            if distance < 0.01:
+                self.z_buffer[i] = float('inf')
+                continue
  
             distance *= math.cos(user.get_rot - rot_i)
             wall_height = screen_height / distance
