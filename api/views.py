@@ -157,8 +157,12 @@ def reset_password(request):
 
 def get_maps(request):
     if request.method == "GET":
-        maps = map.objects.all()
+        user_id = request.session.get('user_id')
 
+        if not user_id:
+            return JsonResponse({"error": "Non connecté"}, status=401)
+
+        maps = map.objects.filter(save__id_account=user_id).distinct()
         data = []
         for m in maps:
             data.append({
@@ -184,7 +188,7 @@ def get_saves(request):
             data.append({
                 "id": save_item.id_save,
                 "pos_y": save_item.pos_y,
-                "pos_x": save_item.pox_x,
+                "pox_x": save_item.pox_x,
                 "health": save_item.health,
                 "created_at": save_item.created_at,
                 "updated_at": save_item.updated_at,
@@ -212,3 +216,12 @@ def get_info(request):
         "name": user.name,
         "email": user.email
     })
+
+@csrf_exempt
+def logout(request):
+    if request.method == "POST":
+        request.session.flush()  
+
+        return JsonResponse({"message": "Déconnecté ✅"})
+
+    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
