@@ -12,4 +12,5 @@ urlpatterns = [
     path('api/get-maps/', get_maps),
     path('api/get-saves/', get_saves),
     path('api/get-info/', get_info),
+    path('api/logout/', logout),
 ]
