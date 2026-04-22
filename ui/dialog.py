@@ -6,7 +6,7 @@ from constants.color import *
 from constants.fonts import *
 
 class Dialog:
-    def __init__(self, image: str):
+    def __init__(self, image: str | None):
         self.content = None
         self.image = image
 
@@ -17,17 +17,21 @@ class Dialog:
 
     @property
     def human_preview(self):
-        return pygame.transform.scale(
-            pygame.image.load(self.image).convert_alpha(),
-            (32, 32)
-        )
+        if self.image is not None:
+            return pygame.transform.scale(
+                pygame.image.load(self.image).convert_alpha(),
+                (32, 32)
+            )
 
     def draw(self, screen: Surface):
         if self.content is None: return
         pygame.draw.rect(screen, BUTTON_BACKGROUND, self.rect, border_radius=4)
         pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=4)
         label = Fonts.font_error_bubble.render(self.content, True, WHITE)
-        lx = self.rect.x + 32 + SCREEN_PADDING
+        lx = self.rect.x + (0 if self.image is None else 32) + SCREEN_PADDING
         ly = self.rect.centery - label.get_height() // 2
-        screen.blit(self.human_preview, ((SCREEN_WIDTH - ELEMENT_WIDTH_LARGE)/2 + SCREEN_PADDING, self.rect.centery - 16))
+
+        if self.image is not None:
+            screen.blit(self.human_preview, ((SCREEN_WIDTH - ELEMENT_WIDTH_LARGE)/2 + SCREEN_PADDING, self.rect.centery - 16))
+
         screen.blit(label, (lx, ly))

@@ -6,6 +6,7 @@ from constants.color import *
 from constants.ui import *
 from settings import *
 from sprite.object_sprite import *
+from sprite.door_sprite import *
 
 class Interaction:
 
@@ -25,4 +26,8 @@ class Interaction:
                 lx = self.label_rect.centerx - self.label_surf.get_width() // 2
                 ly = self.label_rect.centery - self.label_surf.get_height() // 2
                 self.screen.blit(self.label_surf, (lx, ly))
+                return sprite
+            
+            if isinstance(sprite, DoorSprite):
+                sprite.show_dialog(self.screen, self.user)
                 return sprite

@@ -2,6 +2,7 @@ from sprite.human_sprite import *
 from sprite.object_sprite import *
 from constants.assets import *
 from item_factory import *
+from sprite.door_sprite import *
 
 default_pnj_path = './assets/game/pnj/default-pnj.png'
 epstein_pnj_path = './assets/game/pnj/epstein-pnj.png'
@@ -17,6 +18,8 @@ MAP_SPRITES = [
     HumanSprite(3.5, 2, arnaud_pnj_path, [
         'Hello'
     ]),
+    DoorSprite(6, 1.5, arnaud_pnj_path),
+    DoorSprite(8, 1.5, arnaud_pnj_path),
     ObjectSprite(1.5, 3, ItemFactory.vodka()),
     ObjectSprite(2.5, 3, ItemFactory.code(1)),
     ObjectSprite(3.5, 3, ItemFactory.code(2)),

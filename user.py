@@ -7,6 +7,7 @@ from sprite.sprite import *
 from sprite.human_sprite import *
 from item import *
 from sprite.object_sprite import *
+from sprite.door_sprite import *
 
 class User:
 
@@ -33,7 +34,17 @@ class User:
         self.sprites = sprites
 
     def _is_collision(self, pos_x: float, pos_y: float):
-        is_collision = self.map[int(pos_y)][int(pos_x)] != 0
+        door_sprites: List[DoorSprite] = list(filter(lambda sprite: isinstance(sprite, DoorSprite), self.sprites))
+        is_collision = False
+
+        for sprite in door_sprites:
+            if self.is_sprite_collision(0.5, sprite, pos_x, pos_y) and not sprite.is_open:
+                is_collision = True
+                break
+        
+        if not is_collision:
+            is_collision = self.map[int(pos_y)][int(pos_x)] != 0
+
         if is_collision:
             Sounds.hurt()
         return is_collision
@@ -96,16 +107,15 @@ class User:
 
     def sprite_interaction(self) -> Sprite | None:
         for sprite in self.sprites:
-            if sprite.pos_x <= self.pos_x + USER_INTERACTION_AREA and sprite.pos_x >= self.pos_x - USER_INTERACTION_AREA:
-                if sprite.pos_y <= self.pos_y + USER_INTERACTION_AREA and sprite.pos_y >= self.pos_y - USER_INTERACTION_AREA:
+            interaction_area = 0.75 if isinstance(sprite, DoorSprite) else USER_INTERACTION_AREA
+            if self.is_sprite_collision(interaction_area, sprite, self.pos_x, self.pos_y):
+                if isinstance(sprite, ObjectSprite):
+                    if sprite.is_added:
+                        self._has_sprite_interaction = True
+                    else:
+                        self._has_sprite_interaction = True
 
-                    if isinstance(sprite, ObjectSprite):
-                        if sprite.is_added:
-                            self._has_sprite_interaction = True
-                        else:
-                            self._has_sprite_interaction = True
-
-                    return sprite
+                return sprite
                 
             if isinstance(sprite, HumanSprite):
                 self._has_sprite_interaction = False
@@ -150,6 +160,20 @@ class User:
             Sounds.shot()
             self._items = self.inventory_items + self.secret_items + self.ammo_items[0:len(self.ammo_items)-1]
             self._munition_sound = time.time() + 1
+
+    def use_key(self) -> bool:
+        if len(self.key_items) == 0:
+            # TODO
+            return False
+        else:
+            self._items = self.inventory_items + self.code_items + self.key_items[0:len(self.key_items)-1] + self.ammo_items
+            return True
+        
+    def is_sprite_collision(self, area: float, sprite: Sprite, pos_x: float, pos_y: float):
+        if sprite.pos_x <= pos_x + area and sprite.pos_x >= pos_x - area:
+            if sprite.pos_y <= pos_y + area and sprite.pos_y >= pos_y - area:
+                return True
+        return False
 
     @property
     def get_fov(self) -> int:
