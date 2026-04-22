@@ -7,10 +7,8 @@ from sprite.sprite import *
 from sprite.object_sprite import *
 
 class RayCasting:
-
-    _step: float = 0.03
-
-    def __init__(self, screen: Surface, map: List[List[int]], user: User, sprites: List[Sprite]):
+ 
+    def __init__(self, screen: Surface, map: List[List[int]], user, sprites: List = []):
         self.screen = screen
         self.map = map
         self.user = user
@@ -18,66 +16,97 @@ class RayCasting:
             1: pygame.image.load('assets/textures/wall.png').convert(),
             2: pygame.image.load('assets/textures/sky.png').convert(),
         }
-        
+ 
         self.z_buffer = [float('inf')] * screen.get_width()
         self.sprites = sprites
+ 
+    def _cast_ray_dda(self, ox: float, oy: float, dx: float, dy: float):
+        map_x, map_y = int(ox), int(oy)
 
-    def launch_fucking_rays(self, user: User):
+        delta_x = abs(1 / dx) if dx != 0 else float('inf')
+        delta_y = abs(1 / dy) if dy != 0 else float('inf')
+
+        step_x = 1 if dx > 0 else -1
+        step_y = 1 if dy > 0 else -1
+
+        side_x = (map_x + 1 - ox) * delta_x if dx > 0 else (ox - map_x) * delta_x
+        side_y = (map_y + 1 - oy) * delta_y if dy > 0 else (oy - map_y) * delta_y
+
+        hit = False
+        side = 0
+
+        map_height = len(self.map)
+        map_width = len(self.map[0])
+
+        while not hit:
+            if side_x < side_y:
+                side_x += delta_x
+                map_x += step_x
+                side = 0
+            else:
+                side_y += delta_y
+                map_y += step_y
+                side = 1
+
+            if not (0 <= map_x < map_width and 0 <= map_y < map_height):
+                return float('inf'), 0.0, side, 0
+
+            if self.map[map_y][map_x] != 0:
+                hit = True
+
+        if side == 0:
+            distance = (map_x - ox + (1 - step_x) / 2) / dx
+            tex_u = oy + distance * dy
+        else:
+            distance = (map_y - oy + (1 - step_y) / 2) / dy
+            tex_u = ox + distance * dx
+
+        tex_u -= math.floor(tex_u)
+        wall_type = self.map[map_y][map_x]
+
+        return distance, tex_u, side, wall_type
+ 
+    def launch_fucking_rays(self, user):
         screen_width = self.screen.get_width()
         screen_height = self.screen.get_height()
-
+ 
         for i in range(screen_width):
             rot_i = user.get_rot - (user.get_fov / 2) + user.get_fov * i / screen_width
+ 
+            dx = math.cos(rot_i)
+            dy = math.sin(rot_i)
+ 
+            distance, tex_u, side, pos = self._cast_ray_dda(
+                user.get_pos_x, user.get_pos_y, dx, dy
+            )
 
-            dx = self._step * math.cos(rot_i)
-            dy = self._step * math.sin(rot_i)
-
-            x, y = user.get_pos_x, user.get_pos_y
-            n = 0
-
-            while True:
-                x += dx
-                y += dy
-                n += 1
-
-                map_x, map_y = int(x), int(y)
-                pos = self.map[map_y][map_x]
-
-                if pos != 0:
-                    distance = self._step * n
-                    distance *= math.cos(user.get_rot - rot_i)
-                    wall_height = screen_height / distance
-
-                    frac_x = x - map_x
-                    frac_y = y - map_y
-
-                    if min(frac_x, 1 - frac_x) < min(frac_y, 1 - frac_y):
-                        tex_u = frac_y
-                    else:
-                        tex_u = frac_x
-
-                    # Render col with texture
-                    texture = self.textures.get(pos)
-                    if texture:
-                        tex_width = texture.get_width()
-                        tex_height = texture.get_height()
-
-                        tex_x = int(tex_u * tex_width) % tex_width
-                        tex_column = texture.subsurface(pygame.Rect(tex_x, 0, 1, tex_height))
-
-                        wall_h = int(wall_height)
-                        scaled_column = pygame.transform.scale(tex_column, (1, max(1, wall_h)))
-
-                        y1 = int(screen_height / 2 - wall_h / 2)
-                        self.screen.blit(scaled_column, (i, y1))
-                    else:
-                        color = 'red'
-                        y1 = screen_height / 2 - wall_height / 2
-                        y2 = screen_height / 2 + wall_height / 2
-                        pygame.draw.line(self.screen, color, (i, y1), (i, y2))
-
-                    self.z_buffer[i] = distance
-                    break
+            if distance == float('inf'):
+                self.z_buffer[i] = float('inf')
+                continue
+ 
+            distance *= math.cos(user.get_rot - rot_i)
+            wall_height = screen_height / distance
+ 
+            texture = self.textures.get(pos)
+            if texture:
+                tex_width = texture.get_width()
+                tex_height = texture.get_height()
+ 
+                tex_x = int(tex_u * tex_width) % tex_width
+                tex_column = texture.subsurface(pygame.Rect(tex_x, 0, 1, tex_height))
+ 
+                wall_h = int(wall_height)
+                scaled_column = pygame.transform.scale(tex_column, (1, max(1, wall_h)))
+ 
+                y1 = int(screen_height / 2 - wall_h / 2)
+                self.screen.blit(scaled_column, (i, y1))
+            else:
+                color = 'red'
+                y1 = screen_height / 2 - wall_height / 2
+                y2 = screen_height / 2 + wall_height / 2
+                pygame.draw.line(self.screen, color, (i, y1), (i, y2))
+ 
+            self.z_buffer[i] = distance
                 
     def draw_sprites(self, user: User):
         screen_width = self.screen.get_width()
