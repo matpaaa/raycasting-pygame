@@ -6,20 +6,15 @@ from user import User
 from sprite.sprite import *
 from sprite.object_sprite import *
 from sprite.door_sprite import *
+from map_config import *
 
 class RayCasting:
  
-    def __init__(self, screen: Surface, map: List[List[int]], user, sprites: List = []):
+    def __init__(self, screen: Surface, user, map_config: MapConfig):
         self.screen = screen
-        self.map = map
         self.user = user
-        self.textures = {
-            1: pygame.image.load('assets/textures/wall.png').convert(),
-            2: pygame.image.load('assets/textures/sky.png').convert(),
-        }
- 
+        self.map_config = map_config
         self.z_buffer = [float('inf')] * screen.get_width()
-        self.sprites = sprites
  
     def _cast_ray_dda(self, ox: float, oy: float, dx: float, dy: float):
         map_x, map_y = int(ox), int(oy)
@@ -36,8 +31,8 @@ class RayCasting:
         hit = False
         side = 0
 
-        map_height = len(self.map)
-        map_width = len(self.map[0])
+        map_height = len(self.map_config.map)
+        map_width = len(self.map_config.map[0])
 
         while not hit:
             if side_x < side_y:
@@ -52,7 +47,7 @@ class RayCasting:
             if not (0 <= map_x < map_width and 0 <= map_y < map_height):
                 return float('inf'), 0.0, side, 0
 
-            if self.map[map_y][map_x] != 0:
+            if self.map_config.map[map_y][map_x] != 0:
                 hit = True
 
         if side == 0 and dx != 0:
@@ -63,7 +58,7 @@ class RayCasting:
             tex_u = ox + distance * dx
 
         tex_u -= math.floor(tex_u)
-        wall_type = self.map[map_y][map_x]
+        wall_type = self.map_config.map[map_y][map_x]
 
         return distance, tex_u, side, wall_type
  
@@ -92,7 +87,7 @@ class RayCasting:
             distance *= math.cos(user.get_rot - rot_i)
             wall_height = screen_height / distance
  
-            texture = self.textures.get(pos)
+            texture = self.map_config.textures.get(pos)
             if texture:
                 tex_width = texture.get_width()
                 tex_height = texture.get_height()
@@ -123,7 +118,7 @@ class RayCasting:
         screen_height = self.screen.get_height()
 
         sorted_sprites = sorted(
-            self.sprites,
+            self.map_config.sprites,
             key=lambda s: math.hypot(s.pos_x - user.get_pos_x, s.pos_y - user.get_pos_y),
             reverse=True
         )

@@ -10,6 +10,7 @@ from sprite.object_sprite import *
 from sprite.door_sprite import *
 from sprite.enemie_sprite import *
 from constants.assets import *
+from map_config import *
 
 class User:
 
@@ -29,15 +30,14 @@ class User:
     _shoot_at = None
     _step_gun_ray = 0.02
 
-    def __init__(self, pos_x: int, pos_y: int, rot: float, map: List[List[int]], sprites: List[Sprite]):
+    def __init__(self, pos_x: int, pos_y: int, rot: float, map_config: MapConfig):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rot = rot
-        self.map = map
-        self.sprites = sprites
+        self.map_config = map_config
 
     def _is_collision(self, pos_x: float, pos_y: float):
-        door_sprites: List[DoorSprite] = list(filter(lambda sprite: isinstance(sprite, DoorSprite), self.sprites))
+        door_sprites: List[DoorSprite] = list(filter(lambda sprite: isinstance(sprite, DoorSprite), self.map_config.sprites))
         is_collision = False
 
         for sprite in door_sprites:
@@ -46,7 +46,7 @@ class User:
                 break
         
         if not is_collision:
-            is_collision = self.map[int(pos_y)][int(pos_x)] != 0
+            is_collision = self.map_config.map[int(pos_y)][int(pos_x)] != 0
 
         if is_collision:
             Sounds.hurt()
@@ -109,7 +109,7 @@ class User:
         return self.inventory_items[index]
 
     def sprite_interaction(self) -> Sprite | None:
-        for sprite in self.sprites:
+        for sprite in self.map_config.sprites:
             interaction_area = 0.75 if isinstance(sprite, DoorSprite) else USER_INTERACTION_AREA
             if self.is_sprite_collision(interaction_area, sprite, self.pos_x, self.pos_y):
                 if isinstance(sprite, ObjectSprite):
@@ -174,7 +174,7 @@ class User:
 
         x, y = self.get_pos_x, self.get_pos_y
 
-        enemy_sprites = [s for s in self.sprites if isinstance(s, EnemieSprite)]
+        enemy_sprites = [s for s in self.map_config.sprites if isinstance(s, EnemieSprite)]
 
         while True:
             x += dx * self._step_gun_ray
@@ -182,10 +182,10 @@ class User:
 
             map_x, map_y = int(x), int(y)
 
-            if not (0 <= map_x < len(self.map[0]) and 0 <= map_y < len(self.map)):
+            if not (0 <= map_x < len(self.map_config.map[0]) and 0 <= map_y < len(self.map_config.map)):
                 return None
             
-            if self.map[map_y][map_x] != 0:
+            if self.map_config.map[map_y][map_x] != 0:
                 return None
 
             for sprite in enemy_sprites:

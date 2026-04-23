@@ -1,4 +1,3 @@
-from map.map import MAP
 from pygame_actions import PygameActions
 from ray_casting import RayCasting
 from minimap import Minimap
@@ -6,26 +5,30 @@ from settings import DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, F
 from user import User
 from health import *
 from inventory import *
-from map.map_sprites import *
 from sprite.human_sprite import *
 from interaction import *
 from effect import *
 from pygame.event import Event
+from map_config import *
+from mock.map_mocked import *
 
 class Game:
     
     def __init__(self, screen):
         self.screen = screen
 
-        # Load sprite image
-        for i in range(0, len(MAP_SPRITES)):
-            MAP_SPRITES[i].load()
+        self.map_config = MapConfig(MAP_MOCKED, MAP_SPRITES_MOCKED, MAP_TEXTURES_MOCKED)
+        self.map_config.load_textures()
 
-        self.user = User(DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, MAP, MAP_SPRITES)
+        # Load sprite image
+        for sprite in self.map_config.sprites:
+            sprite.load()
+
+        self.user = User(DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, self.map_config)
         self.health = Health(self.user, self.screen)
         self.inventory = Inventory(self.user, self.screen)
-        self.ray_casting = RayCasting(screen, MAP, self.user, MAP_SPRITES)
-        self.minimap = Minimap(screen, MAP, self.user)
+        self.ray_casting = RayCasting(screen, self.user, self.map_config)
+        self.minimap = Minimap(screen, self.user, self.map_config)
         self.pygame_actions = PygameActions(self.user, self.screen)
         self.interaction = Interaction(self.screen, self.user)
         self.effect = Effect(self.screen, self.user)
