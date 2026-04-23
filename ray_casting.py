@@ -17,6 +17,7 @@ class RayCasting:
         self.user = user
         self.map_config = map_config
         self.z_buffer = [float('inf')] * screen.get_width()
+        self._precompute_light(screen.get_width(), screen.get_height())
  
     def _cast_ray_dda(self, ox: float, oy: float, dx: float, dy: float):
         map_x, map_y = int(ox), int(oy)
@@ -66,41 +67,34 @@ class RayCasting:
 
         return distance, tex_u, side, wall_type
  
-    def _build_darkness_overlay(self, screen_width: int, screen_height: int) -> Surface:
+    def _precompute_light(self, screen_width: int, screen_height: int) -> None:
         light_w = 500
         light_h = 400
         center_x = screen_width // 2
         center_y = screen_height // 2
 
-        z = np.array(self.z_buffer, dtype=np.float32)
-        z = np.clip(z, 0, RENDER_DISTANCE)
+        dx = np.clip(np.abs(np.arange(screen_width) - center_x) / (light_w / 2), 0, 1)
+        dy = np.clip(np.abs(np.arange(screen_height) - center_y) / (light_h / 2), 0, 1)
 
-        base_shadow = np.clip((z / RENDER_DISTANCE) * 255, 0, 255)
-        shadow_2d = np.tile(base_shadow, (screen_height, 1)).astype(np.float32)
+        self._dist_norm = np.clip(np.hypot(dy[:, None], dx[None, :]), 0, 1)
+        self._inside_mask = self._dist_norm < 1.0
+        self._fade = self._dist_norm ** 2
+
+    def _build_darkness_overlay(self, screen_width: int, screen_height: int) -> Surface:
+        z = np.clip(self.z_buffer, 0, RENDER_DISTANCE).astype(np.float32)
+
+        base_shadow = (z / RENDER_DISTANCE) * 255
 
         if self.user.light_enabled:
-            xs = np.arange(screen_width)
-            ys = np.arange(screen_height)
+            boosted_shadow = (z / (RENDER_DISTANCE + 3)) * 255
 
-            dx = np.clip(np.abs(xs - center_x) / (light_w / 2), 0, 1)
-            dy = np.clip(np.abs(ys - center_y) / (light_h / 2), 0, 1)
-            dist_norm = np.sqrt(np.outer(dy ** 2, np.ones(screen_width)) +
-                                np.outer(np.ones(screen_height), dx ** 2))
-            dist_norm = np.clip(dist_norm, 0, 1)
-
-            boosted_render = RENDER_DISTANCE + 3
-            boosted_shadow = np.tile(
-                np.clip((z / boosted_render) * 255, 0, 255),
-                (screen_height, 1)
-            ).astype(np.float32)
-
-            fade = dist_norm ** 2
-            inside_mask = dist_norm < 1.0
             shadow_2d = np.where(
-                inside_mask,
-                boosted_shadow * (1 - fade) + shadow_2d * fade,
-                shadow_2d
+                self._inside_mask,
+                boosted_shadow * (1 - self._fade) + base_shadow * self._fade,
+                base_shadow
             )
+        else:
+            shadow_2d = np.broadcast_to(base_shadow, (screen_height, screen_width)).copy()
 
         shadow_2d = np.clip(shadow_2d, 0, 255).astype(np.uint8)
 
@@ -229,7 +223,6 @@ class RayCasting:
                 self.screen.blit(col_surface, (col, y_start))
 
     def draw_darkness(self):
-        """À appeler en dernier, après launch_fucking_rays et draw_sprites."""
         darkness = self._build_darkness_overlay(
             self.screen.get_width(), self.screen.get_height()
         )
