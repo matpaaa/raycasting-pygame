@@ -19,6 +19,9 @@ class Assets:
 
     gun_selected: Surface | None = None
 
+    dead_screen: Surface | None = None
+    win_screen: Surface | None = None
+
     health = {}
 
     item_size = 75
@@ -88,3 +91,6 @@ class Assets:
 
         gun_selected = pygame.image.load('./assets/game/items/gun-selected.png').convert_alpha()
         Assets.gun_selected = pygame.transform.scale(gun_selected, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        Assets.dead_screen = pygame.image.load('./assets/screens/dead-screen.png').convert_alpha()
+        Assets.win_screen = pygame.image.load('./assets/screens/win-screen.png').convert_alpha()

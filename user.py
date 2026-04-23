@@ -29,6 +29,7 @@ class User:
     _shoot_interval = 1
     _shoot_at = None
     _step_gun_ray = 0.02
+    _has_win = False
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map_config: MapConfig):
         self.pos_x = pos_x
@@ -288,3 +289,11 @@ class User:
     def item_selected(self) -> Item | None:
         if len(self.inventory_items)-1 < self.slot_select: return
         return self.inventory_items[self.slot_select]
+    
+    @property
+    def is_dead(self) -> bool:
+        return self._health <= 10
+    
+    @property
+    def has_win(self) -> bool:
+        return self._has_win
