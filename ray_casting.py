@@ -2,6 +2,7 @@ import math
 from typing import List
 from pygame import Surface
 import pygame
+import numpy as np
 from user import User
 from sprite.sprite import *
 from sprite.object_sprite import *
@@ -65,6 +66,51 @@ class RayCasting:
 
         return distance, tex_u, side, wall_type
  
+    def _build_darkness_overlay(self, screen_width: int, screen_height: int) -> Surface:
+        light_w = 700
+        light_h = 500
+        center_x = screen_width // 2
+        center_y = screen_height // 2
+
+        z = np.array(self.z_buffer, dtype=np.float32)
+        z = np.clip(z, 0, RENDER_DISTANCE)
+
+        base_shadow = np.clip((z / RENDER_DISTANCE) * 255, 0, 255)
+        shadow_2d = np.tile(base_shadow, (screen_height, 1)).astype(np.float32)
+
+        if self.user.light_enabled:
+            xs = np.arange(screen_width)
+            ys = np.arange(screen_height)
+
+            dx = np.clip(np.abs(xs - center_x) / (light_w / 2), 0, 1)
+            dy = np.clip(np.abs(ys - center_y) / (light_h / 2), 0, 1)
+            dist_norm = np.sqrt(np.outer(dy ** 2, np.ones(screen_width)) +
+                                np.outer(np.ones(screen_height), dx ** 2))
+            dist_norm = np.clip(dist_norm, 0, 1)
+
+            boosted_render = RENDER_DISTANCE + 3
+            boosted_shadow = np.tile(
+                np.clip((z / boosted_render) * 255, 0, 255),
+                (screen_height, 1)
+            ).astype(np.float32)
+
+            fade = dist_norm ** 2
+            inside_mask = dist_norm < 1.0
+            shadow_2d = np.where(
+                inside_mask,
+                boosted_shadow * (1 - fade) + shadow_2d * fade,
+                shadow_2d
+            )
+
+        shadow_2d = np.clip(shadow_2d, 0, 255).astype(np.uint8)
+
+        darkness = pygame.Surface((screen_width, screen_height), pygame.SRCALPHA)
+        alpha_array = pygame.surfarray.pixels_alpha(darkness)
+        alpha_array[:] = shadow_2d.T
+        del alpha_array
+
+        return darkness
+
     def launch_fucking_rays(self, user):
         screen_width = self.screen.get_width()
         screen_height = self.screen.get_height()
@@ -109,11 +155,6 @@ class RayCasting:
                 y2 = screen_height / 2 + wall_height / 2
                 pygame.draw.line(self.screen, color, (i, y1), (i, y2))
 
-            shadow = int(min(255, (distance / RENDER_DISTANCE) * 255))
-            overlay = pygame.Surface((1, screen_height), pygame.SRCALPHA)
-            overlay.fill((0, 0, 0, shadow))
-            self.screen.blit(overlay, (i, 0))
-
             self.z_buffer[i] = distance
                 
     def draw_sprites(self, user: User):
@@ -152,7 +193,6 @@ class RayCasting:
             if abs(angle_diff) > half_fov + 0.3:
                 continue
 
-            sprite_height = 0
             if isinstance(sprite, ObjectSprite):
                 sprite_height = int((screen_height//6) / distance)
             else:
@@ -168,11 +208,12 @@ class RayCasting:
             tex_w = texture.get_width()
             tex_h = texture.get_height()
             
-            y_start = 0
             if isinstance(sprite, ObjectSprite):
                 y_start = screen_height // 2 + sprite_height
             else:
                 y_start = screen_height // 2 - sprite_height // 4
+
+            scaled_texture = pygame.transform.scale(texture, (max(1, sprite_width), max(1, sprite_height)))
 
             for col in range(x_start, x_end):
                 if col < 0 or col >= screen_width:
@@ -181,11 +222,15 @@ class RayCasting:
                 if distance >= self.z_buffer[col]:
                     continue
 
-                tex_x = int((col - x_start) / sprite_width * tex_w)
-                tex_x = max(0, min(tex_x, tex_w - 1))
+                tex_x = col - x_start
+                tex_x = max(0, min(tex_x, sprite_width - 1))
 
-                tex_col = texture.subsurface(pygame.Rect(tex_x, 0, 1, tex_h))
-                
-                scaled_col = pygame.transform.scale(tex_col, (1, max(1, sprite_height)))
+                col_surface = scaled_texture.subsurface(pygame.Rect(tex_x, 0, 1, max(1, sprite_height)))
+                self.screen.blit(col_surface, (col, y_start))
 
-                self.screen.blit(scaled_col, (col, y_start))
+    def draw_darkness(self):
+        """À appeler en dernier, après launch_fucking_rays et draw_sprites."""
+        darkness = self._build_darkness_overlay(
+            self.screen.get_width(), self.screen.get_height()
+        )
+        self.screen.blit(darkness, (0, 0))

@@ -16,7 +16,9 @@ class PygameActions:
     _walk_sound = None
     _moving = False
     _min_time_action_e = 1
+    _min_time_action_l = 0.3
     _last_action = None
+    _last_action_light = None
 
     def __init__(self, user: User, screen: Surface):
         self.user = user
@@ -93,3 +95,8 @@ class PygameActions:
 
         if keys[pygame.K_SPACE]:
             self.user.handle_shoot()
+
+        if keys[pygame.K_l]:
+            if self._last_action_light is None or time.time() - self._last_action_light >= self._min_time_action_l:
+                self._last_action_light = time.time()
+                self.user.toogle_light()

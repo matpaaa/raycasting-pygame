@@ -15,6 +15,7 @@ from pygame import Surface
 from ui.button import *
 from ui.text import *
 import global_var
+from battery import *
 
 class Game:
     
@@ -30,6 +31,7 @@ class Game:
 
         self.user = User(DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, self.map_config)
         self.health = Health(self.user, self.screen)
+        self.battery = Battery(self.screen, self.user)
         self.inventory = Inventory(self.user, self.screen)
         self.ray_casting = RayCasting(screen, self.user, self.map_config)
         self.minimap = Minimap(screen, self.user, self.map_config)
@@ -53,7 +55,7 @@ class Game:
         )
 
         self.btn_back = Button(
-            'BACK',
+            'RETOUR',
             SCREEN_WIDTH/2 - GAP_BETWEEN_ELEMENT/2 - ELEMENT_WIDTH_SMALL,
             325 + ELEMENT_HEIGHT,
             ELEMENT_WIDTH_SMALL,
@@ -91,11 +93,13 @@ class Game:
         self.screen.fill(SCREEN_BACKGROUND)
         self.ray_casting.launch_fucking_rays(self.user)
         self.ray_casting.draw_sprites(self.user)
+        self.ray_casting.draw_darkness()
 
         self.user.handle_effect()
         self.user.draw_item_select(self.screen)
         self.minimap.draw()
         self.health.draw()
+        self.battery.draw()
         self.inventory.draw()
         self.sprite_interact = self.interaction.handle_interaction()
         self.effect.draw()

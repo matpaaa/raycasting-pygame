@@ -15,7 +15,7 @@ from sprite.collision_sprite import *
 
 class User:
 
-    _rotate_rad = math.pi / 48
+    _rotate_rad = math.pi / 64
     _default_velocity: float = 0.02
     _velocity: float = 0.02
     _fov: int = math.pi / 3
@@ -31,6 +31,8 @@ class User:
     _shoot_at = None
     _step_gun_ray = 0.02
     _has_win = False
+    _light_enabled = False
+    _battery = MAX_USER_BATTERY
 
     def __init__(self, pos_x: int, pos_y: int, rot: float, map_config: MapConfig):
         self.pos_x = pos_x
@@ -160,6 +162,13 @@ class User:
             Sounds.ammo()
             self._munition_sound = None
 
+        if self.light_enabled:
+            if self._battery - 1 <= 0:
+                self._battery = 0
+                self.toogle_light()
+            else:
+                self._battery -= 1
+
     def handle_shoot(self):
         if self._shoot_at and time.time() - self._shoot_at < self._shoot_interval: return
         if self.item_selected is None: return
@@ -217,6 +226,12 @@ class User:
         if self.item_selected and self.item_selected.id_item == 'GUN':
             screen.blit(Assets.gun_selected, (0, 0))
 
+    def toogle_light(self):
+        if self._light_enabled:
+            self._light_enabled = False
+        elif self.has_battery:
+            self._light_enabled = True
+
     @property
     def get_fov(self) -> int:
         return self._fov
@@ -247,7 +262,7 @@ class User:
 
     @property
     def has_speed_boost(self) -> bool:
-        return self._velocity != self._default_velocity
+        return self._velocity > self._default_velocity
     
     @property
     def effect_time_remaining(self):
@@ -303,3 +318,15 @@ class User:
     @property
     def can_open_door(self) -> bool:
         return len(self.key_items) > 0
+    
+    @property
+    def light_enabled(self) -> bool:
+        return self._light_enabled
+    
+    @property
+    def battery(self) -> int:
+        return self._battery
+    
+    @property
+    def has_battery(self) -> bool:
+        return self.battery > 0
