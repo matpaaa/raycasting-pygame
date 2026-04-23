@@ -15,8 +15,8 @@ from map_config import *
 class User:
 
     _rotate_rad = math.pi / 48
-    _default_velocity: float = 0.03
-    _velocity: float = 0.03
+    _default_velocity: float = 0.02
+    _velocity: float = 0.02
     _fov: int = math.pi / 3
     _max_health = 160
     _health = _max_health
@@ -135,6 +135,7 @@ class User:
         self._items = inventory_items + self.secret_items + self.ammo_items
 
         if item_used.id_item == 'VODKA':
+            Sounds.bliat()
             self._velocity = item_used.value
             self._speed_boost_end = time.time() + EFFECT_VODKA_TIME
 

@@ -4,7 +4,7 @@ class ItemFactory:
     
     @staticmethod
     def vodka():
-        return Item('VODKA', 'Vodka', 0.06, 'CONSUMABLE', './assets/game/items/vodka.png')
+        return Item('VODKA', 'Vodka', 0.04, 'CONSUMABLE', './assets/game/items/vodka.png')
     
     @staticmethod
     def canned():
