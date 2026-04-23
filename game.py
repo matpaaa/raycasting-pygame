@@ -40,6 +40,7 @@ class Game:
         self.event = None
 
         self.btn_back_menu = Button('RETOUR AU MENU', SCREEN_WIDTH//2 - ELEMENT_WIDTH_LARGE//2, SCREEN_HEIGHT - 150, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT)
+        self.dead_sound = None
 
     def handle_event(self, event: Event):
         self.event = event
@@ -65,6 +66,8 @@ class Game:
             self.pygame_actions.actions(self.sprite_interact, self.event)
 
         if self.user.is_dead:
+            if self.dead_sound is None:
+                self.dead_sound = Sounds.dead()
             overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
             overlay.fill((255, 56, 60, 255*0.3))
             self.screen.blit(overlay, (0, 0))

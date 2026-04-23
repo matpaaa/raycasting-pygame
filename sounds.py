@@ -28,6 +28,13 @@ class Sounds:
         return sound
     
     @staticmethod
+    def dead():
+        sound = pygame.mixer.Sound('./assets/sounds/dead.mp3')
+        sound.play()
+        sound.set_volume(0.1)
+        return sound
+    
+    @staticmethod
     def home():
         pygame.mixer.music.fadeout(500)
         pygame.mixer.music.load('./assets/sounds/home-music.mp3')

@@ -81,7 +81,7 @@ class User:
 
     def damage(self, dmg):
         Sounds.damage()
-        if self._health - dmg <= 0:
+        if self._health - dmg <= 10:
             self._health = 10
         else:
             self._health -= dmg
