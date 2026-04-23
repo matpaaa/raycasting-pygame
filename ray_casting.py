@@ -6,6 +6,7 @@ from user import User
 from sprite.sprite import *
 from sprite.object_sprite import *
 from sprite.door_sprite import *
+from sprite.collision_sprite import *
 from map_config import *
 
 class RayCasting:
@@ -128,7 +129,7 @@ class RayCasting:
             if isinstance(sprite, ObjectSprite) and sprite.is_added:
                 continue
 
-            if isinstance(sprite, DoorSprite) and sprite.is_open:
+            if isinstance(sprite, CollisionSprite) and sprite.is_open:
                 continue
 
             dx = sprite.pos_x  - user.get_pos_x

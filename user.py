@@ -11,6 +11,7 @@ from sprite.door_sprite import *
 from sprite.enemie_sprite import *
 from constants.assets import *
 from map_config import *
+from sprite.collision_sprite import *
 
 class User:
 
@@ -38,10 +39,10 @@ class User:
         self.map_config = map_config
 
     def _is_collision(self, pos_x: float, pos_y: float):
-        door_sprites: List[DoorSprite] = list(filter(lambda sprite: isinstance(sprite, DoorSprite), self.map_config.sprites))
+        collision_sprites: List[CollisionSprite] = list(filter(lambda sprite: isinstance(sprite, CollisionSprite), self.map_config.sprites))
         is_collision = False
 
-        for sprite in door_sprites:
+        for sprite in collision_sprites:
             if self.is_sprite_collision(0.5, sprite, pos_x, pos_y) and not sprite.is_open:
                 is_collision = True
                 break
@@ -118,7 +119,7 @@ class User:
 
     def sprite_interaction(self) -> Sprite | None:
         for sprite in self.map_config.sprites:
-            interaction_area = 0.75 if isinstance(sprite, DoorSprite) else USER_INTERACTION_AREA
+            interaction_area = 0.75 if isinstance(sprite, CollisionSprite) else USER_INTERACTION_AREA
             if self.is_sprite_collision(interaction_area, sprite, self.pos_x, self.pos_y):
                 if isinstance(sprite, ObjectSprite):
                     if sprite.is_added:
@@ -203,12 +204,8 @@ class User:
                     return sprite
 
     def use_key(self) -> bool:
-        if len(self.key_items) == 0:
-            # TODO Mettre le son quand on a pas la clé
-            return False
-        else:
-            self._items = self.inventory_items + self.code_items + self.key_items[0:len(self.key_items)-1] + self.ammo_items
-            return True
+        if len(self.key_items) == 0: return
+        self._items = self.inventory_items + self.code_items + self.key_items[0:len(self.key_items)-1] + self.ammo_items
         
     def is_sprite_collision(self, area: float, sprite: Sprite, pos_x: float, pos_y: float):
         if sprite.pos_x <= pos_x + area and sprite.pos_x >= pos_x - area:
@@ -298,3 +295,11 @@ class User:
     @property
     def has_win(self) -> bool:
         return self._has_win
+    
+    @property
+    def can_open_final_door(self) -> bool:
+        return len(self.code_items) == NUMBERS_CODE_NEED_WIN
+    
+    @property
+    def can_open_door(self) -> bool:
+        return len(self.key_items) > 0

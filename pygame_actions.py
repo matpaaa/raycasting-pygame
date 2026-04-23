@@ -9,6 +9,7 @@ from sprite.human_sprite import *
 from sprite.object_sprite import *
 from sprite.door_sprite import *
 import time
+from sprite.collision_sprite import *
 
 class PygameActions:
 
@@ -82,7 +83,7 @@ class PygameActions:
                     sprite.handle_interaction(self.screen)
                 elif isinstance(sprite, ObjectSprite):
                     sprite.handle_interaction(self.user)
-                elif isinstance(sprite, DoorSprite):
+                elif isinstance(sprite, CollisionSprite):
                     if self._last_action is None or time.time() - self._last_action >= self._min_time_action_e:
                         self._last_action = time.time()
                         sprite.handle_open(self.user)

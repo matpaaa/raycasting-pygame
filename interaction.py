@@ -7,6 +7,7 @@ from constants.ui import *
 from settings import *
 from sprite.object_sprite import *
 from sprite.door_sprite import *
+from sprite.collision_sprite import *
 
 class Interaction:
 
@@ -28,6 +29,6 @@ class Interaction:
                 self.screen.blit(self.label_surf, (lx, ly))
                 return sprite
             
-            if isinstance(sprite, DoorSprite):
+            if isinstance(sprite, CollisionSprite):
                 sprite.show_dialog(self.screen, self.user)
                 return sprite

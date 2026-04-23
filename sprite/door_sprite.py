@@ -1,24 +1,15 @@
 from sprite.sprite import *
 from ui.dialog import *
-from pygame import Surface
+from sprite.collision_sprite import *
 
-class DoorSprite(Sprite):
+class DoorSprite(CollisionSprite):
     def __init__(self, x, y, image):
-        super().__init__(x, y, image)
-        self.is_open = False
-        self.diablog = Dialog(None)
+        super().__init__(x, y, image, 'Une clé est nécessaire pour ouvrir la porte')
 
-    def show_dialog(self, screen: Surface, user):
-        if not self.is_open:
-            if len(user.key_items) == 0:
-                self.diablog.set_content('Une clé est nécessaire pour ouvrir la porte')
-            else:
-                self.diablog.set_content('Appuier sur E pour ouvrir la porte')
-            self.diablog.draw(screen)
+    def show_dialog(self, screen, user):
+        super().show_dialog(screen, user.can_open_door)
 
     def handle_open(self, user):
-        if self.is_open: return
-        
-        can_open = user.use_key()
-        if can_open:
-            self.is_open = True
+        if user.can_open_door:
+            user.use_key()
+            super().handle_open()
