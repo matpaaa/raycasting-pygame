@@ -5,8 +5,7 @@ class Fonts:
     font_subtitle = None
     font_btn = None
     font_error_bubble = None
-    font_effect = None
-    font_ammo = None
+    font_inventory = None
 
     @staticmethod
     def load():
@@ -14,5 +13,4 @@ class Fonts:
         Fonts.font_subtitle = pygame.font.Font("./assets/fonts/pixel.otf", 18)
         Fonts.font_error_bubble = pygame.font.Font("./assets/fonts/pixel.otf", 14)
         Fonts.font_btn      = pygame.font.Font("./assets/fonts/pixel.otf", 20)
-        Fonts.font_effect      = pygame.font.Font("./assets/fonts/pixel.otf", 48)
-        Fonts.font_ammo      = pygame.font.Font("./assets/fonts/pixel.otf", 24)
+        Fonts.font_inventory      = pygame.font.Font("./assets/fonts/pixel.otf", 24)

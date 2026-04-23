@@ -7,7 +7,6 @@ from health import *
 from inventory import *
 from sprite.human_sprite import *
 from interaction import *
-from effect import *
 from pygame.event import Event
 from map_config import *
 from mock.map_mocked import *
@@ -37,7 +36,6 @@ class Game:
         self.minimap = Minimap(screen, self.user, self.map_config)
         self.pygame_actions = PygameActions(self.user, self.screen)
         self.interaction = Interaction(self.screen, self.user)
-        self.effect = Effect(self.screen, self.user)
 
         self.sprite_interact = None
         self.event = None
@@ -100,9 +98,8 @@ class Game:
         self.minimap.draw()
         self.health.draw()
         self.battery.draw()
-        self.inventory.draw()
         self.sprite_interact = self.interaction.handle_interaction()
-        self.effect.draw()
+        self.inventory.draw()
 
         if not self.user.is_dead and not self.user.has_win and not self.game_menu:
             self.pygame_actions.actions(self.sprite_interact, self.event)

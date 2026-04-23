@@ -199,8 +199,6 @@ class RayCasting:
             x_end   = center_x + sprite_width // 2
 
             texture = sprite.texture
-            tex_w = texture.get_width()
-            tex_h = texture.get_height()
             
             if isinstance(sprite, ObjectSprite):
                 y_start = screen_height // 2 + sprite_height

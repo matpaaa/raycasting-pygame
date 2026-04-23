@@ -59,5 +59,21 @@ class Inventory:
             lx = SCREEN_WIDTH//2 + 200
             ly = SCREEN_HEIGHT - 75
             self.screen.blit(item.texture_size(self._ammo_size), (lx, ly))
-            code_label = Fonts.font_ammo.render(str(len(self.user.ammo_items)), True, WHITE)
+            code_label = Fonts.font_inventory.render(str(len(self.user.ammo_items)), True, WHITE)
             self.screen.blit(code_label, (lx + self._ammo_size, ly + self._ammo_size//2))
+
+        if self.user.has_speed_boost and self.user.effect_time_remaining is not None:
+            self.screen.blit(Assets.vodka, (SCREEN_WIDTH//2 - 350, SCREEN_HEIGHT - 100))
+            label = Fonts.font_inventory.render(str(math.floor(self.user.effect_time_remaining)), True, WHITE)
+            self.screen.blit(label, (SCREEN_WIDTH//2 - 350 + Assets.vodka.get_width()//2 + 16, SCREEN_HEIGHT - 100 + Assets.vodka.get_height()//2))
+
+        light_image = None
+        if self.user.light_enabled:
+            light_image = Assets.light_on
+        else:
+            light_image = Assets.light_off
+
+        if light_image is not None:
+            self.screen.blit(light_image, (SCREEN_WIDTH//2 - 250, SCREEN_HEIGHT - 100))
+            label = Fonts.font_inventory.render('L', True, WHITE)
+            self.screen.blit(label, (SCREEN_WIDTH//2 - 250 + light_image.get_width()//2 + 16, SCREEN_HEIGHT - 100 + light_image.get_height()//2))

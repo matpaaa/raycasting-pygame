@@ -21,6 +21,9 @@ class Assets:
 
     gun_selected: Surface | None = None
 
+    light_off: Surface | None = None
+    light_on: Surface | None = None
+
     dead_screen: Surface | None = None
     win_screen: Surface | None = None
 
@@ -102,3 +105,12 @@ class Assets:
 
         Assets.dead_screen = pygame.image.load('./assets/screens/dead-screen.png').convert_alpha()
         Assets.win_screen = pygame.image.load('./assets/screens/win-screen.png').convert_alpha()
+
+        Assets.light_off = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/light-off.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+        Assets.light_on = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/light-on.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )

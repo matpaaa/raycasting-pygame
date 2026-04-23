@@ -10,6 +10,6 @@ class DoorSprite(CollisionSprite):
         super().show_dialog(screen, user.can_open_door)
 
     def handle_open(self, user):
-        if user.can_open_door:
+        if user.can_open_door and not self.is_open:
             user.use_key()
             super().handle_open()
