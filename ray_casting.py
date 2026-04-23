@@ -51,6 +51,8 @@ class RayCasting:
             if self.map_config.map[map_y][map_x] != 0:
                 hit = True
 
+        tex_u = 0
+        distance = 0
         if side == 0 and dx != 0:
             distance = (map_x - ox + (1 - step_x) / 2) / dx
             tex_u = oy + distance * dy

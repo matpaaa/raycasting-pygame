@@ -13,6 +13,7 @@ from map_config import *
 from mock.map_mocked import *
 from pygame import Surface
 from ui.button import *
+from ui.text import *
 import global_var
 
 class Game:
@@ -41,13 +42,50 @@ class Game:
 
         self.btn_back_menu = Button('RETOUR AU MENU', SCREEN_WIDTH//2 - ELEMENT_WIDTH_LARGE//2, SCREEN_HEIGHT - 150, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT)
         self.dead_sound = None
+        self.game_menu = False
+
+        self.title = Text(
+            "SAUVEGARDER LA PARTIE",
+            'center',
+            275,
+            WHITE,
+            'title'
+        )
+
+        self.btn_back = Button(
+            'BACK',
+            SCREEN_WIDTH/2 - GAP_BETWEEN_ELEMENT/2 - ELEMENT_WIDTH_SMALL,
+            325 + ELEMENT_HEIGHT,
+            ELEMENT_WIDTH_SMALL,
+            ELEMENT_HEIGHT,
+            'danger'
+        )
+
+        self.btn_save = Button(
+            'VALIDER',
+            SCREEN_WIDTH/2 + GAP_BETWEEN_ELEMENT/2,
+            325 + ELEMENT_HEIGHT,
+            ELEMENT_WIDTH_SMALL,
+            ELEMENT_HEIGHT
+        )
 
     def handle_event(self, event: Event):
         self.event = event
 
-        if self.btn_back_menu.is_clicked(event):
+        if self.btn_back_menu.is_clicked(event) or self.btn_back.is_clicked(event):
             Sounds.click()
             global_var.current_page = 'home'
+            self.game_menu = False
+
+        if self.btn_save.is_clicked(event):
+            Sounds.click()
+            # TODO save game
+
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            if self.game_menu:
+                self.game_menu = False
+            else:
+                self.game_menu = True
 
     def draw(self):
         self.screen.fill(SCREEN_BACKGROUND)
@@ -62,7 +100,7 @@ class Game:
         self.sprite_interact = self.interaction.handle_interaction()
         self.effect.draw()
 
-        if not self.user.is_dead and not self.user.has_win:
+        if not self.user.is_dead and not self.user.has_win and not self.game_menu:
             self.pygame_actions.actions(self.sprite_interact, self.event)
 
         if self.user.is_dead:
@@ -79,3 +117,9 @@ class Game:
             self.screen.blit(overlay, (0, 0))
             self.screen.blit(Assets.win_screen, (SCREEN_WIDTH//2 - Assets.win_screen.get_width()//2, SCREEN_HEIGHT//2 - Assets.win_screen.get_height()//2))
             self.btn_back_menu.draw(self.screen)
+
+        if self.game_menu:
+            self.screen.blit(Assets.window_small, ((SCREEN_WIDTH - Assets.window_small.get_width())//2, (SCREEN_HEIGHT - Assets.window_small.get_height())//2))
+            self.title.draw(self.screen)
+            self.btn_back.draw(self.screen)
+            self.btn_save.draw(self.screen)

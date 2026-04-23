@@ -8,6 +8,7 @@ class Assets:
     home_title: Surface | None = None
     screen_title: Surface | None = None
     window: Surface | None = None
+    window_small: Surface | None = None
     danger: Surface | None = None
 
     vodka: Surface | None = None
@@ -35,6 +36,7 @@ class Assets:
         Assets.screen_title = pygame.image.load('./assets/screens/screen-title.png').convert_alpha()
         Assets.home_title = pygame.image.load('./assets/screens/home-title.png').convert_alpha()
         Assets.window = pygame.image.load('./assets/screens/window.png').convert_alpha()
+        Assets.window_small = pygame.image.load('./assets/screens/window-small.png').convert_alpha()
         Assets.danger = pygame.transform.scale(
             pygame.image.load('./assets/screens/danger.png').convert_alpha(),
             (32, 32)

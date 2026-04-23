@@ -50,7 +50,7 @@ while global_var.running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             global_var.running = False
-        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE and global_var.current_page != 'game':
             global_var.running = False
 
         routing.handle_event(event)
@@ -58,7 +58,7 @@ while global_var.running:
     routing.route()
 
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(FPS)
 
 pygame.quit()
 sys.exit()
