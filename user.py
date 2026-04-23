@@ -100,6 +100,12 @@ class User:
         if len(self.inventory_items) >= MAX_ITEM_SLOTS: return
         self._items.append(item)
 
+        if item.id_item == 'KEY':
+            Sounds.take_key()
+
+        if item.id_item == 'GUN':
+            Sounds.take_gun()
+
     def drop_item(self):
         item_deleted = self.inventory_items.pop(self.slot_select)
         return item_deleted

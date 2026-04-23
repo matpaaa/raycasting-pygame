@@ -6,7 +6,7 @@ class Sounds:
     @staticmethod
     def init():
         pygame.mixer.init()
-        pygame.mixer.music.set_volume(0.3)
+        pygame.mixer.music.set_volume(0.2)
 
     @staticmethod
     def click():
@@ -67,13 +67,13 @@ class Sounds:
     def take_gun():
         sound = pygame.mixer.Sound('./assets/sounds/take-gun.mp3')
         sound.play()
-        sound.set_volume(0.5)
+        sound.set_volume(0.3)
 
     @staticmethod
     def take_key():
         sound = pygame.mixer.Sound('./assets/sounds/take-key.mp3')
         sound.play()
-        sound.set_volume(0.5)
+        sound.set_volume(0.3)
 
     @staticmethod
     def ammo():
