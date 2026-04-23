@@ -1,7 +1,7 @@
 from user import *
 from pygame import Surface
-import pygame
 from constants.ui import *
+from constants.assets import *
 
 class Battery:
 
@@ -12,6 +12,6 @@ class Battery:
         self.screen = screen
 
     def draw(self):
-        width = self.user.battery * self._max_width / MAX_USER_BATTERY
-        rect = pygame.Rect(32, 75, width, 20)
-        pygame.draw.rect(self.screen, '#aebb00', rect)
+        battries = self.user.battery // BATTERY_CAPACITY
+        for i in range(battries):
+            self.screen.blit(Assets.battery, (SCREEN_PADDING + 50 * i, 75))

@@ -1,4 +1,5 @@
 from item import *
+from settings import *
 
 class ItemFactory:
     
@@ -25,3 +26,7 @@ class ItemFactory:
     @staticmethod
     def code(value: int):
         return Item('CODE', 'Morceau de code', value, 'SECRET', './assets/game/items/code.png')
+    
+    @staticmethod
+    def battery():
+        return Item('BATTERY', 'Battery', BATTERY_CAPACITY, 'ELECTRICITY', './assets/game/items/battery.png')

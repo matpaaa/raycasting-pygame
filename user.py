@@ -101,6 +101,11 @@ class User:
         self._slot_select = slot_num
 
     def add_item(self, item: Item):
+
+        if item.id_item_type == 'ELECTRICITY':
+            self._battery += item.value
+            return
+
         if len(self.inventory_items) >= MAX_ITEM_SLOTS: return
         self._items.append(item)
 

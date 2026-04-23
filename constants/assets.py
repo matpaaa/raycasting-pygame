@@ -15,6 +15,7 @@ class Assets:
     ammo: Surface | None = None
     code: Surface | None = None
     key: Surface | None = None
+    battery: Surface | None = None
     slot: Surface | None = None
     slot_selected: Surface | None = None
 
@@ -54,6 +55,11 @@ class Assets:
 
         Assets.code = pygame.transform.scale(
             pygame.image.load('./assets/game/items/code.png').convert_alpha(),
+            (Assets.item_size, Assets.item_size)
+        )
+
+        Assets.battery = pygame.transform.scale(
+            pygame.image.load('./assets/game/items/battery.png').convert_alpha(),
             (Assets.item_size, Assets.item_size)
         )
 

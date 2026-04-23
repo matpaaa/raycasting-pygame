@@ -67,8 +67,8 @@ class RayCasting:
         return distance, tex_u, side, wall_type
  
     def _build_darkness_overlay(self, screen_width: int, screen_height: int) -> Surface:
-        light_w = 700
-        light_h = 500
+        light_w = 500
+        light_h = 400
         center_x = screen_width // 2
         center_y = screen_height // 2
 
