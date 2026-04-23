@@ -55,10 +55,10 @@ class RayCasting:
             if self.map[map_y][map_x] != 0:
                 hit = True
 
-        if side == 0:
+        if side == 0 and dx != 0:
             distance = (map_x - ox + (1 - step_x) / 2) / dx
             tex_u = oy + distance * dy
-        else:
+        elif (dy != 0):
             distance = (map_y - oy + (1 - step_y) / 2) / dy
             tex_u = ox + distance * dx
 
@@ -110,7 +110,12 @@ class RayCasting:
                 y1 = screen_height / 2 - wall_height / 2
                 y2 = screen_height / 2 + wall_height / 2
                 pygame.draw.line(self.screen, color, (i, y1), (i, y2))
- 
+
+            shadow = int(min(255, (distance / RENDER_DISTANCE) * 255))
+            overlay = pygame.Surface((1, screen_height), pygame.SRCALPHA)
+            overlay.fill((0, 0, 0, shadow))
+            self.screen.blit(overlay, (i, 0))
+
             self.z_buffer[i] = distance
                 
     def draw_sprites(self, user: User):
