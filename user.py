@@ -103,9 +103,10 @@ class User:
 
         if item.id_item == 'KEY':
             Sounds.take_key()
-
-        if item.id_item == 'GUN':
+        elif item.id_item == 'GUN':
             Sounds.take_gun()
+        else:
+            Sounds.take_item()
 
     def drop_item(self):
         item_deleted = self.inventory_items.pop(self.slot_select)

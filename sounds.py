@@ -76,6 +76,12 @@ class Sounds:
         sound.set_volume(0.3)
 
     @staticmethod
+    def take_item():
+        sound = pygame.mixer.Sound('./assets/sounds/take-item.mp3')
+        sound.play()
+        sound.set_volume(0.3)
+
+    @staticmethod
     def ammo():
         sound = pygame.mixer.Sound('./assets/sounds/ammo.mp3')
         sound.play()
