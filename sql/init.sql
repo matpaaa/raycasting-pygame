@@ -85,6 +85,7 @@ CREATE TABLE IF NOT EXISTS save (
   duration INTEGER NOT NULL,
   is_win BOOLEAN NOT NULL DEFAULT FALSE,
   is_failed BOOLEAN NOT NULL DEFAULT FALSE,
+  online_code VARCHAR(6),
   id_map INT NOT NULL,
 
   FOREIGN KEY (id_map) REFERENCES map(id_map)

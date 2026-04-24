@@ -25,6 +25,7 @@
 ```
 
 ### GET /api/saves
+Récupère toutes les saves pour les affichers dans le menu
 ```
 [
     {
@@ -52,6 +53,7 @@
 ```
 
 ### GET /api/save/[id_save]
+Charge toutes les données de la partie
 ```
 {
     id_save: int
@@ -153,5 +155,148 @@
             damage: int
         }
     ]
+}
+```
+
+
+### GET /api/logout
+Supprimer le token de l'utilisateur pour les déconnecter
+
+### POST /api/login
+```
+BODY
+{
+    credential: str
+    password: str
+}
+```
+
+### POST /api/register
+```
+BODY
+{
+    username: str
+    email: str
+    password: str
+}
+```
+
+### POST /api/verify-code
+Vérifie le code envoyé par email lors de la création d'un compte
+```
+BODY
+{
+    email: str
+    code: str
+}
+```
+
+### DELETE /api/account
+Supprime le compte
+
+### DELETE /api/save
+Supprimer une sauvegarde
+```
+BODY
+{
+    id_save: int
+}
+```
+
+### PUT /api/player/save
+Sauvegarde du joueur utilisateur de la personne
+```
+BODY
+{
+    id_player: int
+    health: int
+    energy: int
+    pos_x: float
+    pos_y: float
+}
+```
+
+### POST /api/puzzle/finish
+Finie une énigme et donne à tous les utilisateurs l'item en récompense
+```
+BODY
+{
+    id_save: int
+    id_puzzle: int
+}
+```
+
+### POST /api/door/open
+Si le type de la porte ouverte est KEY alors il faut vérifier si les utilisateurs ont assez de clé et faire -1 clé
+```
+BODY
+{
+    id_save: int
+    id_sprite: int
+}
+```
+
+### POST /api/recover/item
+```
+BODY
+{
+    id_save: int
+    id_item: int
+}
+```
+
+### DELETE /api/drop/item
+Supprime l'item de l'inventaire de l'utilisateur et créer un sprite_item à l'emplacement de l'utilisateur
+```
+BODY
+{
+    id_player: int
+    id_item: int
+}
+```
+
+### POST /api/create/save
+Lors ce que l'utilisateur créer une partie il va envoyé toutes les données des sprite_item & sprite_enemie présent dans ces fichiers au serveur
+```
+BODY
+{
+    sprite_enemies: [
+        {
+            health: int
+            damage: int
+            pos_x: float
+            pos_y: float
+            image: str
+        }
+    ]
+    sprite_items: [
+        {
+            id_item: str
+            pos_x: float
+            pos_y: float
+            image: str
+        }
+    ]
+}
+```
+
+### POST /api/save/online
+Le joueur qui a créer la partie peut activer le mode online, cela génère un code et le met dans "online_code" dans la table SAVE
+```
+BODY
+{
+    id_player: int
+    id_save: int
+}
+```
+
+### POST /api/save/join
+Un joueur qui est différent de celui d'origine peut rejoindre la partie en entrant le code
+```
+BODY
+{
+    online_code: str
+    id_save: int
+    id_player: int
 }
 ```
