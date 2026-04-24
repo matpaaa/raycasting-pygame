@@ -50,7 +50,12 @@ class User:
                 break
         
         if not is_collision:
-            is_collision = self.map_config.map[int(pos_y)][int(pos_x)] != 0
+            map_case = self.map_config.map[int(pos_y)][int(pos_x)]
+            if map_case == 9:
+                self._has_win = True
+                return
+            
+            is_collision = map_case != 0
 
         if is_collision:
             Sounds.hurt()

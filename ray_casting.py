@@ -1,5 +1,5 @@
 import math
-from typing import List
+from typing import List, Dict
 from pygame import Surface
 import pygame
 import numpy as np
@@ -17,6 +17,7 @@ class RayCasting:
         self.user = user
         self.map_config = map_config
         self.z_buffer = [float('inf')] * screen.get_width()
+        self._sprite_buffer: Dict[int, float] = {}
         self._precompute_light(screen.get_width(), screen.get_height())
  
     def _cast_ray_dda(self, ox: float, oy: float, dx: float, dy: float):
@@ -58,7 +59,7 @@ class RayCasting:
         if side == 0 and dx != 0:
             distance = (map_x - ox + (1 - step_x) / 2) / dx
             tex_u = oy + distance * dy
-        elif (dy != 0):
+        elif dy != 0:
             distance = (map_y - oy + (1 - step_y) / 2) / dy
             tex_u = ox + distance * dx
 
@@ -82,6 +83,10 @@ class RayCasting:
 
     def _build_darkness_overlay(self, screen_width: int, screen_height: int) -> Surface:
         z = np.clip(self.z_buffer, 0, RENDER_DISTANCE).astype(np.float32)
+
+        for col, sprite_dist in self._sprite_buffer.items():
+            if 0 <= col < screen_width:
+                z[col] = min(sprite_dist, RENDER_DISTANCE)
 
         base_shadow = (z / RENDER_DISTANCE) * 255
 
@@ -143,7 +148,7 @@ class RayCasting:
  
                 y1 = int(screen_height / 2 - wall_h / 2)
                 self.screen.blit(scaled_column, (i, y1))
-            else:
+            elif pos != 9:
                 color = 'red'
                 y1 = screen_height / 2 - wall_height / 2
                 y2 = screen_height / 2 + wall_height / 2
@@ -154,6 +159,8 @@ class RayCasting:
     def draw_sprites(self, user: User):
         screen_width = self.screen.get_width()
         screen_height = self.screen.get_height()
+
+        self._sprite_buffer.clear()
 
         sorted_sprites = sorted(
             self.map_config.sprites,
@@ -169,8 +176,8 @@ class RayCasting:
             if isinstance(sprite, CollisionSprite) and sprite.is_open:
                 continue
 
-            dx = sprite.pos_x  - user.get_pos_x
-            dy = sprite.pos_y  - user.get_pos_y
+            dx = sprite.pos_x - user.get_pos_x
+            dy = sprite.pos_y - user.get_pos_y
             distance = math.hypot(dx, dy)
 
             if distance < 0.1:
@@ -188,9 +195,9 @@ class RayCasting:
                 continue
 
             if isinstance(sprite, ObjectSprite):
-                sprite_height = int((screen_height//6) / distance)
+                sprite_height = int((screen_height // 6) / distance)
             else:
-                sprite_height = int(screen_height//1.5 / distance)
+                sprite_height = int(screen_height // 1.5 / distance)
             sprite_width = sprite_height
 
             center_x = int((0.5 + angle_diff / user.get_fov) * screen_width)
@@ -199,7 +206,7 @@ class RayCasting:
             x_end   = center_x + sprite_width // 2
 
             texture = sprite.texture
-            
+
             if isinstance(sprite, ObjectSprite):
                 y_start = screen_height // 2 + sprite_height
             else:
@@ -219,6 +226,8 @@ class RayCasting:
 
                 col_surface = scaled_texture.subsurface(pygame.Rect(tex_x, 0, 1, max(1, sprite_height)))
                 self.screen.blit(col_surface, (col, y_start))
+
+                self._sprite_buffer[col] = distance
 
     def draw_darkness(self):
         darkness = self._build_darkness_overlay(
