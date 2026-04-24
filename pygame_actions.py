@@ -42,7 +42,7 @@ class PygameActions:
 
     def one_actions(self, sprite: Sprite | None, event: Event | None):
         if event.type != pygame.KEYDOWN: return
-        
+
         if event.key == pygame.K_e:
             if (sprite is not None):
                 if isinstance(sprite, HumanSprite) and self.can_exec_action_e:
@@ -66,6 +66,9 @@ class PygameActions:
 
         if event.key == pygame.K_l:
             self.user.toogle_light()
+
+        if event.key == pygame.K_a:
+            self.user.drop_item()
 
     def actions(self, sprite: Sprite | None, event: Event | None):
         keys = pygame.key.get_pressed()

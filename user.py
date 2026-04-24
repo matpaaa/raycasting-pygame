@@ -241,6 +241,13 @@ class User:
         elif self.has_battery:
             self._light_enabled = True
 
+    def drop_item(self):
+        if len(self.inventory_items)-1 < self.slot_select: return
+        inventory_items = self.inventory_items
+        item_used = inventory_items.pop(self.slot_select)
+        self._items = inventory_items + self.secret_items + self.ammo_items
+        self.map_config.add_item_to_sprite(self.pos_x, self.pos_y, item_used)
+
     @property
     def get_fov(self) -> int:
         return self._fov

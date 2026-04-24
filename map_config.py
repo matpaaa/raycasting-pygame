@@ -2,6 +2,8 @@ from typing import List, Dict
 from sprite.sprite import *
 from pygame import Surface
 import pygame
+from sprite.object_sprite import *
+from item import *
 
 class MapConfig:
 
@@ -15,6 +17,11 @@ class MapConfig:
         for path_key in self._textures_path:
             path = self._textures_path[path_key]
             self._textures[path_key] = pygame.image.load(path).convert()
+
+    def add_item_to_sprite(self, x: int, y: int, item: Item):
+        new_sprite = ObjectSprite(x, y, item)
+        new_sprite.load()
+        self._sprites.append(new_sprite)
 
     @property
     def map(self) -> List[List[int]]:
