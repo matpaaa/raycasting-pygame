@@ -45,7 +45,5 @@ class HumanSprite(Sprite):
         current_dialog = self.dialogs[self._dialog_index]
         if current_dialog is None: return
 
-        if self.is_interact:
-            self.diablog.set_content(current_dialog)
-        
+        self.diablog.set_content(current_dialog)
         self.diablog.draw(screen)

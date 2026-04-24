@@ -43,26 +43,26 @@ class PygameActions:
     def one_actions(self, sprite: Sprite | None, event: Event | None):
         if event.type != pygame.KEYDOWN: return
 
-        if event.key == pygame.K_e:
-            if (sprite is not None):
-                if isinstance(sprite, HumanSprite) and self.can_exec_action_e:
-                    self._last_action = time.time()
-                    sprite.handle_interaction(self.screen)
+        # if event.key == pygame.K_e:
+        #     if (sprite is not None):
+        #         if isinstance(sprite, HumanSprite):
+        #             self._last_action = time.time()
+        #             sprite.handle_interaction(self.screen)
 
-                    if event.key == pygame.K_RIGHT:
-                        sprite.next_dialog()
-                    elif event.key == pygame.K_LEFT:
-                        sprite.previous_dialog()
+        #             if event.key == pygame.K_RIGHT:
+        #                 sprite.next_dialog()
+        #             elif event.key == pygame.K_LEFT:
+        #                 sprite.previous_dialog()
 
-                elif isinstance(sprite, ObjectSprite):
-                    sprite.handle_interaction(self.user)
-                elif isinstance(sprite, CollisionSprite):
-                    if self.can_exec_action_e:
-                        self._last_action = time.time()
-                        sprite.handle_open(self.user)
+        #         elif isinstance(sprite, ObjectSprite):
+        #             sprite.handle_interaction(self.user)
+        #         elif isinstance(sprite, CollisionSprite):
+        #             if self.can_exec_action_e:
+        #                 self._last_action = time.time()
+        #                 sprite.handle_open(self.user)
 
-            else:
-                self.user.use_item()
+        #     else:
+        #         self.user.use_item()
 
         if event.key == pygame.K_l:
             self.user.toogle_light()
@@ -120,3 +120,23 @@ class PygameActions:
 
         if keys[pygame.K_SPACE]:
             self.user.handle_shoot()
+
+        if keys[pygame.K_e]:
+            if (sprite is not None):
+                if isinstance(sprite, HumanSprite):
+                    sprite.handle_interaction(self.screen)
+
+                    if keys[pygame.K_RIGHT]:
+                        sprite.next_dialog()
+                    elif keys[pygame.K_LEFT]:
+                        sprite.previous_dialog()
+
+                elif isinstance(sprite, ObjectSprite):
+                    sprite.handle_interaction(self.user)
+                elif isinstance(sprite, CollisionSprite):
+                    if self._last_action is None or time.time() - self._last_action >= self._min_time_action_e:
+                        self._last_action = time.time()
+                        sprite.handle_open(self.user)
+
+            else:
+                self.user.use_item()

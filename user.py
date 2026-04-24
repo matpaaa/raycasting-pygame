@@ -16,8 +16,8 @@ from sprite.collision_sprite import *
 class User:
 
     _rotate_rad = math.pi / 64
-    _default_velocity: float = 0.02
-    _velocity: float = 0.02
+    _default_velocity: float = 0.03
+    _velocity: float = 0.03
     _fov: int = math.pi / 3
     _max_health = 160
     _health = _max_health
@@ -139,6 +139,8 @@ class User:
                     else:
                         self._has_sprite_interaction = True
                         return sprite
+                    
+                return sprite
                 
             if isinstance(sprite, HumanSprite):
                 self._has_sprite_interaction = False
