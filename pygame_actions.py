@@ -39,15 +39,20 @@ class PygameActions:
     def actions(self, sprite: Sprite | None, event: Event | None):
         keys = pygame.key.get_pressed()
         self._moving = False
-        
-        if keys[pygame.K_LEFT] or keys[pygame.K_q]:
+
+        if event is not None and event.type == pygame.KEYUP:
+            if sprite is not None and isinstance(sprite, HumanSprite):
+                if event.key == pygame.K_e:
+                    sprite.interaction_released()
+
+        if keys[pygame.K_q]:
             self.user_move_left()
-        if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
+        if keys[pygame.K_d]:
             self.user_move_right()
-        if keys[pygame.K_UP] or keys[pygame.K_z]:
+        if keys[pygame.K_z]:
             self.user_move_up()
             self._moving = True
-        if keys[pygame.K_DOWN]or keys[pygame.K_s]:
+        if keys[pygame.K_s]:
             self.user_move_down()
             self._moving = True
 
@@ -83,6 +88,12 @@ class PygameActions:
             if (sprite is not None):
                 if isinstance(sprite, HumanSprite):
                     sprite.handle_interaction(self.screen)
+
+                    if keys[pygame.K_RIGHT]:
+                        sprite.next_dialog()
+                    elif keys[pygame.K_LEFT]:
+                        sprite.previous_dialog()
+
                 elif isinstance(sprite, ObjectSprite):
                     sprite.handle_interaction(self.user)
                 elif isinstance(sprite, CollisionSprite):

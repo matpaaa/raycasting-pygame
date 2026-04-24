@@ -28,7 +28,7 @@ class Dialog:
         pygame.draw.rect(screen, BUTTON_BACKGROUND, self.rect, border_radius=4)
         pygame.draw.rect(screen, WHITE, self.rect, 2, border_radius=4)
         label = Fonts.font_error_bubble.render(self.content, True, WHITE)
-        lx = self.rect.x + (0 if self.image is None else 32) + SCREEN_PADDING
+        lx = self.rect.x + (0 if self.image is None else 40) + SCREEN_PADDING
         ly = self.rect.centery - label.get_height() // 2
 
         if self.image is not None:
