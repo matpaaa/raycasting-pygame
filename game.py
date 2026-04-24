@@ -71,6 +71,7 @@ class Game:
 
     def handle_event(self, event: Event):
         self.event = event
+        self.pygame_actions.one_actions(self.sprite_interact, self.event)
 
         if self.btn_back_menu.is_clicked(event) or self.btn_back.is_clicked(event):
             Sounds.click()

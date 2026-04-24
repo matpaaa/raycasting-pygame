@@ -138,8 +138,7 @@ class User:
                         self._has_sprite_interaction = True
                     else:
                         self._has_sprite_interaction = True
-
-                return sprite
+                        return sprite
                 
             if isinstance(sprite, HumanSprite):
                 self._has_sprite_interaction = False
