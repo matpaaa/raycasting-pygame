@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS item_type (
 CREATE TABLE IF NOT EXISTS item (
   id_item VARCHAR(16) PRIMARY KEY,
   name VARCHAR(16) NOT NULL,
-  value DECIMAL(10,2) NOT NULL,
+  value DECIMAL(10,2),
   id_item_type VARCHAR(16) NOT NULL,
 
   FOREIGN KEY (id_item_type)
@@ -13,17 +13,14 @@ CREATE TABLE IF NOT EXISTS item (
 );
 
 CREATE TABLE IF NOT EXISTS sprite (
-  id_sprite SERIAL PRIMARY KEY,
+  id_sprite INT PRIMARY KEY,
   pos_x DECIMAL(10,2) NOT NULL,
   pos_y DECIMAL(10,2) NOT NULL,
   image TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sprite_door_type (
-  id_sprite_door_type VARCHAR(16) PRIMARY KEY,
-  id_sprite INT NULL,
-
-  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite)
+  id_sprite_door_type VARCHAR(16) PRIMARY KEY
 );
 
 CREATE TABLE IF NOT EXISTS map (
@@ -62,7 +59,7 @@ CREATE TABLE IF NOT EXISTS sprite_item (
   FOREIGN KEY (id_item) REFERENCES item(id_item)
 );
 
-CREATE TABLE IF NOT EXISTS sprite_enemie (
+CREATE TABLE IF NOT EXISTS sprite_enemy (
   id_sprite INT PRIMARY KEY,
   health INT NOT NULL,
   damage INT NOT NULL,
@@ -86,7 +83,8 @@ CREATE TABLE IF NOT EXISTS save (
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
   duration INTEGER NOT NULL,
-
+  is_win BOOLEAN NOT NULL DEFAULT FALSE,
+  is_failed BOOLEAN NOT NULL DEFAULT FALSE,
   id_map INT NOT NULL,
 
   FOREIGN KEY (id_map) REFERENCES map(id_map)
@@ -121,7 +119,7 @@ CREATE TABLE IF NOT EXISTS item_possessed (
 );
 
 CREATE TABLE IF NOT EXISTS item_secret_possessed (
-  id_item_possessed INT PRIMARY KEY,
+  id_item_secret_possessed SERIAL PRIMARY KEY,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   id_item VARCHAR(16) NOT NULL,
   id_save INT NULL,
@@ -133,17 +131,17 @@ CREATE TABLE IF NOT EXISTS item_secret_possessed (
 CREATE TABLE IF NOT EXISTS to_finish (
   id_save INT NOT NULL,
   id_puzzle INT NOT NULL,
-  created_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id_save, id_puzzle),
   FOREIGN KEY (id_save) REFERENCES save(id_save),
   FOREIGN KEY (id_puzzle) REFERENCES puzzle(id_puzzle)
 );
 
 CREATE TABLE IF NOT EXISTS to_open (
-  id_puzzle INT NOT NULL,
-  id_sprite_door INT NOT NULL,
-  created_at TIMESTAMP NOT NULL,
-  PRIMARY KEY (id_puzzle, id_sprite_door),
-  FOREIGN KEY (id_puzzle) REFERENCES puzzle(id_puzzle),
-  FOREIGN KEY (id_sprite_door) REFERENCES sprite_door(id_sprite)
+  id_sprite INT NOT NULL,
+  id_sprite INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (id_sprite, id_sprite),
+  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite),
+  FOREIGN KEY (id_sprite) REFERENCES sprite_door(id_sprite)
 );
