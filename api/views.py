@@ -162,7 +162,7 @@ def get_maps(request):
         if not user_id:
             return JsonResponse({"error": "Non connecté"}, status=401)
 
-        maps = map.objects.filter(save__id_account=user_id).distinct()
+        maps = map.objects.filter(id_map__in=save.objects.filter(player__id_account=user_id).values_list('id_map', flat=True)).distinct()
         data = []
         for m in maps:
             data.append({
@@ -182,20 +182,37 @@ def get_saves(request):
         if not user_id:
             return JsonResponse({"error": "Non connecté"}, status=401)
 
-        saves = save.objects.filter(id_account=user_id)
-        data=[]
+        saves = save.objects.filter(player__id_account=user_id).distinct()
+
+        data = []
+
         for save_item in saves:
+            players_data = []
+
+            for p in save_item.player_set.all():
+                players_data.append({
+                    "id_player": p.id_player,
+                    "health": p.health,
+                    "energy": p.energy,
+                    "pos_x": float(p.pos_x),
+                    "pos_y": float(p.pos_y),
+                    "created_at": p.created_at,
+                    "name": p.name,
+                    "is_owner": p.is_owner
+                })
+
             data.append({
-                "id": save_item.id_save,
-                "pos_y": save_item.pos_y,
-                "pox_x": save_item.pox_x,
-                "health": save_item.health,
+                "id_save": save_item.id_save,
                 "created_at": save_item.created_at,
                 "updated_at": save_item.updated_at,
-                "name_map": save_item.id_map.name
+                "duration": save_item.duration,
+                "id_map": save_item.id_map.id_map,
+                "is_win": save_item.is_win,
+                "is_failed": save_item.is_failed,
+                "players": players_data
             })
 
-        return JsonResponse({"saves": data})
+        return JsonResponse(data, safe=False)
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
@@ -214,7 +231,9 @@ def get_info(request):
     return JsonResponse({
         "id": user.id_account,
         "name": user.name,
-        "email": user.email
+        "email": user.email,
+        "created_at": user.created_at,
+        "is_verified":user.is_verified
     })
 
 @csrf_exempt
