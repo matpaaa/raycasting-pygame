@@ -140,9 +140,9 @@ CREATE TABLE IF NOT EXISTS to_finish (
 
 CREATE TABLE IF NOT EXISTS to_open (
   id_sprite INT NOT NULL,
-  id_sprite INT NOT NULL,
+  id_save INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  PRIMARY KEY (id_sprite, id_sprite),
-  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite),
+  PRIMARY KEY (id_save, id_sprite),
+  FOREIGN KEY (id_save) REFERENCES save(id_save),
   FOREIGN KEY (id_sprite) REFERENCES sprite_door(id_sprite)
 );
