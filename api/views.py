@@ -3,7 +3,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from .models import account,map,save
+from .models import *
 import json
 import random
 
@@ -244,3 +244,159 @@ def logout(request):
         return JsonResponse({},status=200)
 
     return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+def get_save(request, id_save):
+    if request.method != "GET":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    try:
+        save_obj = save.objects.get(id_save=id_save)
+    except save.DoesNotExist:
+        return JsonResponse({"error": "Save introuvable"}, status=404)
+
+    players_data = []
+
+    players = player.objects.filter(id_save=save_obj)
+
+    for p in players:
+        
+        items = ItemPossessed.objects.filter(id_player=p)
+
+        items_data = []
+        for it in items:
+            item_obj = it.id_item
+
+            items_data.append({
+                "id_item_possessed": it.id_item_possessed,
+                "created_at": it.created_at,
+                "id_item": item_obj.id_item,
+                "value": float(item_obj.value) if item_obj.value else None,
+                "name": item_obj.name,
+                "id_item_type": item_obj.id_item_type.id_item_type
+            })
+
+        players_data.append({
+            "id_player": p.id_player,
+            "health": p.health,
+            "energy": p.energy,
+            "pos_x": float(p.pos_x),
+            "pos_y": float(p.pos_y),
+            "created_at": p.created_at,
+            "name": p.name,
+            "is_owner": p.is_owner,
+            "items": items_data
+        })
+
+    secret_items = item_secret_possessed.objects.filter(id_save=save_obj)
+
+    secret_data = []
+    for s in secret_items:
+        item_obj = s.id_item
+
+        secret_data.append({
+            "id_item_secret_possessed": s.id_item_secret_possessed,
+            "created_at": s.created_at,
+            "id_item": item_obj.id_item,
+            "value": float(item_obj.value) if item_obj.value else None,
+            "name": item_obj.name,
+            "id_item_type": item_obj.id_item_type.id_item_type
+        })
+
+    finish_data = []
+    finishes = to_finish.objects.filter(id_save=save_obj)
+
+    for f in finishes:
+        finish_data.append({
+            "id_save": f.id_save.id_save,
+            "id_puzzle": f.id_puzzle.id_puzzle,
+            "created_at": f.created_at
+        })
+
+    puzzles = puzzle.objects.all()
+
+    puzzles_data = []
+    for puz in puzzles:
+        puzzles_data.append({
+            "id_puzzle": puz.id_puzzle,
+            "title": puz.title,
+            "content": puz.content,
+            "item": None  
+        })
+
+    
+    open_data = []
+    opens = to_open.objects.filter(id_save=save_obj)
+
+    for o in opens:
+        open_data.append({
+            "id_save": o.id_save.id_save,
+            "id_sprite": o.id_sprite.id_sprite,
+            "created_at": o.created_at
+        })
+
+    sprite_doors_data = []
+    doors = sprite_door.objects.filter(id_map=save_obj.id_map)
+
+    for d in doors:
+        sprite_obj = d.id_sprite
+
+        sprite_doors_data.append({
+            "id_sprite": sprite_obj.id_sprite,
+            "id_sprite_door_type": d.id_sprite_door_type.id_sprite_door_type,
+            "pos_x": float(sprite_obj.pos_x),
+            "pos_y": float(sprite_obj.pos_y),
+            "image": sprite_obj.image
+        })
+
+    sprite_items_data = []
+    sprite_items = sprite_item.objects.all()
+
+    for si in sprite_items:
+        sprite_obj = si.id_sprite
+        item_obj = si.id_item
+
+        sprite_items_data.append({
+            "id_sprite": sprite_obj.id_sprite,
+            "pos_x": float(sprite_obj.pos_x),
+            "pos_y": float(sprite_obj.pos_y),
+            "image": sprite_obj.image,
+            "created_at": si.created_at,
+            "id_item": item_obj.id_item,
+            "value": float(item_obj.value) if item_obj.value else None,
+            "name": item_obj.name,
+            "id_item_type": item_obj.id_item_type.id_item_type
+        })
+
+    enemies_data = []
+    enemies = sprite_enemy.objects.all()
+
+    for e in enemies:
+        sprite_obj = e.id_sprite
+
+        enemies_data.append({
+            "id_sprite": sprite_obj.id_sprite,
+            "pos_x": float(sprite_obj.pos_x),
+            "pos_y": float(sprite_obj.pos_y),
+            "image": sprite_obj.image,
+            "created_at": e.created_at,
+            "health": e.health,
+            "damage": e.damage
+        })
+
+    return JsonResponse({
+        "id_save": save_obj.id_save,
+        "created_at": save_obj.created_at,
+        "updated_at": save_obj.updated_at,
+        "duration": save_obj.duration,
+        "id_map": save_obj.id_map.id_map,
+        "is_win": save_obj.is_win,
+        "is_failed": save_obj.is_failed,
+        "players": players_data,
+        "items_secret": secret_data,
+        "finish": finish_data,
+        "puzzles": puzzles_data,
+        "open": open_data,
+        "sprite_doors": sprite_doors_data,
+        "sprite_items": sprite_items_data,
+        "sprite_enemies": enemies_data
+    })
