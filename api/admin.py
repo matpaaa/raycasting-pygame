@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import account,map,save,player
+from .models import *
 # Register your models here.
-admin.site.register(account)
-admin.site.register(map)
-admin.site.register(save)
-admin.site.register(player)
+admin.site.register(Account)
+admin.site.register(Map)
+admin.site.register(Save)
+admin.site.register(Player)
