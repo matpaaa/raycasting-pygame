@@ -14,4 +14,5 @@ urlpatterns = [
     path('api/get-info/', get_info),
     path('api/logout/', logout),
     path('api/get-save/<id_save>/', get_save),
+    path('api/player/save/', save_player),
 ]

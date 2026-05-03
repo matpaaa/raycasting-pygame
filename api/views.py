@@ -406,3 +406,44 @@ def get_save(request, id_save):
         "sprite_items": sprite_items_data,
         "sprite_enemies": enemies_data
     })
+
+@csrf_exempt
+def save_player(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    try:
+        user_id = request.session.get('user_id')
+
+        if not user_id:
+            return JsonResponse({}, status=401)
+
+        body = json.loads(request.body)
+
+        id_player = body.get("id_player")
+        health = body.get("health")
+        energy = body.get("energy")
+        pos_x = body.get("pos_x")
+        pos_y = body.get("pos_y")
+
+        if not id_player:
+            return JsonResponse({}, status=400)
+
+        player = Player.objects.get(id_player=id_player)
+
+        if player.id_account_id != user_id:
+            return JsonResponse({}, status=403)
+
+        player.health = health
+        player.energy = energy
+        player.pos_x = pos_x
+        player.pos_y = pos_y
+        player.save()
+
+        return JsonResponse({})
+
+    except Player.DoesNotExist:
+        return JsonResponse({}, status=404)
+
+    except Exception as e:
+        return JsonResponse({}, status=500)
