@@ -502,4 +502,64 @@ def finish_puzzle(request):
         return JsonResponse({}, status=404)
 
     except Exception as e:
-        return JsonResponse({}, status=500)    
+        return JsonResponse({}, status=500)   
+
+@csrf_exempt
+def open_door(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    try:
+        body = json.loads(request.body)
+
+        id_save = body.get("id_save")
+        id_sprite = body.get("id_sprite")
+
+        if not id_save or not id_sprite:
+            return JsonResponse({}, status=400)
+
+        save_obj = Save.objects.get(id_save=id_save)
+        door = SpriteDoor.objects.get(id_sprite=id_sprite)
+
+        # 🔒 déjà ouverte ?
+        if ToOpen.objects.filter(id_save=save_obj, id_sprite=door).exists():
+            return JsonResponse({}, status=400)
+
+        door_type = door.id_sprite_door_type.id_sprite_door_type
+
+        players = Player.objects.filter(id_save=save_obj)
+
+        if door_type == "KEY":
+
+            key_removed = False
+
+            for player in players:
+                key_item = ItemPossessed.objects.filter(
+                    id_player=player,
+                    id_item__id_item_type__id="KEY"
+                ).first()
+
+                if key_item:
+                    key_item.delete()  
+                    key_removed = True
+                    break
+
+            if not key_removed:
+                return JsonResponse({}, status=400)
+
+        ToOpen.objects.create(
+            id_save=save_obj,
+            id_sprite=door,
+            created_at=now()
+        )
+
+        return JsonResponse({},status=200)
+
+    except Save.DoesNotExist:
+        return JsonResponse({}, status=404)
+
+    except SpriteDoor.DoesNotExist:
+        return JsonResponse({}, status=404)
+
+    except Exception as e:
+        return JsonResponse({}, status=500) 
