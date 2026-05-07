@@ -36,8 +36,8 @@ CREATE TABLE IF NOT EXISTS puzzle (
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   id_sprite_door_type VARCHAR(16) NOT NULL,
 
-  FOREIGN KEY (id_sprite_door_type)
-  REFERENCES sprite_door_type(id_sprite_door_type)
+  FOREIGN KEY (id_sprite_door_type) REFERENCES sprite_door_type(id_sprite_door_type),
+  FOREIGN KEY (id_item) REFERENCES item(id_item)
 );
 
 CREATE TABLE IF NOT EXISTS sprite_door (
