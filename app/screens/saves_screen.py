@@ -19,11 +19,12 @@ class SavesScreen:
         
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and self.start_game_rect.collidepoint(event.pos):
-            global_var.current_page = 'game'
+            global_var.navigatePage('game')
+            
         if self.disconnect_btn.is_clicked(event):
             res = AuthApi.logout()
             if res.status_code == 200:
-                global_var.current_page = 'login'
+                global_var.navigatePage('login')
         
     def draw(self):
         self.screen.fill((0, 0, 0))

@@ -8,8 +8,9 @@ from app.ui.line import *
 from app._utils.sounds import *
 from app.ui.text import *
 from app.constants.color import *
+from app.api.auth_api import *
 
-class ForgotPasswordCodeScreen:
+class VerifyCodeScreen:
 
     def __init__(self, screen):
         self.screen = screen
@@ -68,11 +69,16 @@ class ForgotPasswordCodeScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'forgot_password'
+            global_var.navigatePage(global_var.last_page)
 
         if self.btn_confirm.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'new_password'
+            res = AuthApi.verify_code(self.input_code.value)
+            if res.status_code == 200:
+                if global_var.last_page == 'register':
+                    global_var.navigatePage('login')
+                else:
+                    global_var.navigatePage('new_password')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

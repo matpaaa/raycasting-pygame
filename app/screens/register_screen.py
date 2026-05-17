@@ -6,6 +6,7 @@ from app.ui.button import *
 import app._utils.global_var as global_var
 from app.ui.line import *
 from app._utils.sounds import *
+from app.api.auth_api import *
 
 class RegisterScreen:
 
@@ -69,11 +70,11 @@ class RegisterScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'login'
+            global_var.navigatePage('login')
 
         if self.btn_login.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'login'
+            global_var.navigatePage('login')
 
         if self.btn_create.is_clicked(event):
             Sounds.click()
@@ -87,8 +88,21 @@ class RegisterScreen:
 
         if not username or not email or not password or not confirm:
             return
-        if password != confirm:
+        elif password != confirm:
             return
+        else:
+            data = {
+                'name': username,
+                'email': email,
+                'password': password
+            }
+            res = AuthApi.register(data)
+            if res.status_code == 200:
+                self.username_input.value = ''
+                self.email_input.value = ''
+                self.password_input.value = ''
+                self.confirm_input.value = ''
+                global_var.navigatePage('verify_code')
 
     def draw(self):
         self.screen.fill((0, 0, 0))
