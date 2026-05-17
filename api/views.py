@@ -446,7 +446,7 @@ def save_player(request):
         return JsonResponse({}, status=404)
 
     except Exception as e:
-        return JsonResponse({}, status=500)
+        return JsonResponse({"error": str(e)}, status=500)
     
 
 @csrf_exempt
@@ -502,4 +502,52 @@ def finish_puzzle(request):
         return JsonResponse({}, status=404)
 
     except Exception as e:
-        return JsonResponse({}, status=500)    
+        return JsonResponse({"error": str(e)}, status=500)    
+    
+
+@csrf_exempt
+def recover_item(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse({}, status=401)
+
+        body = json.loads(request.body)
+
+        id_save = body.get("id_save")
+        id_item = body.get("id_item")
+
+        if not id_save or not id_item:
+            return JsonResponse({}, status=400)
+
+        save_obj = Save.objects.get(id_save=id_save)
+        player = Player.objects.filter(
+            id_save=save_obj,
+            id_account_id=user_id
+        ).first()
+
+        if not player:
+            return JsonResponse({},status=403)
+
+        item_obj = Item.objects.get(id_item=id_item)
+
+        ItemPossessed.objects.create(
+            id_player=player,
+            id_item=item_obj,
+            created_at=now()
+        )
+
+        return JsonResponse({},status=200)
+
+    except Save.DoesNotExist:
+        return JsonResponse({}, status=404)
+
+    except Item.DoesNotExist:
+        return JsonResponse({}, status=404)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
