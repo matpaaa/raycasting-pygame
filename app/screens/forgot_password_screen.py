@@ -38,10 +38,10 @@ class ForgotPasswordScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'login'
+            global_var.navigatePage('login')
         if self.btn_confirm.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'forgot_password_code'
+            global_var.navigatePage('forgot_password_code')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

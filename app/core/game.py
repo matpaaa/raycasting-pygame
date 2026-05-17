@@ -75,7 +75,7 @@ class Game:
 
         if self.btn_back_menu.is_clicked(event) or self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'home'
+            global_var.navigatePage('home')
             self.game_menu = False
 
         if self.btn_save.is_clicked(event):
