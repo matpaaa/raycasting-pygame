@@ -639,4 +639,15 @@ def delete_save(request):
         return JsonResponse({},status=200)
 
     except Exception as e:
-        return JsonResponse({"error": str(e)}, status=500)  
+        return JsonResponse({"error": str(e)}, status=500) 
+
+def auth_status(request):
+    if request.method != "GET":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({"connected": False }, status=200)
+
+    return JsonResponse({ "connected": True })     
