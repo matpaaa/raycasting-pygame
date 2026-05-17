@@ -46,18 +46,18 @@ class LoginScreen:
             global_var.current_page = 'home'
 
         if self.btn_connect.is_clicked(event):
-            Sounds.click()
-            global_var.current_page = 'game'
+            # Sounds.click()
+            # global_var.current_page = 'game'
 
-            # data = {
-            #     "name": self.username_input.value,
-            #     "password": self.input_password.value
-            # }
-            # res = AuthApi.login(data)
-            # if res.status_code == 200:
-            #     global_var.current_page = 'game'
-            # else:
-            #     self.error_bubble.set_content('Username ou mot de passe invalide')
+            data = {
+                "name": self.username_input.value,
+                "password": self.input_password.value
+            }
+            res = AuthApi.login(data)
+            if res.status_code == 200:
+                global_var.current_page = 'saves'
+            else:
+                self.error_bubble.set_content('Username ou mot de passe invalide')
 
         if self.btn_forgot_password.is_clicked(event):
             Sounds.click()
