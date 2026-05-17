@@ -8,6 +8,7 @@ from app.screens.register_screen import *
 from app.screens.forgot_password_screen import *
 from app.screens.forgot_password_code_screen import *
 from app.screens.new_password_screen import *
+from app.screens.saves_screen import *
 from app.core.game import *
 from app.constants.fonts import *
 from app.ui.button import *
@@ -29,6 +30,7 @@ register_screen = RegisterScreen(screen)
 forgot_password_screen = ForgotPasswordScreen(screen)
 forgot_password_code_screen = ForgotPasswordCodeScreen(screen)
 new_password_screen = NewPasswordScreen(screen)
+saves_screen = SavesScreen(screen)
 game = Game(screen)
 
 routing = Routing(
@@ -38,6 +40,7 @@ routing = Routing(
     forgot_password_screen,
     forgot_password_code_screen,
     new_password_screen,
+    saves_screen,
     game
 )
 

@@ -14,6 +14,7 @@ class Routing:
             forgot_password_screen,
             forgot_password_code_screen,
             new_password_screen,
+            saves_screen,
             game
         ):
 
@@ -23,6 +24,7 @@ class Routing:
         self.forgot_password_screen = forgot_password_screen
         self.forgot_password_code_screen = forgot_password_code_screen
         self.new_password_screen = new_password_screen
+        self.saves_screen = saves_screen
 
         self.game = game
 
@@ -56,6 +58,9 @@ class Routing:
             return
         elif global_var.current_page == 'new_password':
             self.new_password_screen.draw()
+            return
+        elif global_var.current_page == 'saves':
+            self.saves_screen.draw()
             return
         elif global_var.current_page == 'game':
             self.game.draw()
