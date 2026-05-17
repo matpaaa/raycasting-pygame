@@ -1,18 +1,18 @@
 import pygame
 import sys
-from settings import *
-from constants.assets import *
-from screens.home_screen import *
-from screens.login_screen import *
-from screens.register_screen import *
-from screens.forgot_password_screen import *
-from screens.forgot_password_code_screen import *
-from screens.new_password_screen import *
-from game import *
-from constants.fonts import *
-from ui.button import *
-import global_var
-from routing import *
+from app.constants.settings import *
+from app.constants.assets import *
+from app.screens.home_screen import *
+from app.screens.login_screen import *
+from app.screens.register_screen import *
+from app.screens.forgot_password_screen import *
+from app.screens.forgot_password_code_screen import *
+from app.screens.new_password_screen import *
+from app.core.game import *
+from app.constants.fonts import *
+from app.ui.button import *
+import app._utils.global_var as global_var
+from app.screens.routing import *
 
 pygame.init()
 Sounds.init()
