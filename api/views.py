@@ -610,4 +610,44 @@ def open_door(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
-    
+@csrf_exempt
+def delete_save(request):
+    if request.method != "DELETE":
+        return JsonResponse(
+            {},status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse({},status=401)
+
+        body = json.loads(request.body)
+
+        id_save = body.get("id_save")
+
+        if not id_save:
+            return JsonResponse({},status=400)
+
+        save_obj = Save.objects.filter(id_save=id_save).first()
+
+        if not save_obj:
+            return JsonResponse({},status=404)
+
+        save_obj.delete()
+
+        return JsonResponse({},status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500) 
+
+def auth_status(request):
+    if request.method != "GET":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({"connected": False }, status=200)
+
+    return JsonResponse({ "connected": True })     
