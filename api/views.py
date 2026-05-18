@@ -610,6 +610,70 @@ def open_door(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
+    
+@csrf_exempt    
+def create_save(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return JsonResponse({}, status=401)
+
+    try:
+        body = json.loads(request.body)
+
+        sprite_enemies = body.get("sprite_enemies", [])
+        sprite_items = body.get("sprite_items", [])
+
+        game_map = Map.objects.first()
+
+        save_obj = Save.objects.create(
+            created_at=now(),
+            updated_at=now(),
+            duration=0,
+            is_win=False,
+            is_failed=False,
+            online_code=None,
+            id_map=game_map
+        )
+
+        for enemy in sprite_enemies:
+            sprite_obj = Sprite.objects.create(
+                pos_x=enemy["pos_x"],
+                pos_y=enemy["pos_y"],
+                image=enemy["image"]
+            )
+
+            SpriteEnemy.objects.create(
+                id_sprite=sprite_obj,
+                health=enemy["health"],
+                damage=enemy["damage"],
+                created_at=now()
+            )
+
+        for item in sprite_items:
+            sprite_obj = Sprite.objects.create(
+                pos_x=item["pos_x"],
+                pos_y=item["pos_y"],
+                image=item["image"]
+            )
+
+            item_obj = Item.objects.get(id_item=item["id_item"])
+
+            SpriteItem.objects.create(
+                id_sprite=sprite_obj,
+                id_item=item_obj,
+                created_at=now()
+            )
+
+        return JsonResponse({},status=200)
+
+    except Item.DoesNotExist:
+        return JsonResponse({}, status=400)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 @csrf_exempt
 def delete_save(request):
     if request.method != "DELETE":

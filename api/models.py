@@ -114,7 +114,7 @@ class Save(models.Model):
 
 
 class Sprite(models.Model):
-    id_sprite = models.IntegerField(primary_key=True)
+    id_sprite = models.AutoField(primary_key=True)
     pos_x = models.DecimalField(max_digits=10, decimal_places=2)
     pos_y = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.TextField()

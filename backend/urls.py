@@ -19,5 +19,6 @@ urlpatterns = [
     path('api/recover/item', recover_item),
     path('api/door/open', open_door),
     path('api/delete/save', delete_save),
+    path('api/create/save', create_save),
     path('api/auth/status', auth_status),
 ]
