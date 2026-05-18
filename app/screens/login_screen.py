@@ -43,29 +43,29 @@ class LoginScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'home'
+            global_var.navigatePage('home')
 
         if self.btn_connect.is_clicked(event):
-            Sounds.click()
-            global_var.current_page = 'game'
+            # Sounds.click()
+            # global_var.navigatePage('game')
 
-            # data = {
-            #     "name": self.username_input.value,
-            #     "password": self.input_password.value
-            # }
-            # res = AuthApi.login(data)
-            # if res.status_code == 200:
-            #     global_var.current_page = 'game'
-            # else:
-            #     self.error_bubble.set_content('Username ou mot de passe invalide')
+            data = {
+                "name": self.username_input.value,
+                "password": self.input_password.value
+            }
+            res = AuthApi.login(data)
+            if res.status_code == 200:
+                global_var.navigatePage('saves')
+            else:
+                self.error_bubble.set_content('Username ou mot de passe invalide')
 
         if self.btn_forgot_password.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'forgot_password'
+            global_var.navigatePage('forgot_password')
 
         if self.btn_create_account.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'register'
+            global_var.navigatePage('register')
 
     def _get_y(self, num):
         return 164 + ELEMENT_HEIGHT*num + GAP_BETWEEN_ELEMENT*num

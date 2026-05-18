@@ -41,7 +41,7 @@ class NewPasswordScreen:
 
         if self.btn_submit.is_clicked(event):
             Sounds.click()
-            global_var.current_page = 'login'
+            global_var.navigatePage('login')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

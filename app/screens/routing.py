@@ -12,17 +12,19 @@ class Routing:
             login_screen,
             register_screen,
             forgot_password_screen,
-            forgot_password_code_screen,
             new_password_screen,
+            saves_screen,
+            verify_code_screen,
             game
         ):
 
         self.home_screen = home_screen
         self.login_screen = login_screen
         self.register_screen = register_screen
+        self.verify_code_screen = verify_code_screen
         self.forgot_password_screen = forgot_password_screen
-        self.forgot_password_code_screen = forgot_password_code_screen
         self.new_password_screen = new_password_screen
+        self.saves_screen = saves_screen
 
         self.game = game
 
@@ -48,14 +50,20 @@ class Routing:
         elif global_var.current_page == 'register':
             self.register_screen.draw()
             return
+        elif global_var.current_page == 'verify_code':
+            self.register_screen.draw()
+            return
         elif global_var.current_page == 'forgot_password':
             self.forgot_password_screen.draw()
             return
-        elif global_var.current_page == 'forgot_password_code':
-            self.forgot_password_code_screen.draw()
+        elif global_var.current_page == 'verify_code':
+            self.verify_code_screen.draw()
             return
         elif global_var.current_page == 'new_password':
             self.new_password_screen.draw()
+            return
+        elif global_var.current_page == 'saves':
+            self.saves_screen.draw()
             return
         elif global_var.current_page == 'game':
             self.game.draw()
@@ -74,11 +82,14 @@ class Routing:
         elif global_var.current_page == 'forgot_password':
             self.forgot_password_screen.handle_event(event)
             return
-        elif global_var.current_page == 'forgot_password_code':
-            self.forgot_password_code_screen.handle_event(event)
+        elif global_var.current_page == 'verify_code':
+            self.verify_code_screen.handle_event(event)
             return
         elif global_var.current_page == 'new_password':
             self.new_password_screen.handle_event(event)
+            return
+        elif global_var.current_page == 'saves':
+            self.saves_screen.handle_event(event)
             return
         elif global_var.current_page == 'game':
             self.game.handle_event(event)
