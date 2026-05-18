@@ -90,7 +90,6 @@ class Puzzle(models.Model):
     title = models.CharField(max_length=128)
     content = models.CharField(max_length=128)
     created_at = models.DateTimeField()
-    id_sprite_door_type = models.ForeignKey('SpriteDoorType', models.DO_NOTHING, db_column='id_sprite_door_type')
     id_item = models.ForeignKey(Item,models.SET_NULL,db_column='id_item',null=True,blank=True)
 
     class Meta:
