@@ -3,8 +3,8 @@ from app.features.item import *
 
 class ObjectSprite(Sprite):
 
-    def __init__(self, x, y, item: Item):
-        super().__init__(x, y, item.image)
+    def __init__(self, x, y, item: Item, id=None):
+        super().__init__(x, y, item.image, id)
         self.item = item
         self.is_added = False
 
@@ -13,4 +13,4 @@ class ObjectSprite(Sprite):
             self.is_added = True
             
             self.item.add_item_inventory()
-            user.add_item(self.item)
+            user.add_item(self.item, self.id)

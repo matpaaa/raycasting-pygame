@@ -7,11 +7,12 @@ from app.features.item import *
 
 class MapConfig:
 
-    def __init__(self, map: List[List[int]], sprites: List[Sprite], textures_path: Dict[int, str]):
+    def __init__(self, map: List[List[int]], sprites: List[Sprite], textures_path: Dict[int, str], id_save: int):
         self._map = map
         self._sprites = sprites
         self._textures_path = textures_path
         self._textures = {}
+        self._id_save = id_save
 
     def load_textures(self):
         for path_key in self._textures_path:
@@ -34,3 +35,7 @@ class MapConfig:
     @property
     def textures(self) -> Dict[int, Surface]:
         return self._textures
+    
+    @property
+    def id_save(self) -> int:
+        return self._id_save

@@ -71,7 +71,7 @@ class SavesScreen:
     # ------------------------------------------------------------------
 
     def _load_saves(self):
-        if len(self.saves) > 0: return
+        if len(self.saves) > 0 and global_var.save_store.saves is not None: return
         saves = global_var.save_store.saves
         self.saves = saves if saves else []
         max_index = len(self.saves)

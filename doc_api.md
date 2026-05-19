@@ -239,6 +239,7 @@ BODY
 ```
 BODY
 {
+    id_sprite: int
     id_save: int
     id_item: int
 }

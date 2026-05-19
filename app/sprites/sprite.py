@@ -1,10 +1,11 @@
 import pygame
 
 class Sprite:
-    def __init__(self, x, y, image):
+    def __init__(self, x, y, image, id=None):
         self._x = x
         self._y = y
         self._image = image
+        self._id = id
 
 
     def load(self) :
@@ -29,6 +30,10 @@ class Sprite:
     @property
     def image(self):
         return self._image
+    
+    @property
+    def id(self):
+        return self._id
     
     @property
     def texture(self):

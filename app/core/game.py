@@ -68,11 +68,10 @@ class Game:
         me = global_var.user_store.me
                 
         sprites = save_loaded['sprite_items'] + save_loaded['sprite_enemies'] + save_loaded['sprite_doors'] + [sprite for sprite in MAP_SPRITES_MOCKED if isinstance(sprite, HumanSprite)]
-        # Load sprite image
         for sprite in sprites:
             sprite.load()
             
-        self.map_config = MapConfig(MAP_MOCKED, sprites, MAP_TEXTURES_MOCKED)
+        self.map_config = MapConfig(MAP_MOCKED, sprites, MAP_TEXTURES_MOCKED, save_loaded['id_save'])
         self.map_config.load_textures()
                                 
         current_player = next((player for player in save_loaded['players'] if player['id_account'] == me['id_account']), None)
@@ -80,13 +79,20 @@ class Game:
             global_var.navigatePage('saves')
             return
         
-        print(current_player)
+        user_items = []
+        for item in save_loaded['items_secret']:
+            user_items.append(Item(item['id_item'], item['name'], item['value'], item['id_item_type'], item['image']))
+            
+        for item in current_player['items']:
+            user_items.append(Item(item['id_item'], item['name'], item['value'], item['id_item_type'], item['image']))
         
         pos_x = float(current_player['pos_x']) or DEFAULT_USER_POS_X
         pos_y = float(current_player['pos_y']) or DEFAULT_USER_POS_Y
         rotation = current_player['rotation'] or DEFAULT_USER_ROT
         
         self.user = User(pos_x, pos_y, rotation, self.map_config)
+        self.user.set_items(user_items)
+        
         self.health = Health(self.user, self.screen)
         self.battery = Battery(self.screen, self.user)
         self.inventory = Inventory(self.user, self.screen)
@@ -121,6 +127,7 @@ class Game:
         if self.btn_save.is_clicked(event):
             Sounds.click()
             self.save_user_async()
+            global_var.save_store.invalid_saves({'refetch': True})
             self.game_menu = False
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:

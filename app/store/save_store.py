@@ -47,15 +47,15 @@ class SaveStore:
 
             for sprite in original_doors:
                 if sprite['id_sprite_door_type'] == 'CODE':
-                    self.save_loaded['sprite_doors'].append(DoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image']))
+                    self.save_loaded['sprite_doors'].append(DoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['id_sprite']))
                 else:
-                    self.save_loaded['sprite_doors'].append(FinalDoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image']))
+                    self.save_loaded['sprite_doors'].append(FinalDoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['id_sprite']))
 
             for sprite in original_items:
                 item = sprite['item']
                 value = float(item['value']) if item['value'] is not None else None
                 itemClass = Item(item['id_item'], item['name'], value, item['id_item_type'], item['image'])
-                self.save_loaded['sprite_items'].append(ObjectSprite(float(sprite['pos_x']), float(sprite['pos_y']), itemClass))
+                self.save_loaded['sprite_items'].append(ObjectSprite(float(sprite['pos_x']), float(sprite['pos_y']), itemClass, sprite['id_sprite']))
 
             for sprite in original_enemies:
-                self.save_loaded['sprite_enemies'].append(EnemieSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['health'], sprite['damage']))
+                self.save_loaded['sprite_enemies'].append(EnemieSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['health'], sprite['damage'], sprite['id_sprite']))

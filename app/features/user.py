@@ -12,6 +12,7 @@ from app.sprites.enemie_sprite import *
 from app.constants.assets import *
 from app.features.map_config import *
 from app.sprites.collision_sprite import *
+from app.services.game_service import *
 
 class User:
 
@@ -105,8 +106,7 @@ class User:
         if slot_num < 0 or slot_num > MAX_ITEM_SLOTS or slot_num == self._slot_select: return
         self._slot_select = slot_num
 
-    def add_item(self, item: Item):
-
+    def add_item(self, item: Item, id_sprite):
         if item.id_item_type == 'ELECTRICITY':
             self._battery += item.value
             return
@@ -120,10 +120,8 @@ class User:
             Sounds.take_gun()
         else:
             Sounds.take_item()
-
-    def drop_item(self):
-        item_deleted = self.inventory_items.pop(self.slot_select)
-        return item_deleted
+            
+        recover_item(self.map_config.id_save, item.id_item, id_sprite)
     
     def get_item(self, index: int) -> Item | None:
         if len(self.inventory_items)-1 < index: return None
@@ -249,6 +247,10 @@ class User:
         item_used = inventory_items.pop(self.slot_select)
         self._items = inventory_items + self.secret_items + self.ammo_items
         self.map_config.add_item_to_sprite(self.pos_x, self.pos_y, item_used)
+        drop_item(self.map_config.id_save, item_used.id_item, self.pos_x, self.pos_y)
+        
+    def set_items(self, items: List[Item]):
+        self._items = items
 
     @property
     def get_fov(self) -> int:
