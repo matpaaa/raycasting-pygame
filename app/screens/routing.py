@@ -15,6 +15,7 @@ class Routing:
             new_password_screen,
             saves_screen,
             verify_code_screen,
+            loading,
             game
         ):
 
@@ -25,6 +26,7 @@ class Routing:
         self.forgot_password_screen = forgot_password_screen
         self.new_password_screen = new_password_screen
         self.saves_screen = saves_screen
+        self.loading = loading
 
         self.game = game
 
@@ -40,6 +42,11 @@ class Routing:
 
     def route(self):
         self.load_sound()
+        
+        if global_var.current_page == 'game':
+            self.game.load_save()
+        elif global_var.last_page == 'game':
+            self.game.unload_save()
 
         if global_var.current_page == 'home':
             self.home_screen.draw()
@@ -63,7 +70,12 @@ class Routing:
             self.new_password_screen.draw()
             return
         elif global_var.current_page == 'saves':
+            global_var.user_store.hydrate()
+            global_var.save_store.hydrate_saves()
             self.saves_screen.draw()
+            return
+        elif global_var.current_page == 'loading':
+            self.loading.draw()
             return
         elif global_var.current_page == 'game':
             self.game.draw()

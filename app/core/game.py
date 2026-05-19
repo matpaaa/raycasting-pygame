@@ -15,28 +15,15 @@ from app.ui.button import *
 from app.ui.text import *
 import app._utils.global_var as global_var
 from app.features.battery import *
+from app.services.save_service import *
+import threading
 
 class Game:
     
     def __init__(self, screen: Surface):
         self.screen = screen
 
-        self.map_config = MapConfig(MAP_MOCKED, MAP_SPRITES_MOCKED, MAP_TEXTURES_MOCKED)
-        self.map_config.load_textures()
-
-        # Load sprite image
-        for sprite in self.map_config.sprites:
-            sprite.load()
-
-        self.user = User(DEFAULT_USER_POS_X, DEFAULT_USER_POS_Y, DEFAULT_USER_ROT, self.map_config)
-        self.health = Health(self.user, self.screen)
-        self.battery = Battery(self.screen, self.user)
-        self.inventory = Inventory(self.user, self.screen)
-        self.ray_casting = RayCasting(screen, self.user, self.map_config)
-        self.minimap = Minimap(screen, self.user, self.map_config)
-        self.pygame_actions = PygameActions(self.user, self.screen)
-        self.interaction = Interaction(self.screen, self.user)
-
+        self.map_config = None
         self.sprite_interact = None
         self.event = None
 
@@ -53,7 +40,7 @@ class Game:
         )
 
         self.btn_back = Button(
-            'RETOUR',
+            'QUITTER',
             SCREEN_WIDTH/2 - GAP_BETWEEN_ELEMENT/2 - ELEMENT_WIDTH_SMALL,
             325 + ELEMENT_HEIGHT,
             ELEMENT_WIDTH_SMALL,
@@ -68,19 +55,73 @@ class Game:
             ELEMENT_WIDTH_SMALL,
             ELEMENT_HEIGHT
         )
+        
+    def save_user_async(self):
+        global_var.navigatePage('loading')
+        thread = threading.Thread(target=save_user, args=(self.user,))
+        thread.start()
+        
+    def load_save(self):
+        if self.map_config is not None: return
+        
+        save_loaded = global_var.save_store.save_loaded
+        me = global_var.user_store.me
+                
+        sprites = save_loaded['sprite_items'] + save_loaded['sprite_enemies'] + save_loaded['sprite_doors'] + [sprite for sprite in MAP_SPRITES_MOCKED if isinstance(sprite, HumanSprite)]
+        # Load sprite image
+        for sprite in sprites:
+            sprite.load()
+            
+        self.map_config = MapConfig(MAP_MOCKED, sprites, MAP_TEXTURES_MOCKED)
+        self.map_config.load_textures()
+                                
+        current_player = next((player for player in save_loaded['players'] if player['id_account'] == me['id_account']), None)
+        if current_player is None:
+            global_var.navigatePage('saves')
+            return
+        
+        print(current_player)
+        
+        pos_x = float(current_player['pos_x']) or DEFAULT_USER_POS_X
+        pos_y = float(current_player['pos_y']) or DEFAULT_USER_POS_Y
+        rotation = current_player['rotation'] or DEFAULT_USER_ROT
+        
+        self.user = User(pos_x, pos_y, rotation, self.map_config)
+        self.health = Health(self.user, self.screen)
+        self.battery = Battery(self.screen, self.user)
+        self.inventory = Inventory(self.user, self.screen)
+        self.ray_casting = RayCasting(self.screen, self.user, self.map_config)
+        self.minimap = Minimap(self.screen, self.user, self.map_config)
+        self.pygame_actions = PygameActions(self.user, self.screen)
+        self.interaction = Interaction(self.screen, self.user)
+        
+    def unload_save(self):
+        self.map_config = None
+        
+        self.user = None
+        self.health = None
+        self.battery = None
+        self.inventory = None
+        self.ray_casting = None
+        self.minimap = None
+        self.pygame_actions = None
+        self.interaction = None
 
     def handle_event(self, event: Event):
+        if self.pygame_actions is None: return
+        
         self.event = event
         self.pygame_actions.one_actions(self.sprite_interact, self.event)
 
         if self.btn_back_menu.is_clicked(event) or self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('home')
+            global_var.navigatePage('saves')
             self.game_menu = False
 
         if self.btn_save.is_clicked(event):
             Sounds.click()
-            # TODO save game
+            self.save_user_async()
+            self.game_menu = False
 
         if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
             if self.game_menu:
@@ -89,6 +130,8 @@ class Game:
                 self.game_menu = True
 
     def draw(self):
+        if self.map_config is None: return
+        
         self.screen.fill(SCREEN_BACKGROUND)
         self.ray_casting.launch_fucking_rays(self.user)
         self.ray_casting.draw_sprites(self.user)

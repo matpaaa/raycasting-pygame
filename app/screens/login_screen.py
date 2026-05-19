@@ -46,15 +46,15 @@ class LoginScreen:
             global_var.navigatePage('home')
 
         if self.btn_connect.is_clicked(event):
-            # Sounds.click()
-            # global_var.navigatePage('game')
-
+            Sounds.click()
             data = {
                 "name": self.username_input.value,
                 "password": self.input_password.value
             }
             res = AuthApi.login(data)
             if res.status_code == 200:
+                self.username_input.value = ''
+                self.input_password.value = ''
                 global_var.navigatePage('saves')
             else:
                 self.error_bubble.set_content('Username ou mot de passe invalide')

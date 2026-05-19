@@ -208,7 +208,6 @@ Sauvegarde du joueur utilisateur de la personne
 ```
 BODY
 {
-    id_player: int
     health: int
     energy: int
     pos_x: float
@@ -250,8 +249,10 @@ Supprime l'item de l'inventaire de l'utilisateur et créer un sprite_item à l'e
 ```
 BODY
 {
-    id_player: int
+    id_save: int
     id_item: int
+    pos_x: float
+    pos_y: float
 }
 ```
 

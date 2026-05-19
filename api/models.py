@@ -22,6 +22,7 @@ class Item(models.Model):
     name = models.CharField(max_length=16)
     value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     id_item_type = models.ForeignKey('ItemType', models.DO_NOTHING, db_column='id_item_type')
+    image = models.TextField()
 
     class Meta:
         managed = False
@@ -30,7 +31,7 @@ class Item(models.Model):
 
 class ItemPossessed(models.Model):
     id_item_possessed = models.AutoField(primary_key=True)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
     id_item = models.ForeignKey(Item, models.DO_NOTHING, db_column='id_item')
     id_player = models.ForeignKey('Player', models.DO_NOTHING, db_column='id_player')
 
@@ -41,7 +42,7 @@ class ItemPossessed(models.Model):
 
 class ItemSecretPossessed(models.Model):
     id_item_secret_possessed = models.AutoField(primary_key=True)
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
     id_item = models.ForeignKey(Item, models.DO_NOTHING, db_column='id_item')
     id_save = models.ForeignKey('Save', models.DO_NOTHING, db_column='id_save', blank=True, null=True)
 
@@ -61,7 +62,10 @@ class ItemType(models.Model):
 class Map(models.Model):
     id_map = models.AutoField(primary_key=True)
     name = models.CharField(max_length=16)
-    created_at = models.DateTimeField()
+    default_pos_x = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    default_pos_y = models.DecimalField(max_digits=10, decimal_places=2, default=1)
+    default_rotation = models.IntegerField(default=90)
+    created_at = models.DateTimeField(default=now())
 
     class Meta:
         managed = False
@@ -70,13 +74,13 @@ class Map(models.Model):
 
 class Player(models.Model):
     id_player = models.AutoField(primary_key=True)
-    health = models.SmallIntegerField()
-    energy = models.IntegerField()
+    health = models.SmallIntegerField(default=160)
+    energy = models.IntegerField(default=1200)
     pos_x = models.DecimalField(max_digits=10, decimal_places=2)
     pos_y = models.DecimalField(max_digits=10, decimal_places=2)
-    created_at = models.DateTimeField()
-    name = models.CharField(max_length=16)
-    is_owner = models.BooleanField()
+    rotation = models.IntegerField(default=90)
+    created_at = models.DateTimeField(default=now())
+    is_owner = models.BooleanField(default=False)
     id_account = models.ForeignKey(Account, models.DO_NOTHING, db_column='id_account')
     id_save = models.ForeignKey('Save', models.DO_NOTHING, db_column='id_save')
 
@@ -89,8 +93,7 @@ class Puzzle(models.Model):
     id_puzzle = models.AutoField(primary_key=True)
     title = models.CharField(max_length=128)
     content = models.CharField(max_length=128)
-    created_at = models.DateTimeField()
-    id_sprite_door_type = models.ForeignKey('SpriteDoorType', models.DO_NOTHING, db_column='id_sprite_door_type')
+    created_at = models.DateTimeField(default=now())
     id_item = models.ForeignKey(Item,models.SET_NULL,db_column='id_item',null=True,blank=True)
 
     class Meta:
@@ -100,8 +103,8 @@ class Puzzle(models.Model):
 
 class Save(models.Model):
     id_save = models.AutoField(primary_key=True)
-    created_at = models.DateTimeField()
-    updated_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
+    updated_at = models.DateTimeField(default=now())
     duration = models.IntegerField()
     is_win = models.BooleanField()
     is_failed = models.BooleanField()
@@ -117,7 +120,6 @@ class Sprite(models.Model):
     id_sprite = models.AutoField(primary_key=True)
     pos_x = models.DecimalField(max_digits=10, decimal_places=2)
     pos_y = models.DecimalField(max_digits=10, decimal_places=2)
-    image = models.TextField()
 
     class Meta:
         managed = False
@@ -136,6 +138,7 @@ class SpriteDoor(models.Model):
 
 class SpriteDoorType(models.Model):
     id_sprite_door_type = models.CharField(primary_key=True, max_length=16)
+    image = models.TextField()
 
     class Meta:
         managed = False
@@ -144,9 +147,11 @@ class SpriteDoorType(models.Model):
 
 class SpriteEnemy(models.Model):
     id_sprite = models.OneToOneField(Sprite, models.DO_NOTHING, db_column='id_sprite', primary_key=True)
+    id_save = models.OneToOneField(Save, models.DO_NOTHING, db_column='id_save')
     health = models.IntegerField()
     damage = models.IntegerField()
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
+    image = models.TextField()
 
     class Meta:
         managed = False
@@ -155,7 +160,8 @@ class SpriteEnemy(models.Model):
 
 class SpriteItem(models.Model):
     id_sprite = models.OneToOneField(Sprite, models.DO_NOTHING, db_column='id_sprite', primary_key=True)
-    created_at = models.DateTimeField()
+    id_save = models.OneToOneField(Save, models.DO_NOTHING, db_column='id_save')
+    created_at = models.DateTimeField(default=now())
     id_item = models.ForeignKey(Item, models.DO_NOTHING, db_column='id_item')
 
     class Meta:
@@ -167,7 +173,7 @@ class ToFinish(models.Model):
     pk = models.CompositePrimaryKey('id_save', 'id_puzzle')
     id_save = models.ForeignKey(Save, models.DO_NOTHING, db_column='id_save')
     id_puzzle = models.ForeignKey(Puzzle, models.DO_NOTHING, db_column='id_puzzle')
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
 
     class Meta:
         managed = False
@@ -178,7 +184,7 @@ class ToOpen(models.Model):
     pk = models.CompositePrimaryKey('id_save', 'id_sprite')
     id_sprite = models.ForeignKey(SpriteDoor, models.DO_NOTHING, db_column='id_sprite')
     id_save = models.ForeignKey(Save, models.DO_NOTHING, db_column='id_save')
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(default=now())
 
     class Meta:
         managed = False
