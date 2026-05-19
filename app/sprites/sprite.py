@@ -27,6 +27,10 @@ class Sprite:
         return self._sprite['y']
     
     @property
+    def image(self):
+        return self._image
+    
+    @property
     def texture(self):
         return self._sprite['texture']
     

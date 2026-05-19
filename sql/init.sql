@@ -7,25 +7,29 @@ CREATE TABLE IF NOT EXISTS item (
   name VARCHAR(16) NOT NULL,
   value DECIMAL(10,2),
   id_item_type VARCHAR(16) NOT NULL,
+  image TEXT NOT NULL,
 
   FOREIGN KEY (id_item_type)
   REFERENCES item_type(id_item_type)
 );
 
 CREATE TABLE IF NOT EXISTS sprite (
-  id_sprite INT PRIMARY KEY,
+  id_sprite SERIAL PRIMARY KEY,
   pos_x DECIMAL(10,2) NOT NULL,
   pos_y DECIMAL(10,2) NOT NULL,
-  image TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS sprite_door_type (
-  id_sprite_door_type VARCHAR(16) PRIMARY KEY
+  id_sprite_door_type VARCHAR(16) PRIMARY KEY,
+  image TEXT NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS map (
   id_map SERIAL PRIMARY KEY,
   name VARCHAR(16) NOT NULL,
+  default_pos_x FLOAT NOT NULL DEFAULT 1,
+  default_pos_y FLOAT NOT NULL DEFAULT 1,
+  default_rotation FLOAT NOT NULL DEFAULT 90,
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -46,18 +50,20 @@ CREATE TABLE IF NOT EXISTS sprite_door (
   id_sprite_door_type VARCHAR(16) NOT NULL,
   id_map INT NOT NULL,
 
-  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite),
-  FOREIGN KEY (id_sprite_door_type) REFERENCES sprite_door_type(id_sprite_door_type),
-  FOREIGN KEY (id_map) REFERENCES map(id_map)
+  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite) ON DELETE CASCADE,
+  FOREIGN KEY (id_sprite_door_type) REFERENCES sprite_door_type(id_sprite_door_type) ON DELETE CASCADE,
+  FOREIGN KEY (id_map) REFERENCES map(id_map) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS sprite_item (
   id_sprite INT PRIMARY KEY,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   id_item VARCHAR(16) NOT NULL,
+  id_save INT,
 
-  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite),
-  FOREIGN KEY (id_item) REFERENCES item(id_item)
+  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite) ON DELETE CASCADE,
+  FOREIGN KEY (id_item) REFERENCES item(id_item) ON DELETE CASCADE,
+  FOREIGN KEY (id_save) REFERENCES save(id_save) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS sprite_enemy (
@@ -65,8 +71,11 @@ CREATE TABLE IF NOT EXISTS sprite_enemy (
   health INT NOT NULL,
   damage INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  id_save INT,
+  image TEXT NOT NULL,
 
-  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite)
+  FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite) ON DELETE CASCADE,
+  FOREIGN KEY (id_save) REFERENCES save(id_save) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS account (
@@ -89,24 +98,24 @@ CREATE TABLE IF NOT EXISTS save (
   online_code VARCHAR(6),
   id_map INT NOT NULL,
 
-  FOREIGN KEY (id_map) REFERENCES map(id_map)
+  FOREIGN KEY (id_map) REFERENCES map(id_map) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS player (
   id_player SERIAL PRIMARY KEY,
-  health SMALLINT NOT NULL,
-  energy INTEGER NOT NULL,
+  health SMALLINT NOT NULL DEFAULT 160,
+  energy INTEGER NOT NULL DEFAULT 1200,
   pos_x DECIMAL(10,2) NOT NULL,
   pos_y DECIMAL(10,2) NOT NULL,
+  rotation INT NOT NULL DEFAULT 90,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  name VARCHAR(16) NOT NULL,
   is_owner BOOLEAN NOT NULL DEFAULT FALSE,
 
   id_account INT NOT NULL,
   id_save INT NOT NULL,
 
-  FOREIGN KEY (id_account) REFERENCES account(id_account),
-  FOREIGN KEY (id_save) REFERENCES save(id_save)
+  FOREIGN KEY (id_account) REFERENCES account(id_account) ON DELETE CASCADE,
+  FOREIGN KEY (id_save) REFERENCES save(id_save) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS item_possessed (
@@ -116,8 +125,8 @@ CREATE TABLE IF NOT EXISTS item_possessed (
   id_item VARCHAR(16) NOT NULL,
   id_player INT NOT NULL,
 
-  FOREIGN KEY (id_item) REFERENCES item(id_item),
-  FOREIGN KEY (id_player) REFERENCES player(id_player)
+  FOREIGN KEY (id_item) REFERENCES item(id_item) ON DELETE CASCADE,
+  FOREIGN KEY (id_player) REFERENCES player(id_player) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS item_secret_possessed (
@@ -126,8 +135,8 @@ CREATE TABLE IF NOT EXISTS item_secret_possessed (
   id_item VARCHAR(16) NOT NULL,
   id_save INT NULL,
 
-  FOREIGN KEY (id_item) REFERENCES item(id_item),
-  FOREIGN KEY (id_save) REFERENCES save(id_save)
+  FOREIGN KEY (id_item) REFERENCES item(id_item) ON DELETE CASCADE,
+  FOREIGN KEY (id_save) REFERENCES save(id_save) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS to_finish (
@@ -135,8 +144,8 @@ CREATE TABLE IF NOT EXISTS to_finish (
   id_puzzle INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id_save, id_puzzle),
-  FOREIGN KEY (id_save) REFERENCES save(id_save),
-  FOREIGN KEY (id_puzzle) REFERENCES puzzle(id_puzzle)
+  FOREIGN KEY (id_save) REFERENCES save(id_save) ON DELETE CASCADE,
+  FOREIGN KEY (id_puzzle) REFERENCES puzzle(id_puzzle) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS to_open (
@@ -144,6 +153,6 @@ CREATE TABLE IF NOT EXISTS to_open (
   id_save INT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id_save, id_sprite),
-  FOREIGN KEY (id_save) REFERENCES save(id_save),
-  FOREIGN KEY (id_sprite) REFERENCES sprite_door(id_sprite)
+  FOREIGN KEY (id_save) REFERENCES save(id_save) ON DELETE CASCADE,
+  FOREIGN KEY (id_sprite) REFERENCES sprite_door(id_sprite) ON DELETE CASCADE
 );

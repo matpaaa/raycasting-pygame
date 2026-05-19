@@ -5,12 +5,12 @@ class AuthApi:
     
     @staticmethod
     def login(data):
-        res = requests.post(f'{API_URL}api/login', json=data)
+        res = session.post(f'{API_URL}api/login', json=data)
         return res
     
     @staticmethod
     def logout():
-        res = requests.post(f'{API_URL}api/logout')
+        res = session.post(f'{API_URL}api/logout')
         return res
     
     @staticmethod

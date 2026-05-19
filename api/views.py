@@ -2,6 +2,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.hashers import check_password
 from django.views.decorators.csrf import csrf_exempt
+from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from .models import *
 import json
@@ -176,45 +177,47 @@ def get_maps(request):
     return JsonResponse({}, status=405)
 
 def get_saves(request):
-    if request.method == "GET":
-        user_id = request.session.get('user_id')
+    if request.method != "GET":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
-        if not user_id:
-            return JsonResponse({}, status=401)
+    user_id = request.session.get('user_id')
 
-        saves = Save.objects.filter(player__id_account=user_id).distinct()
+    if not user_id:
+        return JsonResponse({}, status=401)
 
-        data = []
+    saves = Save.objects.filter(
+        player__id_account_id=user_id
+    ).prefetch_related("player_set", "id_map").distinct()
 
-        for save_item in saves:
-            players_data = []
+    data = []
 
-            for player in save_item.player_set.all():
-                players_data.append({
-                    "id_player": player.id_player,
-                    "health": player.health,
-                    "energy": player.energy,
-                    "pos_x": player.pos_x,
-                    "pos_y": player.pos_y,
-                    "created_at": player.created_at,
-                    "name": player.name,
-                    "is_owner": player.is_owner
-                })
+    for save_item in saves:
+        players_data = []
 
-            data.append({
-                "id_save": save_item.id_save,
-                "created_at": save_item.created_at,
-                "updated_at": save_item.updated_at,
-                "duration": save_item.duration,
-                "id_map": save_item.id_map.id_map,
-                "is_win": save_item.is_win,
-                "is_failed": save_item.is_failed,
-                "players": players_data
+        for player in save_item.player_set.all():
+            players_data.append({
+                "id_player": player.id_player,
+                "health": player.health,
+                "energy": player.energy,
+                "pos_x": float(player.pos_x),
+                "pos_y": float(player.pos_y),
+                "created_at": player.created_at.isoformat(),
+                "name": player.id_account.name,
+                "is_owner": player.is_owner
             })
 
-        return JsonResponse(data, safe=False)
+        data.append({
+            "id_save": save_item.id_save,
+            "created_at": save_item.created_at.isoformat(),
+            "updated_at": save_item.updated_at.isoformat(),
+            "duration": save_item.duration,
+            "id_map": save_item.id_map.id_map,
+            "is_win": save_item.is_win,
+            "is_failed": save_item.is_failed,
+            "players": players_data
+        })
 
-    return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+    return JsonResponse(data, safe=False)
 
 def get_info(request):
     if request.method == "GET":
@@ -229,7 +232,7 @@ def get_info(request):
         return JsonResponse({}, status=404)
 
     return JsonResponse({
-        "id": user.id_account,
+        "id_account": user.id_account,
         "name": user.name,
         "email": user.email,
         "created_at": user.created_at,
@@ -254,31 +257,28 @@ def get_save(request, id_save):
 
         if not user_id:
             return JsonResponse({}, status=401)
-        
+
         save_obj = Save.objects.get(id_save=id_save)
 
     except Save.DoesNotExist:
         return JsonResponse({}, status=404)
 
     players_data = []
-
     players = Player.objects.filter(id_save=save_obj)
 
     for player in players:
-        
         items = ItemPossessed.objects.filter(id_player=player)
 
         items_data = []
         for item in items:
             item_obj = item.id_item
-
             items_data.append({
                 "id_item_possessed": item.id_item_possessed,
                 "created_at": item.created_at,
                 "id_item": item_obj.id_item,
                 "value": float(item_obj.value) if item_obj.value else None,
                 "name": item_obj.name,
-                "id_item_type": item_obj.id_item_type_id
+                "id_item_type": item_obj.id_item_type_id  # ✅ déjà correct
             })
 
         players_data.append({
@@ -287,8 +287,10 @@ def get_save(request, id_save):
             "energy": player.energy,
             "pos_x": player.pos_x,
             "pos_y": player.pos_y,
+            "rotation": player.rotation,
             "created_at": player.created_at,
-            "name": player.name,
+            "name": player.id_account.name,
+            "id_account": player.id_account.id_account,
             "is_owner": player.is_owner,
             "items": items_data
         })
@@ -298,7 +300,6 @@ def get_save(request, id_save):
     secret_data = []
     for secret in secret_items:
         item_obj = secret.id_item
-
         secret_data.append({
             "id_item_secret_possessed": secret.id_item_secret_possessed,
             "created_at": secret.created_at,
@@ -322,14 +323,24 @@ def get_save(request, id_save):
 
     puzzles_data = []
     for puzzle in puzzles:
+        # ✅ CORRECTION : on expose l'item lié au puzzle s'il existe
+        item_data = None
+        if puzzle.id_item:
+            item_data = {
+                "id_item": puzzle.id_item.id_item,
+                "name": puzzle.id_item.name,
+                "value": float(puzzle.id_item.value) if puzzle.id_item.value else None,
+                "id_item_type": puzzle.id_item.id_item_type_id,
+                "image": puzzle.id_item.image,
+            }
+
         puzzles_data.append({
             "id_puzzle": puzzle.id_puzzle,
             "title": puzzle.title,
             "content": puzzle.content,
-            "item": None  
+            "item": item_data  # ✅ plus hardcodé à None
         })
 
-    
     open_data = []
     opens = ToOpen.objects.filter(id_save=save_obj)
 
@@ -345,45 +356,44 @@ def get_save(request, id_save):
 
     for door in doors:
         sprite_obj = door.id_sprite
-
         sprite_doors_data.append({
             "id_sprite": sprite_obj.id_sprite,
-            "id_sprite_door_type": door.id_sprite_door_type_id,
+            "id_sprite_door_type": door.id_sprite_door_type_id,  # ✅ _id pour l'id brut
             "pos_x": sprite_obj.pos_x,
             "pos_y": sprite_obj.pos_y,
-            "image": sprite_obj.image
+            "image": door.id_sprite_door_type.image  # ✅ accès objet pour image, correct
         })
 
     sprite_items_data = []
-    sprite_items = SpriteItem.objects.all()
+    sprite_items = SpriteItem.objects.filter(id_save=id_save)
 
     for sprite_item in sprite_items:
         sprite_obj = sprite_item.id_sprite
         item_obj = sprite_item.id_item
-
         sprite_items_data.append({
             "id_sprite": sprite_obj.id_sprite,
             "pos_x": sprite_obj.pos_x,
             "pos_y": sprite_obj.pos_y,
-            "image": sprite_obj.image,
             "created_at": sprite_item.created_at,
-            "id_item": item_obj.id_item,
-            "value": float(item_obj.value) if item_obj.value else None,
-            "name": item_obj.name,
-            "id_item_type": item_obj.id_item_type_id
+            "item": {
+                "image": item_obj.image,
+                "id_item": item_obj.id_item,
+                "value": float(item_obj.value) if item_obj.value else None,
+                "name": item_obj.name,
+                "id_item_type": item_obj.id_item_type_id  # ✅ CORRECTION : _id pour cohérence
+            }
         })
 
     enemies_data = []
-    enemies = SpriteEnemy.objects.all()
+    enemies = SpriteEnemy.objects.filter(id_save=id_save)
 
     for enemy in enemies:
         sprite_obj = enemy.id_sprite
-
         enemies_data.append({
             "id_sprite": sprite_obj.id_sprite,
             "pos_x": sprite_obj.pos_x,
             "pos_y": sprite_obj.pos_y,
-            "image": sprite_obj.image,
+            "image": enemy.image,
             "created_at": enemy.created_at,
             "health": enemy.health,
             "damage": enemy.damage
@@ -394,7 +404,7 @@ def get_save(request, id_save):
         "created_at": save_obj.created_at,
         "updated_at": save_obj.updated_at,
         "duration": save_obj.duration,
-        "id_map": save_obj.id_map_id,
+        "id_map": save_obj.id_map.id_map,
         "is_win": save_obj.is_win,
         "is_failed": save_obj.is_failed,
         "players": players_data,
@@ -420,24 +430,19 @@ def save_player(request):
 
         body = json.loads(request.body)
 
-        id_player = body.get("id_player")
         health = body.get("health")
         energy = body.get("energy")
         pos_x = body.get("pos_x")
         pos_y = body.get("pos_y")
-
-        if not id_player:
-            return JsonResponse({}, status=400)
-
-        player = Player.objects.get(id_player=id_player)
-
-        if player.id_account_id != user_id:
-            return JsonResponse({}, status=403)
+        rotation = body.get("rotation")
+        
+        player = Player.objects.filter(id_account=user_id)[0]
 
         player.health = health
         player.energy = energy
         player.pos_x = pos_x
         player.pos_y = pos_y
+        player.rotation = rotation
         player.save()
 
         return JsonResponse({})
@@ -537,7 +542,6 @@ def recover_item(request):
         ItemPossessed.objects.create(
             id_player=player,
             id_item=item_obj,
-            created_at=now()
         )
 
         return JsonResponse({},status=200)
@@ -627,7 +631,9 @@ def create_save(request):
         sprite_items = body.get("sprite_items", [])
 
         game_map = Map.objects.first()
-
+        
+        account_obj = Account.objects.get(id_account=user_id)
+        
         save_obj = Save.objects.create(
             created_at=now(),
             updated_at=now(),
@@ -637,37 +643,44 @@ def create_save(request):
             online_code=None,
             id_map=game_map
         )
+        
+        Player.objects.create(
+            is_owner=True,
+            id_account=account_obj,
+            id_save=save_obj,
+            pos_x=game_map.default_pos_x,
+            pos_y=game_map.default_pos_y
+        )
 
         for enemy in sprite_enemies:
             sprite_obj = Sprite.objects.create(
                 pos_x=enemy["pos_x"],
                 pos_y=enemy["pos_y"],
-                image=enemy["image"]
             )
 
             SpriteEnemy.objects.create(
                 id_sprite=sprite_obj,
+                id_save=save_obj,
                 health=enemy["health"],
                 damage=enemy["damage"],
-                created_at=now()
+                image=enemy["image"],
             )
 
         for item in sprite_items:
             sprite_obj = Sprite.objects.create(
                 pos_x=item["pos_x"],
                 pos_y=item["pos_y"],
-                image=item["image"]
             )
 
             item_obj = Item.objects.get(id_item=item["id_item"])
 
             SpriteItem.objects.create(
                 id_sprite=sprite_obj,
+                id_save=save_obj,
                 id_item=item_obj,
-                created_at=now()
             )
 
-        return JsonResponse({},status=200)
+        return JsonResponse(model_to_dict(save_obj),status=200)
 
     except Item.DoesNotExist:
         return JsonResponse({}, status=400)
@@ -689,6 +702,7 @@ def delete_save(request):
         body = json.loads(request.body)
 
         id_save = body.get("id_save")
+        print(body)
 
         if not id_save:
             return JsonResponse({},status=400)
@@ -714,7 +728,40 @@ def auth_status(request):
     if not user_id:
         return JsonResponse({"connected": False }, status=200)
 
-    return JsonResponse({ "connected": True })    
+    return JsonResponse({ "connected": True })     
+
+def drop_item(request):
+    if request.method != "PUT":
+        return JsonResponse({}, status=405)
+    
+    user_id = request.session.get("user_id")
+    if not user_id:
+        return JsonResponse({},status=401)
+        
+    body = json.loads(request.body)
+    
+    id_save = body.get("id_save")
+    id_item = body.get("id_item")
+    pos_x = body.get("pos_x")
+    pos_y = body.get("pos_y")
+    
+    save_obj = Save.objects.get(id_save=id_save)
+    item_obj = Item.objects.get(id_item=id_item)
+    
+    ItemPossessed.objects.delete(id_save=id_save,id_item=id_item)
+    
+    sprite_obj = Sprite.objects.create(
+        pos_x=pos_x,
+        pos_y=pos_y,
+    )
+    
+    SpriteItem.objects.create(
+        id_sprite=sprite_obj,
+        id_save=save_obj,
+        id_item=item_obj,
+    )
+    
+    return JsonResponse({},status=200)
 
 def delete_account(request):
     if request.method != "DELETE":

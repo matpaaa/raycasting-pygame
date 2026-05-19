@@ -1,9 +1,15 @@
 from app.api.user_api import *
 from app.store.store import InvalidStoreOptions
+from app.model.me_model import *
+from app.model.map_model import *
 
 class UserStore:
-    me = None
-    maps = None
+    me = None | MeModel
+    maps = None | MapModel
+    
+    def __init__(self):
+        self.me = None
+        self.maps = None
     
     def hydrate(self):
         self.hydrate_me()

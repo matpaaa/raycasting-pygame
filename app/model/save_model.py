@@ -4,7 +4,10 @@ from app.model.item_model import *
 from app.model.finish_model import *
 from app.model.puzzle_model import *
 from app.model.open_model import *
-from app.model.sprite_model import *
+from app.sprites.enemie_sprite import *
+from app.sprites.object_sprite import *
+from app.sprites.door_sprite import *
+from app.sprites.final_door_sprite import *
 
 class SaveModel:
     id_save: int
@@ -24,6 +27,6 @@ class SaveLoadedModel(SaveModel):
     finish: list[FinishModel]
     puzzles: list[PuzzleModel]
     open: list[OpenModel]
-    sprite_doors: list[SpriteDoor]
-    sprite_items: list[SpriteItem]
-    sprite_enemies: list[SpriteEnemie]
+    sprite_doors: list[DoorSprite | FinalDoorSprite]
+    sprite_items: list[ObjectSprite]
+    sprite_enemies: list[EnemieSprite]
