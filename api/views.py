@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from .models import *
 import json
 import random
+from django.utils.timezone import make_aware
 
 @csrf_exempt
 def register(request):
@@ -278,7 +279,8 @@ def get_save(request, id_save):
                 "id_item": item_obj.id_item,
                 "value": float(item_obj.value) if item_obj.value else None,
                 "name": item_obj.name,
-                "id_item_type": item_obj.id_item_type_id  # ✅ déjà correct
+                "image": item_obj.image,
+                "id_item_type": item_obj.id_item_type_id
             })
 
         players_data.append({
@@ -306,6 +308,7 @@ def get_save(request, id_save):
             "id_item": item_obj.id_item,
             "value": float(item_obj.value) if item_obj.value else None,
             "name": item_obj.name,
+            "image": item_obj.image,
             "id_item_type": item_obj.id_item_type_id
         })
 
@@ -323,7 +326,6 @@ def get_save(request, id_save):
 
     puzzles_data = []
     for puzzle in puzzles:
-        # ✅ CORRECTION : on expose l'item lié au puzzle s'il existe
         item_data = None
         if puzzle.id_item:
             item_data = {
@@ -338,7 +340,7 @@ def get_save(request, id_save):
             "id_puzzle": puzzle.id_puzzle,
             "title": puzzle.title,
             "content": puzzle.content,
-            "item": item_data  # ✅ plus hardcodé à None
+            "item": item_data
         })
 
     open_data = []
@@ -358,10 +360,10 @@ def get_save(request, id_save):
         sprite_obj = door.id_sprite
         sprite_doors_data.append({
             "id_sprite": sprite_obj.id_sprite,
-            "id_sprite_door_type": door.id_sprite_door_type_id,  # ✅ _id pour l'id brut
+            "id_sprite_door_type": door.id_sprite_door_type_id,
             "pos_x": sprite_obj.pos_x,
             "pos_y": sprite_obj.pos_y,
-            "image": door.id_sprite_door_type.image  # ✅ accès objet pour image, correct
+            "image": door.id_sprite_door_type.image
         })
 
     sprite_items_data = []
@@ -380,7 +382,7 @@ def get_save(request, id_save):
                 "id_item": item_obj.id_item,
                 "value": float(item_obj.value) if item_obj.value else None,
                 "name": item_obj.name,
-                "id_item_type": item_obj.id_item_type_id  # ✅ CORRECTION : _id pour cohérence
+                "id_item_type": item_obj.id_item_type_id
             }
         })
 
@@ -444,6 +446,14 @@ def save_player(request):
         player.pos_y = pos_y
         player.rotation = rotation
         player.save()
+        
+        if player.is_owner:
+            save_obj = player.id_save
+            updated_at = make_aware(save_obj.updated_at)
+            save_obj.duration += int(
+                (now() - updated_at).total_seconds()
+            )
+            save_obj.save()
 
         return JsonResponse({})
 
@@ -538,11 +548,17 @@ def recover_item(request):
             return JsonResponse({},status=403)
 
         item_obj = Item.objects.get(id_item=id_item)
-
-        ItemPossessed.objects.create(
-            id_player=player,
-            id_item=item_obj,
-        )
+        
+        if item_obj.id_item_type == 'SECRET':
+            ItemSecretPossessed.objects.create(
+                id_player=player,
+                id_item=item_obj,
+            )
+        else:
+            ItemPossessed.objects.create(
+                id_player=player,
+                id_item=item_obj,
+            )
 
         return JsonResponse({},status=200)
 
@@ -702,7 +718,6 @@ def delete_save(request):
         body = json.loads(request.body)
 
         id_save = body.get("id_save")
-        print(body)
 
         if not id_save:
             return JsonResponse({},status=400)
@@ -728,40 +743,75 @@ def auth_status(request):
     if not user_id:
         return JsonResponse({"connected": False }, status=200)
 
-    return JsonResponse({ "connected": True })     
-
+    return JsonResponse({ "connected": True })
+     
+@csrf_exempt
 def drop_item(request):
     if request.method != "PUT":
         return JsonResponse({}, status=405)
-    
+
     user_id = request.session.get("user_id")
     if not user_id:
-        return JsonResponse({},status=401)
-        
+        return JsonResponse({}, status=401)
+
     body = json.loads(request.body)
-    
+
     id_save = body.get("id_save")
     id_item = body.get("id_item")
     pos_x = body.get("pos_x")
     pos_y = body.get("pos_y")
-    
-    save_obj = Save.objects.get(id_save=id_save)
-    item_obj = Item.objects.get(id_item=id_item)
-    
-    ItemPossessed.objects.delete(id_save=id_save,id_item=id_item)
-    
-    sprite_obj = Sprite.objects.create(
-        pos_x=pos_x,
-        pos_y=pos_y,
-    )
-    
-    SpriteItem.objects.create(
-        id_sprite=sprite_obj,
-        id_save=save_obj,
-        id_item=item_obj,
-    )
-    
-    return JsonResponse({},status=200)
+
+    save_obj = Save.objects.filter(id_save=id_save).first()
+    item_obj = Item.objects.filter(id_item=id_item).first()
+
+    if not save_obj or not item_obj:
+        return JsonResponse({}, status=404)
+
+    if item_obj.id_item_type == 'SECRET':
+
+        item_secret_obj = ItemSecretPossessed.objects.filter(
+            id_save=id_save,
+            id_item=id_item
+        ).first()
+
+        if not item_secret_obj:
+            return JsonResponse({}, status=404)
+
+        item_secret_obj.delete()
+
+    else:
+        player = Player.objects.filter(
+            id_save=id_save,
+            id_account=user_id
+        ).first()
+
+        if not player:
+            return JsonResponse({}, status=404)
+
+        item_possessed_obj = ItemPossessed.objects.filter(
+            id_player=player,
+            id_item=id_item
+        ).first()
+
+        if not item_possessed_obj:
+            return JsonResponse({}, status=404)
+
+        item_reference = item_possessed_obj.id_item
+
+        item_possessed_obj.delete()
+
+        sprite_obj = Sprite.objects.create(
+            pos_x=pos_x,
+            pos_y=pos_y,
+        )
+
+        SpriteItem.objects.create(
+            id_sprite=sprite_obj,
+            id_save=save_obj,
+            id_item=item_reference,
+        )
+
+    return JsonResponse({}, status=200)
 
 def delete_account(request):
     if request.method != "DELETE":

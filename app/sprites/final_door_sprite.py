@@ -1,8 +1,8 @@
 from app.sprites.collision_sprite import *
 
 class FinalDoorSprite(CollisionSprite):
-    def __init__(self, x, y, image):
-        super().__init__(x, y, image, 'Trouver les 5 codes pour ouvrir la porte')
+    def __init__(self, x, y, image, id=None):
+        super().__init__(x, y, image, 'Trouver les 5 codes pour ouvrir la porte', id)
 
     def show_dialog(self, screen, user):
         super().show_dialog(screen, user.can_open_final_door)

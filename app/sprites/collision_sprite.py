@@ -2,8 +2,8 @@ from app.sprites.sprite import *
 from app.ui.dialog import *
 
 class CollisionSprite(Sprite):
-    def __init__(self, x, y, image, invalid_message):
-        super().__init__(x, y, image)
+    def __init__(self, x, y, image, invalid_message, id=None):
+        super().__init__(x, y, image, id)
 
         self._is_open = False
         self._diablog = Dialog(None)

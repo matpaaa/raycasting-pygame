@@ -2,8 +2,8 @@ from app.sprites.sprite import *
 
 class EnemieSprite(Sprite):
 
-    def __init__(self, x, y, image, pv, damage: int):
-        super().__init__(x, y, image)
+    def __init__(self, x, y, image, pv, damage: int, id=None):
+        super().__init__(x, y, image, id)
 
         self.pv = pv
         self.damage = damage

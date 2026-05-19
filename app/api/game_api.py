@@ -4,7 +4,7 @@ class GameApi:
     
     @staticmethod
     def drop_item(data):
-        return session.delete(f'{API_URL}api/drop/item', json=data)
+        return session.put(f'{API_URL}api/drop/item', json=data)
 
     @staticmethod
     def recover_item(data):

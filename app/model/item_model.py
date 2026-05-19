@@ -5,6 +5,7 @@ class ItemModel:
     value: float
     name: str
     id_item_type: str
+    image: str
     
 class ItemSecretModel(ItemModel):
     id_item_secret_possessed: int
