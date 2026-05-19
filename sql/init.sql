@@ -38,9 +38,11 @@ CREATE TABLE IF NOT EXISTS puzzle (
   title VARCHAR(128) NOT NULL,
   content VARCHAR(128) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-  id_item VARCHAR(16) NOT NULL,
+  id_item VARCHAR(16),
 
-  FOREIGN KEY (id_item) REFERENCES item(id_item) ON DELETE CASCADE
+  FOREIGN KEY (id_item)
+    REFERENCES item(id_item)
+    ON DELETE SET NULL
 );
 
 CREATE TABLE IF NOT EXISTS sprite_door (

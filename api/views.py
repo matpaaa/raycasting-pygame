@@ -762,3 +762,26 @@ def drop_item(request):
     )
     
     return JsonResponse({},status=200)
+
+def delete_account(request):
+    if request.method != "DELETE":
+        return JsonResponse({},status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse({},status=401)
+
+        account = Account.objects.filter(id_account=user_id).first()
+
+        if not account:
+            return JsonResponse({},status=404)
+        
+        account.delete()
+        request.session.flush()
+
+        return JsonResponse({},status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)},status=500) 
