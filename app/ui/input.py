@@ -40,7 +40,7 @@ class Input:
         pygame.draw.rect(surface, border_color, self.input_rect, 2, border_radius=4)
 
         if self.value:
-            text_surf = Fonts.font_btn.render(self.value, True, BUTTON_WHITE)
+            text_surf = pygame.font.Font(None, 28).render(self.value, True, BUTTON_WHITE)
         else:
             text_surf = Fonts.font_btn.render(self.placeholder, True, INPUT_PLACEHOLDER)
 

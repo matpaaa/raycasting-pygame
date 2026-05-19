@@ -534,6 +534,7 @@ def recover_item(request):
 
         id_save = body.get("id_save")
         id_item = body.get("id_item")
+        id_sprite = body.get("id_sprite")
 
         if not id_save or not id_item:
             return JsonResponse({}, status=400)
@@ -559,6 +560,9 @@ def recover_item(request):
                 id_player=player,
                 id_item=item_obj,
             )
+            
+        sprite_obj = Sprite.objects.filter(id_sprite=id_sprite)
+        sprite_obj.delete()
 
         return JsonResponse({},status=200)
 

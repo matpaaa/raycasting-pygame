@@ -67,7 +67,10 @@ class PygameActions:
         if event.key == pygame.K_l:
             self.user.toogle_light()
 
-        if event.key == pygame.K_a:
+        if event.key == pygame.K_a and not IS_KEYBOARD_QWERTZ:
+            self.user.drop_item()
+            
+        if event.key == pygame.K_q and IS_KEYBOARD_QWERTZ:
             self.user.drop_item()
 
     def actions(self, sprite: Sprite | None, event: Event | None):
