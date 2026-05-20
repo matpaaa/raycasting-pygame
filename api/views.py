@@ -437,8 +437,9 @@ def save_player(request):
         pos_x = body.get("pos_x")
         pos_y = body.get("pos_y")
         rotation = body.get("rotation")
-        
-        player = Player.objects.filter(id_account=user_id)[0]
+        id_save = body.get("id_save")
+                
+        player = Player.objects.filter(id_account=user_id,id_save=id_save).first()
 
         player.health = health
         player.energy = energy
@@ -550,9 +551,9 @@ def recover_item(request):
 
         item_obj = Item.objects.get(id_item=id_item)
         
-        if item_obj.id_item_type == 'SECRET':
+        if item_obj.id_item_type.id_item_type == 'SECRET':
             ItemSecretPossessed.objects.create(
-                id_player=player,
+                id_save=save_obj,
                 id_item=item_obj,
             )
         else:
@@ -585,45 +586,42 @@ def open_door(request):
 
         id_save = body.get("id_save")
         id_sprite = body.get("id_sprite")
-
+        
         if not id_save or not id_sprite:
             return JsonResponse({}, status=400)
 
         save_obj = Save.objects.get(id_save=id_save)
         door = SpriteDoor.objects.get(id_sprite=id_sprite)
 
-        if ToOpen.objects.filter(id_save=save_obj, id_sprite=door).exists():
-            return JsonResponse({}, status=400)
-
         door_type = door.id_sprite_door_type_id
-
-        players = Player.objects.filter(id_save=save_obj)
 
         if door_type == "KEY":
 
-            key_removed = False
+            key_item = ItemSecretPossessed.objects.filter(
+                id_save=id_save,
+                id_item="KEY"
+            ).first()
+            
+            if not key_item:
+                return JsonResponse({}, status=400)
 
-            for player in players:
-                key_item = ItemPossessed.objects.filter(
-                    id_player=player,
-                    id_item__id_item_type__id_item_type="KEY"
-                ).first()
+            key_item.delete()
 
-                if key_item:
-                    key_item.delete()  
-                    key_removed = True
-                    break
+        else:
+            codes = ItemSecretPossessed.objects.filter(
+                id_save=id_save,
+                id_item__id_item_type__id_item_type="CODE"
+            )
 
-            if not key_removed:
+            if codes.count() != 5:
                 return JsonResponse({}, status=400)
 
         ToOpen.objects.create(
             id_save=save_obj,
             id_sprite=door,
-            created_at=now()
         )
 
-        return JsonResponse({},status=200)
+        return JsonResponse({}, status=200)
 
     except Save.DoesNotExist:
         return JsonResponse({}, status=404)
@@ -632,6 +630,7 @@ def open_door(request):
         return JsonResponse({}, status=404)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=500)
     
     

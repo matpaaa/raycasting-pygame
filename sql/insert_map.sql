@@ -7,6 +7,6 @@ INSERT INTO sprite (id_sprite, pos_x, pos_y) VALUES
 (1000000002, 17.5, 6.5);
 
 INSERT INTO sprite_door (id_sprite, id_sprite_door_type, id_map) VALUES
-(1000000000, 'CODE', 1),
-(1000000001, 'CODE', 1),
-(1000000002, 'CODE', 1);
+(1000000000, 'KEY', 1),
+(1000000001, 'KEY', 1),
+(1000000002, 'KEY', 1);

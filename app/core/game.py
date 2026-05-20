@@ -58,7 +58,7 @@ class Game:
         
     def save_user_async(self):
         global_var.navigatePage('loading')
-        thread = threading.Thread(target=save_user, args=(self.user,))
+        thread = threading.Thread(target=save_user, args=(self.user,self.map_config.id_save,))
         thread.start()
         
     def load_save(self):
@@ -98,7 +98,7 @@ class Game:
         self.inventory = Inventory(self.user, self.screen)
         self.ray_casting = RayCasting(self.screen, self.user, self.map_config)
         self.minimap = Minimap(self.screen, self.user, self.map_config)
-        self.pygame_actions = PygameActions(self.user, self.screen)
+        self.pygame_actions = PygameActions(self.user, self.screen, self.map_config)
         self.interaction = Interaction(self.screen, self.user)
         
     def unload_save(self):
