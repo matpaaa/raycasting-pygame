@@ -39,7 +39,7 @@ class ForgotPasswordScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('login')
+            global_var.navigate_page('login')
         if self.btn_confirm.is_clicked(event):
             Sounds.click()
             email = self.input_email.value
@@ -49,7 +49,7 @@ class ForgotPasswordScreen:
             
             if res.status_code == 200:
                 global_var.verify_code_email = email
-                global_var.navigatePage('verify_code')
+                global_var.navigate_page('verify_code')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

@@ -300,8 +300,6 @@ Un joueur qui est différent de celui d'origine peut rejoindre la partie en entr
 BODY
 {
     online_code: str
-    id_save: int
-    id_player: int
 }
 ```
 

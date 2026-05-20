@@ -70,11 +70,11 @@ class RegisterScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('login')
+            global_var.navigate_page('login')
 
         if self.btn_login.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('login')
+            global_var.navigate_page('login')
 
         if self.btn_create.is_clicked(event):
             Sounds.click()
@@ -103,7 +103,7 @@ class RegisterScreen:
                 self.email_input.value = ''
                 self.password_input.value = ''
                 self.confirm_input.value = ''
-                global_var.navigatePage('verify_code')
+                global_var.navigate_page('verify_code')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

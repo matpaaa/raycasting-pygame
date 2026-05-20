@@ -16,6 +16,7 @@ import app._utils.global_var as global_var
 from app.screens.routing import *
 from app.screens.loading_screen import *
 from app.screens.settings_screen import *
+from app.screens.error_screen import *
 
 pygame.init()
 Sounds.init()
@@ -36,6 +37,7 @@ saves_screen = SavesScreen(screen)
 game = Game(screen)
 loading = LoadingScreen(screen)
 settings = SettingsScreen(screen)
+error_screen = ErrorScreen(screen)
 
 routing = Routing(
     home_screen,
@@ -47,7 +49,8 @@ routing = Routing(
     verify_code_screen,
     loading,
     game,
-    settings
+    settings,
+    error_screen
 )
 
 

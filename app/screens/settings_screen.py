@@ -28,7 +28,6 @@ class SettingsScreen:
     
     def handle_event(self, event):
         if self.delete_account_btn.is_clicked(event):
-            print('click')
             Sounds.click()
             res = AuthApi.delete_account()
             if res.status_code == 200:
@@ -36,9 +35,9 @@ class SettingsScreen:
                 global_var.save_store.invalid_saves()
                 global_var.user_store.invalid_maps()
                 global_var.user_store.invalid_me()
-                global_var.navigatePage('login')
+                global_var.navigate_page('login')
         elif self.back_btn.is_clicked(event):
-            global_var.navigatePage('saves')
+            global_var.navigate_page('saves')
     
     def draw(self):
         self.screen.fill((0, 0, 0))

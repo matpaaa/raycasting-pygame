@@ -1,3 +1,4 @@
+import asyncio
 import math
 import time
 from typing import List
@@ -36,13 +37,15 @@ class User:
     _light_enabled = False
     _battery = MAX_USER_BATTERY
 
-    def __init__(self, pos_x: int, pos_y: int, rot: float, health: int, battery: int, map_config: MapConfig):
+    def __init__(self, pos_x: int, pos_y: int, rot: float, health: int, battery: int, id_player: int, map_config: MapConfig, ws):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rot = rot
         self._health = health
         self._battery = battery
+        self.id_player = id_player
         self.map_config = map_config
+        self.ws = ws
 
     def _is_collision(self, pos_x: float, pos_y: float):
         collision_sprites: List[CollisionSprite] = list(filter(lambda sprite: isinstance(sprite, CollisionSprite), self.map_config.sprites))
@@ -64,6 +67,11 @@ class User:
         if is_collision:
             Sounds.hurt()
         return is_collision
+    
+    def ws_move(self):
+        threading.Thread(
+            target=lambda: asyncio.run(self.ws.move(self))
+        ).start()
 
     def move_up(self):
         new_pos_x = self.pos_x + self._velocity * math.cos(self.rot)
@@ -74,6 +82,7 @@ class User:
 
         self.pos_x = new_pos_x
         self.pos_y = new_pos_y
+        self.ws_move()
 
     def move_down(self):
         new_pos_x = self.pos_x - self._velocity * math.cos(self.rot)
@@ -84,6 +93,7 @@ class User:
 
         self.pos_x = new_pos_x
         self.pos_y = new_pos_y
+        self.ws_move()
 
     def move_left(self):
         self.rot -= self._rotate_rad
@@ -92,6 +102,8 @@ class User:
         self.rot += self._rotate_rad
 
     def damage(self, dmg):
+        if self._health <= 0: return
+        
         Sounds.damage()
         if self._health - dmg <= 10:
             self._health = 10
@@ -141,6 +153,9 @@ class User:
                     else:
                         self._has_sprite_interaction = True
                         return sprite
+                    
+                if isinstance(sprite, EnemieSprite):
+                    self.damage(1)
                     
                 return sprite
                 

@@ -7,11 +7,16 @@ from app.api.auth_api import *
 from app.services.save_service import *
 import threading
 from app._utils.sounds import *
+from app.ui.input import Input
+from app.ui.text import Text
+from app.ui.error_bubble import *
+from app.constants.color import *
 
 class SavesScreen:
 
     def __init__(self, screen):
         self.screen = screen
+        self.modal_join_save = False
         self.disconnect_btn = Button(
             'DECONNEXION',
             SCREEN_WIDTH - ELEMENT_WIDTH_SMALL - 100,
@@ -35,6 +40,14 @@ class SavesScreen:
             SCREEN_WIDTH//2-ELEMENT_WIDTH_LARGE//2,
             SCREEN_HEIGHT-SCREEN_PADDING-ELEMENT_HEIGHT,
             ELEMENT_WIDTH_LARGE,
+            ELEMENT_HEIGHT,
+        )
+        
+        self.join_btn = Button(
+            "Rejoindre",
+            SCREEN_WIDTH-ELEMENT_WIDTH_SMALL-SCREEN_PADDING,
+            SCREEN_HEIGHT-SCREEN_PADDING-ELEMENT_HEIGHT,
+            ELEMENT_WIDTH_SMALL,
             ELEMENT_HEIGHT,
         )
 
@@ -75,6 +88,49 @@ class SavesScreen:
             Assets.settings.get_width(),
             Assets.settings.get_height()
         )
+        
+        self.input_code = Input(
+            'ENTRER LE CODE',
+            SCREEN_WIDTH/2 - ELEMENT_WIDTH_LARGE/2,
+            348,
+            ELEMENT_WIDTH_LARGE,
+            ELEMENT_HEIGHT
+        )
+        
+        self.btn_back = Button(
+            'BACK',
+            SCREEN_WIDTH/2 - GAP_BETWEEN_ELEMENT/2 - ELEMENT_WIDTH_SMALL,
+            368 + ELEMENT_HEIGHT,
+            ELEMENT_WIDTH_SMALL,
+            ELEMENT_HEIGHT,
+            'danger'
+        )
+
+        self.btn_confirm = Button(
+            'VALIDER',
+            SCREEN_WIDTH/2 + GAP_BETWEEN_ELEMENT/2,
+            368 + ELEMENT_HEIGHT,
+            ELEMENT_WIDTH_SMALL,
+            ELEMENT_HEIGHT
+        )
+        
+        self.title = Text(
+            "Rejoindre une partie",
+            'center',
+            224,
+            WHITE,
+            'title'
+        )
+
+        self.subtitle = Text(
+            "Entrer le code de la partie que vous souhaiter joindre",
+            'center',
+            270,
+            TEXT_GRAY,
+            'subtitle'
+        )
+        
+        self.error_bubble = ErrorBubble(self.screen)
 
     def _load_saves(self):
         if len(self.saves) > 0 and global_var.save_store.saves is not None: return
@@ -98,23 +154,50 @@ class SavesScreen:
         return self.saves[self.current_index - 1]
     
     def create_save_async(self):
-        global_var.navigatePage('loading')
+        global_var.navigate_page('loading')
         thread = threading.Thread(target=create_save)
         thread.start()
         
     def load_save_async(self):
-        global_var.navigatePage('loading')
+        global_var.navigate_page('loading')
         save = self._selected_save
         thread = threading.Thread(target=load_save, args=(save['id_save'],))
         thread.start()
+        
+    def join_save_async(self):
+        online_code = self.input_code.value
+        
+        if online_code:
+            try:
+                int_online_code = int(online_code)
+                global_var.navigate_page('loading')
+                thread = threading.Thread(target=join_save, args=(int_online_code,))
+                thread.start()
+            except:
+                self.error_bubble.set_content('Code invalide')
 
     def handle_event(self, event):
+        self.error_bubble.handle_event(event)
+        if self.modal_join_save:
+            self.input_code.handle_event(event)
+        
         if event.type != pygame.MOUSEBUTTONDOWN or event.button != 1:
             return
         
+        if self.join_btn.is_clicked(event):
+            self.modal_join_save = True
+        
+        if self.btn_back.is_clicked(event) and self.modal_join_save:
+            self.modal_join_save = False
+            
+        if self.btn_confirm.is_clicked(event) and self.modal_join_save:
+            self.join_save_async()
+            
+        if self.modal_join_save: return
+        
         if self.settings_rect.collidepoint(event.pos):
             Sounds.click()
-            global_var.navigatePage('settings')
+            global_var.navigate_page('settings')
 
         if self.arrow_left_rect.collidepoint(event.pos):
             Sounds.click()
@@ -132,8 +215,11 @@ class SavesScreen:
         elif self.delete_save_btn.is_clicked(event):
             if self._selected_save:
                 Sounds.click()
-                delete_save(self._selected_save['id_save'])
-                self.saves = []
+                try:
+                    delete_save(self._selected_save['id_save'])
+                    self.saves = []
+                except:
+                    self.error_bubble.set_content("Erreur lors de la suppression d'une sauvegarde")
 
         elif self.start_game_rect.collidepoint(event.pos):
             Sounds.click()
@@ -152,7 +238,7 @@ class SavesScreen:
             global_var.user_store.invalid_me()
             self.saves = []
             if res.status_code == 200:
-                global_var.navigatePage('login')
+                global_var.navigate_page('login')
 
     def draw(self):
         thread = threading.Thread(target=self._load_saves)
@@ -171,7 +257,8 @@ class SavesScreen:
         arrow_right.set_alpha(right_alpha)
         self.screen.blit(arrow_left,  (self.arrow_left_rect.x,  self.arrow_left_rect.y))
         self.screen.blit(arrow_right, (self.arrow_right_rect.x, self.arrow_right_rect.y))
-
+        self.join_btn.draw(self.screen)
+        
         self._draw_dots()
         self.create_save_btn.draw(self.screen)
 
@@ -179,6 +266,16 @@ class SavesScreen:
             self.screen.blit(Assets.start_game, (self.start_game_x, self.start_game_y))
         else:
             self._draw_save_card(self._selected_save)
+            
+        if self.modal_join_save:
+            self.screen.blit(Assets.window, ((SCREEN_WIDTH - Assets.window.get_width()) / 2, (SCREEN_HEIGHT - Assets.window.get_height()) / 2))
+            self.title.draw(self.screen)
+            self.subtitle.draw(self.screen)
+            self.btn_back.draw(self.screen)
+            self.btn_confirm.draw(self.screen)
+            self.input_code.draw(self.screen)
+            
+        self.error_bubble.draw()
 
     def _draw_dots(self):
         dot_radius = 6
@@ -197,9 +294,9 @@ class SavesScreen:
         card_y = SCREEN_HEIGHT // 2 - card_h // 2 - 40
 
         card_surf = pygame.Surface((card_w, card_h), pygame.SRCALPHA)
-        card_surf.fill((0, 0, 0, 160))
+        card_surf.fill(BUTTON_BACKGROUND)
         self.screen.blit(card_surf, (card_x, card_y))
-        pygame.draw.rect(self.screen, (200, 200, 100), (card_x, card_y, card_w, card_h), 2, border_radius=8)
+        pygame.draw.rect(self.screen, WHITE, (card_x, card_y, card_w, card_h), 2, border_radius=8)
 
         def _get(key):
             return save[key] if isinstance(save, dict) else getattr(save, key, '?')
@@ -220,15 +317,15 @@ class SavesScreen:
         padding = 16
         line_h  = 30
 
-        title_surf = self.font_title.render(f'Sauvegarde #{save_id}', True, (255, 255, 255))
+        title_surf = self.font_title.render(f'Sauvegarde #{save_id}', True, WHITE)
         self.screen.blit(title_surf, (card_x + padding, card_y + padding))
         
         minutes = duration // 60
         seconds = duration % 60
 
         infos = [
-            (f'Durée : {minutes} min {seconds:02d} s', (200, 200, 200)),
-            (f'Créée : {created}', (200, 200, 200)),
+            (f'Durée : {minutes} min {seconds:02d} s', WHITE),
+            (f'Créée : {created}', WHITE),
             (status, status_color),
         ]
         for i, (text, color) in enumerate(infos):

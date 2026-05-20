@@ -17,7 +17,8 @@ class Routing:
             verify_code_screen,
             loading,
             game,
-            settings
+            settings,
+            error_screen
         ):
 
         self.home_screen = home_screen
@@ -29,6 +30,7 @@ class Routing:
         self.saves_screen = saves_screen
         self.loading = loading
         self.settings = settings
+        self.error_screen = error_screen
 
         self.game = game
 
@@ -82,6 +84,9 @@ class Routing:
         elif global_var.current_page == 'game':
             self.game.draw()
             return
+        elif global_var.current_page == 'error':
+            self.error_screen.draw()
+            return
         
     def handle_event(self, event):
         if global_var.current_page == 'home':
@@ -110,4 +115,7 @@ class Routing:
             return
         elif global_var.current_page == 'game':
             self.game.handle_event(event)
+            return
+        elif global_var.current_page == 'error':
+            self.error_screen.handle_event(event)
             return

@@ -35,15 +35,17 @@ def create_save():
         global_var.save_store.invalid_saves({'refetch': True})
         global_var.save_store.invalid_save_loaded()
         global_var.save_store.hydrate_save_loaded(res_data['id_save'])
-        global_var.navigatePage('game')
+        global_var.navigate_page('game')
     else:
-        Exception('Impossible de créer une nouvelle partie')
+        global_var.back_page()
         
 def load_save(save_id: int):
-    global_var.navigatePage('loading')
-    global_var.save_store.invalid_save_loaded()
-    global_var.save_store.hydrate_save_loaded(save_id)
-    global_var.navigatePage('game')
+    try:
+        global_var.save_store.invalid_save_loaded()
+        global_var.save_store.hydrate_save_loaded(save_id)
+        global_var.navigate_page('game')
+    except:
+        global_var.back_page()
         
 def save_user(user: User, id_save: int):
     data = {
@@ -58,7 +60,7 @@ def save_user(user: User, id_save: int):
     res = SaveApi.save_player(data)
     if res.status_code == 200:
         global_var.save_store.invalid_saves({'refetch': True})
-        global_var.navigatePage('saves')
+        global_var.navigate_page('saves')
     else:
         Exception('Erreur durant la sauvegarde la partie')
         
@@ -66,3 +68,17 @@ def delete_save(id_save: int):
     res = SaveApi.delete_save({ 'id_save': id_save })
     if res.status_code == 200:
         global_var.save_store.invalid_saves({'refetch': True})
+    else:
+        Exception()
+        
+def join_save(online_code: int):
+    res = SaveApi.join_save({
+        'online_code': online_code
+    })
+    
+    if res.status_code == 200:
+        global_var.save_store.invalid_save_loaded()
+        global_var.save_store.hydrate_save_loaded(res['id_save'])
+        global_var.navigate_page('game')
+    else:
+        global_var.back_page()
