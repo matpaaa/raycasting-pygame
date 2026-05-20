@@ -867,3 +867,39 @@ def failed(request):
     save_obj.save()
     
     return JsonResponse({},status=200)
+
+@csrf_exempt
+def consumable(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({}, status=401)
+
+    body = json.loads(request.body)
+
+    id_save = body.get("id_save")
+    id_item = body.get("id_item")
+
+    player_obj = Player.objects.filter(
+        id_save=id_save,
+        id_account=user_id
+    ).first()
+
+    item_obj = ItemPossessed.objects.filter(
+        id_item=id_item,
+        id_player=player_obj
+    ).first()
+
+    if not item_obj:
+        return JsonResponse({}, status=404)
+
+    if item_obj.id_item.id_item == "CANNED":
+        player_obj.health = min(160, player_obj.health + item_obj.id_item.value)
+        player_obj.save()
+
+    item_obj.delete()
+
+    return JsonResponse({}, status=200)
