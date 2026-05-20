@@ -35,6 +35,12 @@ class Game:
         
         self.menu_puzzle = False
         self.current_puzzle_index = 0
+        
+        self.is_failed = False
+        self.is_win = False
+        
+        self.is_failed_req = False
+        self.is_win_req = False
 
         self.title = Text(
             "SAUVEGARDER LA PARTIE",
@@ -70,6 +76,16 @@ class Game:
     def save_user_async(self):
         thread = threading.Thread(target=save_user, args=(self.user,self.map_config.id_save,))
         thread.start()
+        
+    def failed_req(self):
+        if not self.is_failed_req:
+            self.is_failed_req = True
+            game_failed(self.save_loaded['id_save'])
+            
+    def win_req(self):
+        if not self.is_win_req:
+            self.is_win_req = True
+            game_win(self.save_loaded['id_save'])
         
     def load_save(self):
         if self.map_config is not None: return
@@ -113,6 +129,14 @@ class Game:
         
         self.save_loaded = save_loaded
         
+        if self.save_loaded['is_failed']:
+            self.is_failed = True
+            self.failed_req()
+            
+        if self.save_loaded['is_win']:
+            self.is_win = True
+            self.win_req()
+        
     def unload_save(self):
         self.map_config = None
         
@@ -124,12 +148,18 @@ class Game:
         self.minimap = None
         self.pygame_actions = None
         self.interaction = None
+        
+        self.is_failed = False
+        self.is_failed_req = False
+        self.is_win = False
+        self.is_win_req = False
 
     def handle_event(self, event: Event):
         if self.pygame_actions is None: return
         
         self.event = event
-        self.pygame_actions.one_actions(self.sprite_interact, self.event)
+        if not self.is_win and not self.is_failed:
+            self.pygame_actions.one_actions(self.sprite_interact, self.event)
 
         if self.btn_back_menu.is_clicked(event) or self.btn_back.is_clicked(event):
             Sounds.click()
@@ -182,7 +212,7 @@ class Game:
         if not self.user.is_dead and not self.user.has_win and not self.game_menu:
             self.pygame_actions.actions(self.sprite_interact, self.event)
 
-        if self.user.is_dead:
+        if self.is_failed:
             if self.dead_sound is None:
                 self.dead_sound = Sounds.dead()
             overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
@@ -190,12 +220,22 @@ class Game:
             self.screen.blit(overlay, (0, 0))
             self.screen.blit(Assets.dead_screen, (SCREEN_WIDTH//2 - Assets.dead_screen.get_width()//2, SCREEN_HEIGHT//2 - Assets.dead_screen.get_height()//2))
             self.btn_back_menu.draw(self.screen)
-        elif self.user.has_win:
+            
+        if self.is_win:
             overlay = pygame.Surface((self.screen.get_width(), self.screen.get_height()), pygame.SRCALPHA)
             overlay.fill((52, 199, 89, 255*0.3))
             self.screen.blit(overlay, (0, 0))
             self.screen.blit(Assets.win_screen, (SCREEN_WIDTH//2 - Assets.win_screen.get_width()//2, SCREEN_HEIGHT//2 - Assets.win_screen.get_height()//2))
             self.btn_back_menu.draw(self.screen)
+            
+
+        if self.user.is_dead:
+            self.is_failed = True
+            self.failed_req()
+            
+        if self.user.has_win:
+            self.is_win = True
+            self.win_req()
 
         if self.game_menu:
             self.screen.blit(Assets.window_small, ((SCREEN_WIDTH - Assets.window_small.get_width())//2, (SCREEN_HEIGHT - Assets.window_small.get_height())//2))

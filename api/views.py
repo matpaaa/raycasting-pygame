@@ -806,6 +806,7 @@ def drop_item(request):
 
     return JsonResponse({}, status=200)
 
+@csrf_exempt
 def delete_account(request):
     if request.method != "DELETE":
         return JsonResponse({},status=405)
@@ -828,3 +829,41 @@ def delete_account(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)},status=500) 
+
+@csrf_exempt
+def win(request):
+    if request.method != "POST":
+        return JsonResponse({},status=405)
+    
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({},status=401)
+    
+    body = json.loads(request.body)
+    id_save = body.get("id_save")
+    
+    save_obj = Save.objects.filter(id_save=id_save).first()
+    save_obj.is_win = True
+    save_obj.save()
+    
+    return JsonResponse({},status=200)
+
+@csrf_exempt
+def failed(request):
+    if request.method != "POST":
+        return JsonResponse({},status=405)
+    
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({},status=401)
+    
+    body = json.loads(request.body)
+    id_save = body.get("id_save")
+    
+    save_obj = Save.objects.filter(id_save=id_save).first()
+    save_obj.is_failed = True
+    save_obj.save()
+    
+    return JsonResponse({},status=200)
