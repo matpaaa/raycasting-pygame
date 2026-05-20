@@ -10,5 +10,7 @@ user_store = UserStore()
 
 def navigatePage(page):
     global last_page,current_page
+    if page == current_page: return
+    
     last_page = current_page
     current_page = page

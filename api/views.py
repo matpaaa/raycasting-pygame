@@ -440,7 +440,6 @@ def save_player(request):
         id_save = body.get("id_save")
                 
         player = Player.objects.filter(id_account=user_id,id_save=id_save).first()
-
         player.health = health
         player.energy = energy
         player.pos_x = pos_x
@@ -630,7 +629,6 @@ def open_door(request):
         return JsonResponse({}, status=404)
 
     except Exception as e:
-        print(e)
         return JsonResponse({"error": str(e)}, status=500)
     
     

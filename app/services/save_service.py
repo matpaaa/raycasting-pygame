@@ -50,7 +50,7 @@ def save_user(user: User, id_save: int):
         'energy': user.battery,
         'pos_x': user.pos_x,
         'pos_y': user.pos_y,
-        'rotation': user.rot,
+        'rotation': user.get_rot,
         'id_save': id_save
     }
     

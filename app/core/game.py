@@ -57,7 +57,6 @@ class Game:
         )
         
     def save_user_async(self):
-        global_var.navigatePage('loading')
         thread = threading.Thread(target=save_user, args=(self.user,self.map_config.id_save,))
         thread.start()
         
@@ -143,7 +142,7 @@ class Game:
         self.ray_casting.launch_fucking_rays(self.user)
         self.ray_casting.draw_sprites(self.user)
         self.ray_casting.draw_darkness()
-
+        
         self.user.handle_effect()
         self.user.draw_item_select(self.screen)
         self.minimap.draw()
