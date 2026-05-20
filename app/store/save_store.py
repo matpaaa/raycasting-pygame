@@ -15,9 +15,13 @@ class SaveStore:
         self.save_loaded = None
         self.saves = None
     
-    def invalid_saves(self, options: InvalidStoreOptions):
+    def invalid_saves(self, options=None):
+        if options is None:
+            options = {"refetch": None}
+            
         self.saves = None
-        if options['refetch']:
+            
+        if options.get("refetch"):
             self.hydrate_saves()
             
     def invalid_save_loaded(self, options=None):

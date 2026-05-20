@@ -14,7 +14,7 @@ class SavesScreen:
         self.screen = screen
         self.disconnect_btn = Button(
             'DECONNEXION',
-            SCREEN_WIDTH - ELEMENT_WIDTH_SMALL - SCREEN_PADDING,
+            SCREEN_WIDTH - ELEMENT_WIDTH_SMALL - 100,
             64,
             ELEMENT_WIDTH_SMALL,
             ELEMENT_HEIGHT,
@@ -132,6 +132,11 @@ class SavesScreen:
 
         elif self.disconnect_btn.is_clicked(event):
             res = AuthApi.logout()
+            global_var.save_store.invalid_save_loaded()
+            global_var.save_store.invalid_saves()
+            global_var.user_store.invalid_maps()
+            global_var.user_store.invalid_me()
+            self.saves = []
             if res.status_code == 200:
                 global_var.navigatePage('login')
 

@@ -98,6 +98,7 @@ class RegisterScreen:
             }
             res = AuthApi.register(data)
             if res.status_code == 200:
+                global_var.verify_code_email = email
                 self.username_input.value = ''
                 self.email_input.value = ''
                 self.password_input.value = ''

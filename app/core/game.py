@@ -217,7 +217,7 @@ class Game:
         self.inventory.draw()
         
         elapsed_seconds = (pygame.time.get_ticks() - self.session_start) // 1000
-        remaining = 10 - self.save_loaded['duration'] - elapsed_seconds
+        remaining = GAME_DURATION - self.save_loaded['duration'] - elapsed_seconds
         
         if remaining <= 0:
             self.is_failed = True

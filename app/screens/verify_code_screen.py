@@ -73,8 +73,12 @@ class VerifyCodeScreen:
 
         if self.btn_confirm.is_clicked(event):
             Sounds.click()
-            res = AuthApi.verify_code(self.input_code.value)
+            res = AuthApi.verify_code({
+                'code': self.input_code.value,
+                'email': global_var.verify_code_email
+            })
             if res.status_code == 200:
+                global_var.verify_code_email = None
                 if global_var.last_page == 'register':
                     global_var.navigatePage('login')
                 else:

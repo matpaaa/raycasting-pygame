@@ -57,9 +57,6 @@ class Routing:
         elif global_var.current_page == 'register':
             self.register_screen.draw()
             return
-        elif global_var.current_page == 'verify_code':
-            self.register_screen.draw()
-            return
         elif global_var.current_page == 'forgot_password':
             self.forgot_password_screen.draw()
             return
