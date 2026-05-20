@@ -23,4 +23,5 @@ urlpatterns = [
     path('api/create/save', create_save),
     path('api/auth/status', auth_status),
     path('api/delete/account', delete_account),
+    path('api/save/online', save_online),
 ]

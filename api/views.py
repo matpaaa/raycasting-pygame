@@ -8,6 +8,7 @@ from .models import *
 import json
 import random
 from django.utils.timezone import make_aware
+import string
 
 @csrf_exempt
 def register(request):
@@ -828,3 +829,58 @@ def delete_account(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)},status=500) 
+
+@csrf_exempt
+def save_online(request):
+    if request.method != "POST":
+        return JsonResponse({},status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse(
+                {},status=401)
+
+        body = json.loads(request.body)
+
+        id_player = body.get("id_player")
+        id_save = body.get("id_save")
+
+        if not id_player or not id_save:
+            return JsonResponse({},status=400)
+
+        try:
+            player = Player.objects.get(
+                id_player=id_player,
+                id_account_id=user_id
+            )
+
+        except Player.DoesNotExist:
+            return JsonResponse({},status=404)
+
+        try:
+            save = Save.objects.get(id_save=id_save)
+
+        except Save.DoesNotExist:
+            return JsonResponse({},status=404)
+
+        if player.id_save_id != save.id_save:
+            return JsonResponse({},status=403)
+
+        if not player.is_owner:
+            return JsonResponse({},status=403)
+
+        while True:
+            code = ''.join(random.choices(string.ascii_uppercase + string.digits,k=6))
+
+            if not Save.objects.filter(online_code=code).exists():
+                break
+
+        save.online_code = code
+        save.save()
+
+        return JsonResponse({},status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)},status=500)
