@@ -957,3 +957,44 @@ def consumable(request):
     item_obj.delete()
 
     return JsonResponse({}, status=200)
+
+@csrf_exempt
+def shoot_enemy(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({}, status=401)
+
+    body = json.loads(request.body)
+
+    id_save = body.get("id_save")
+    id_sprite = body.get("id_sprite")
+    
+    player_obj = Player.objects.filter(
+        id_save=id_save,
+        id_account=user_id
+    ).first()
+    
+    gun_obj = ItemPossessed.objects.filter(
+        id_item='GUN',
+        id_player=player_obj
+    ).first()
+    
+    ammo_obj = ItemPossessed.objects.filter(
+        id_item='AMMO',
+        id_player=player_obj
+    ).first()
+    
+    if not gun_obj and not ammo_obj:
+        return JsonResponse({}, status=400)
+    
+    ammo_obj.delete()
+    
+    sprite_shooted_obj = SpriteEnemy.objects.filter(id_sprite=id_sprite).first()
+    sprite_shooted_obj.health = 0
+    sprite_shooted_obj.save()
+    
+    return JsonResponse({}, status=200)

@@ -202,6 +202,7 @@ class User:
 
             if not sprite_shooted is None:
                 sprite_shooted.receive_damage(self.item_selected.value)
+                shoot_enemy(self.map_config.id_save, sprite_shooted.id)
 
     def get_enemie_shot(self):
         dx = math.cos(self.get_rot)

@@ -330,3 +330,13 @@ BODY
     id_save: int
 }
 ```
+
+### POST /api/save/shoot
+Consommer une item
+```
+BODY
+{
+    id_sprite: int
+    id_save: int
+}
+```
