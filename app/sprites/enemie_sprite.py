@@ -7,14 +7,20 @@ class EnemieSprite(Sprite):
 
         self.pv = pv
         self.damage = damage
+        
+        if self.pv <= 0:
+            self.dead()
 
     def attack(self, user):
         user.damage(self.damage)
-
+        
+    def dead(self):
+        super().set_image('./app/assets/game/pnj/zombie-dead-pnj.png')
+        
     def receive_damage(self, dmg):
         if self.pv - dmg <= 0:
             self.pv = 0
-            super().set_image('./app/assets/game/pnj/zombie-dead-pnj.png')
+            self.dead()
         else:
             self.pv -= dmg
 

@@ -29,3 +29,7 @@ class GameApi:
     @staticmethod
     def consumable(data):
         return session.post(f'{API_URL}api/save/consumable', json=data)
+    
+    @staticmethod
+    def shoot_enemy(data):
+        return session.post(f'{API_URL}api/save/shoot', json=data)

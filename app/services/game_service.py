@@ -41,3 +41,9 @@ def user_comsumable(id_save: int, id_item: int):
         'id_save': id_save,
         'id_item': id_item
     })
+    
+def shoot_enemy(id_save: int, id_sprite: int):
+    GameApi.shoot_enemy({
+        'id_save': id_save,
+        'id_sprite': id_sprite
+    })
