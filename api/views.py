@@ -921,3 +921,60 @@ def failed(request):
     save_obj.save()
     
     return JsonResponse({},status=200)
+
+@csrf_exempt
+def join_save(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse({}, status=401)
+
+        body = json.loads(request.body)
+
+        online_code = body.get("online_code")
+        id_save = body.get("id_save")
+        id_player = body.get("id_player")
+
+        if not online_code or not id_save or not id_player:
+            return JsonResponse({}, status=400)
+
+        try:
+            online_code = int(online_code)
+        except ValueError:
+            return JsonResponse({},status=400)
+
+        try:
+            save = Save.objects.get(
+                id_save=id_save,
+                online_code=online_code
+            )
+
+        except Save.DoesNotExist:
+            return JsonResponse({},status=404)
+
+        try:
+            player = Player.objects.get(
+                id_player=id_player,
+                id_account_id=user_id
+            )
+
+        except Player.DoesNotExist:
+            return JsonResponse({},status=404)
+
+        if player.is_owner:
+            return JsonResponse({},status=403)
+
+        if player.id_save_id == save.id_save:
+            return JsonResponse({},status=400)
+
+        player.id_save = save
+        player.save()
+
+        return JsonResponse({}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)},status=500)
