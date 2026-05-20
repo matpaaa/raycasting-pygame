@@ -32,3 +32,8 @@ class AuthApi:
     def verify_code(data):
         res = requests.post(f'{API_URL}api/verify-code', json=data)
         return res
+    
+    @staticmethod
+    def delete_account():
+        res = session.delete(f'{API_URL}api/delete/account')
+        return res

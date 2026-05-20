@@ -65,6 +65,16 @@ class SavesScreen:
 
         self.font_title = Fonts.font_save_title
         self.font_info  = Fonts.font_save_info
+        
+        self.settings_pos_x = SCREEN_WIDTH-120-ELEMENT_WIDTH_SMALL-Assets.settings.get_width()
+        self.settings_pos_y = 64
+        
+        self.settings_rect = pygame.Rect(
+            self.settings_pos_x,
+            self.settings_pos_y,
+            Assets.settings.get_width(),
+            Assets.settings.get_height()
+        )
 
     def _load_saves(self):
         if len(self.saves) > 0 and global_var.save_store.saves is not None: return
@@ -101,6 +111,10 @@ class SavesScreen:
     def handle_event(self, event):
         if event.type != pygame.MOUSEBUTTONDOWN or event.button != 1:
             return
+        
+        if self.settings_rect.collidepoint(event.pos):
+            Sounds.click()
+            global_var.navigatePage('settings')
 
         if self.arrow_left_rect.collidepoint(event.pos):
             Sounds.click()
@@ -141,10 +155,12 @@ class SavesScreen:
                 global_var.navigatePage('login')
 
     def draw(self):
-        self._load_saves()
+        thread = threading.Thread(target=self._load_saves)
+        thread.start()
         self.screen.fill((0, 0, 0))
         self.screen.blit(Assets.background, (0, 0))
         self.screen.blit(Assets.screen_title, (100, 64))
+        self.screen.blit(Assets.settings, (SCREEN_WIDTH-120-ELEMENT_WIDTH_SMALL-Assets.settings.get_width(), 64))
         self.disconnect_btn.draw(self.screen)
 
         left_alpha  = 255 if self._total_slots > 1 else 80
