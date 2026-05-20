@@ -36,9 +36,12 @@ CREATE TABLE IF NOT EXISTS map (
 CREATE TABLE IF NOT EXISTS puzzle (
   id_puzzle SERIAL PRIMARY KEY,
   title VARCHAR(128) NOT NULL,
-  content VARCHAR(128) NOT NULL,
+  content VARCHAR(1024) NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   id_item VARCHAR(16),
+  id_map INT NOT NULL,
+
+  FOREIGN KEY (id_map) REFERENCES map(id_map) ON DELETE CASCADE,
 
   FOREIGN KEY (id_item)
     REFERENCES item(id_item)

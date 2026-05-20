@@ -327,14 +327,6 @@ def get_save(request, id_save):
     puzzles_data = []
     for puzzle in puzzles:
         item_data = None
-        if puzzle.id_item:
-            item_data = {
-                "id_item": puzzle.id_item.id_item,
-                "name": puzzle.id_item.name,
-                "value": float(puzzle.id_item.value) if puzzle.id_item.value else None,
-                "id_item_type": puzzle.id_item.id_item_type_id,
-                "image": puzzle.id_item.image,
-            }
 
         puzzles_data.append({
             "id_puzzle": puzzle.id_puzzle,
