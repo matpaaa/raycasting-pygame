@@ -17,3 +17,11 @@ class GameApi:
     @staticmethod
     def puzzle_finish(data):
         return session.post(f'{API_URL}api/puzzle/finish', json=data)
+    
+    @staticmethod
+    def win(data):
+        return session.post(f'{API_URL}api/save/win', json=data)
+    
+    @staticmethod
+    def failed(data):
+        return session.post(f'{API_URL}api/save/failed', json=data)
