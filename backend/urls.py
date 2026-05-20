@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/save/win', win),
     path('api/save/failed', failed),
     path('api/save/<id_save>', get_save),
+    path('api/save/join', join_save),
 ]
