@@ -18,12 +18,14 @@ from app.features.battery import *
 from app.services.save_service import *
 import threading
 from app._utils.wrap_text import *
+import time
 
 class Game:
     
     def __init__(self, screen: Surface):
         self.screen = screen
 
+        self.session_start = None
         self.save_loaded = None
         self.map_config = None
         self.sprite_interact = None
@@ -92,6 +94,8 @@ class Game:
         
         save_loaded = global_var.save_store.save_loaded
         me = global_var.user_store.me
+        
+        self.session_start = pygame.time.get_ticks()
                 
         sprites = save_loaded['sprite_items'] + save_loaded['sprite_enemies'] + save_loaded['sprite_doors'] + [sprite for sprite in MAP_SPRITES_MOCKED if isinstance(sprite, HumanSprite)]
         for sprite in sprites:
@@ -141,6 +145,7 @@ class Game:
         
     def unload_save(self):
         self.map_config = None
+        self.session_start = None
         
         self.user = None
         self.health = None
@@ -210,6 +215,21 @@ class Game:
         self.battery.draw()
         self.sprite_interact = self.interaction.handle_interaction()
         self.inventory.draw()
+        
+        elapsed_seconds = (pygame.time.get_ticks() - self.session_start) // 1000
+        remaining = 10 - self.save_loaded['duration'] - elapsed_seconds
+        
+        if remaining <= 0:
+            self.is_failed = True
+            self.failed_req()
+        
+        remaining = max(0, remaining)
+
+        minutes = remaining // 60
+        seconds = remaining % 60
+
+        timer_surf = Fonts.font_title.render(f'{minutes} min {seconds:02d} s', True, TEXT_GRAY)
+        self.screen.blit(timer_surf, (SCREEN_WIDTH//2-timer_surf.get_width()//2, 50))
 
         if not self.user.is_dead and not self.user.has_win and not self.game_menu:
             self.pygame_actions.actions(self.sprite_interact, self.event)
