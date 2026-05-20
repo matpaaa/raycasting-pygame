@@ -114,9 +114,11 @@ class Game:
         
         pos_x = float(current_player['pos_x']) or DEFAULT_USER_POS_X
         pos_y = float(current_player['pos_y']) or DEFAULT_USER_POS_Y
+        health = int(current_player['health'])
+        energy = int(current_player['energy'])
         rotation = current_player['rotation'] or DEFAULT_USER_ROT
         
-        self.user = User(pos_x, pos_y, rotation, self.map_config)
+        self.user = User(pos_x, pos_y, rotation, health, energy, self.map_config)
         self.user.set_items(user_items)
         
         self.health = Health(self.user, self.screen)

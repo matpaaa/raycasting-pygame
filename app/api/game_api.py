@@ -25,3 +25,7 @@ class GameApi:
     @staticmethod
     def failed(data):
         return session.post(f'{API_URL}api/save/failed', json=data)
+    
+    @staticmethod
+    def consumable(data):
+        return session.post(f'{API_URL}api/save/consumable', json=data)
