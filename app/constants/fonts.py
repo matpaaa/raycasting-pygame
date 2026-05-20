@@ -7,6 +7,9 @@ class Fonts:
     font_error_bubble: None | pygame.font.Font = None
     font_inventory: None | pygame.font.Font = None
     font_puzzle_content: None | pygame.font.Font = None
+    
+    font_save_title: None | pygame.font.Font = None
+    font_save_info: None | pygame.font.Font = None
 
     @staticmethod
     def load():
@@ -16,3 +19,6 @@ class Fonts:
         Fonts.font_error_bubble = pygame.font.Font("./app/assets/fonts/pixel.otf", 14)
         Fonts.font_btn      = pygame.font.Font("./app/assets/fonts/pixel.otf", 20)
         Fonts.font_inventory      = pygame.font.Font("./app/assets/fonts/pixel.otf", 24)
+        
+        Fonts.font_save_title = pygame.font.Font("./app/assets/fonts/pixel.otf", 24)
+        Fonts.font_save_info = pygame.font.Font("./app/assets/fonts/pixel.otf", 18)

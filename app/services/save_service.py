@@ -32,6 +32,7 @@ def create_save():
     res = SaveApi.create_save(data)
     if res.status_code == 200:
         res_data = res.json()
+        global_var.save_store.invalid_saves({'refetch': True})
         global_var.save_store.invalid_save_loaded()
         global_var.save_store.hydrate_save_loaded(res_data['id_save'])
         global_var.navigatePage('game')
@@ -56,6 +57,7 @@ def save_user(user: User, id_save: int):
     
     res = SaveApi.save_player(data)
     if res.status_code == 200:
+        global_var.save_store.invalid_saves({'refetch': True})
         global_var.navigatePage('saves')
     else:
         Exception('Erreur durant la sauvegarde la partie')

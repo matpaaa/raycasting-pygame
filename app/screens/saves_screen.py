@@ -63,12 +63,8 @@ class SavesScreen:
         self.current_index = 0
         self.saves = []
 
-        self.font_title = pygame.font.SysFont(None, 36)
-        self.font_info  = pygame.font.SysFont(None, 26)
-
-    # ------------------------------------------------------------------
-    # Chargement des saves
-    # ------------------------------------------------------------------
+        self.font_title = Fonts.font_save_title
+        self.font_info  = Fonts.font_save_info
 
     def _load_saves(self):
         if len(self.saves) > 0 and global_var.save_store.saves is not None: return
@@ -76,10 +72,6 @@ class SavesScreen:
         self.saves = saves if saves else []
         max_index = len(self.saves)
         self.current_index = min(self.current_index, max_index)
-
-    # ------------------------------------------------------------------
-    # Propriétés de commodité
-    # ------------------------------------------------------------------
 
     @property
     def _total_slots(self):
@@ -105,9 +97,6 @@ class SavesScreen:
         save = self._selected_save
         thread = threading.Thread(target=load_save, args=(save['id_save'],))
         thread.start()
-    # ------------------------------------------------------------------
-    # Événements
-    # ------------------------------------------------------------------
 
     def handle_event(self, event):
         if event.type != pygame.MOUSEBUTTONDOWN or event.button != 1:
@@ -124,6 +113,7 @@ class SavesScreen:
         elif self.create_save_btn.is_clicked(event):
             Sounds.click()
             self.create_save_async()
+            self.saves = []
             
         elif self.delete_save_btn.is_clicked(event):
             if self._selected_save:
@@ -135,18 +125,15 @@ class SavesScreen:
             Sounds.click()
             if self._is_new_game_selected:
                 self.create_save_async()
+                self.saves = []
             else:   
                 self.load_save_async()
+                self.saves = []
 
-        # Bouton déconnexion
         elif self.disconnect_btn.is_clicked(event):
             res = AuthApi.logout()
             if res.status_code == 200:
                 global_var.navigatePage('login')
-
-    # ------------------------------------------------------------------
-    # Rendu
-    # ------------------------------------------------------------------
 
     def draw(self):
         self._load_saves()
@@ -214,11 +201,14 @@ class SavesScreen:
 
         title_surf = self.font_title.render(f'Sauvegarde #{save_id}', True, (255, 255, 255))
         self.screen.blit(title_surf, (card_x + padding, card_y + padding))
+        
+        minutes = duration // 60
+        seconds = duration % 60
 
         infos = [
-            (f'Durée : {duration}s',  (200, 200, 200)),
-            (f'Créée : {created}',    (200, 200, 200)),
-            (status,                   status_color),
+            (f'Durée : {minutes} min {seconds:02d} s', (200, 200, 200)),
+            (f'Créée : {created}', (200, 200, 200)),
+            (status, status_color),
         ]
         for i, (text, color) in enumerate(infos):
             surf = self.font_info.render(text, True, color)
