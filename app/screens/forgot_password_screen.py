@@ -6,6 +6,7 @@ from app.ui.button import *
 import app._utils.global_var as global_var
 from app.ui.line import *
 from app._utils.sounds import *
+from app.api.auth_api import *
 
 class ForgotPasswordScreen:
     def __init__(self, screen):
@@ -41,7 +42,14 @@ class ForgotPasswordScreen:
             global_var.navigatePage('login')
         if self.btn_confirm.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('forgot_password_code')
+            email = self.input_email.value
+            res = AuthApi.forgot_password({
+                'email': email
+            })
+            
+            if res.status_code == 200:
+                global_var.verify_code_email = email
+                global_var.navigatePage('verify_code')
 
     def draw(self):
         self.screen.fill((0, 0, 0))
