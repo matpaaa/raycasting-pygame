@@ -26,7 +26,7 @@ urlpatterns = [
     path('api/save/win', win),
     path('api/save/failed', failed),
     path('api/save/join', join_save),
-    path('api/save/<id_save>', get_save),
     path('api/save/consumable', consumable),
     path('api/save/shoot', shoot_enemy),
+    path('api/save/<id_save>', get_save),
 ]
