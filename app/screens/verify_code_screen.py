@@ -78,8 +78,8 @@ class VerifyCodeScreen:
                 'email': global_var.verify_code_email
             })
             if res.status_code == 200:
-                global_var.verify_code_email = None
                 if global_var.last_page == 'register':
+                    global_var.verify_code_email = None
                     global_var.navigatePage('login')
                 else:
                     global_var.navigatePage('new_password')
