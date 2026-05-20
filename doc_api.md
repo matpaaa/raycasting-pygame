@@ -304,3 +304,19 @@ BODY
     id_player: int
 }
 ```
+
+### POST /api/save/win
+```
+BODY
+{
+    id_save: int
+}
+```
+
+### POST /api/save/failed
+```
+BODY
+{
+    id_save: int
+}
+```

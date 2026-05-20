@@ -13,7 +13,6 @@ urlpatterns = [
     path('api/saves', get_saves),
     path('api/me', get_info),
     path('api/logout', logout),
-    path('api/save/<id_save>', get_save),
     path('api/player/save', save_player),
     path('api/puzzle/finish', finish_puzzle),
     path('api/recover/item', recover_item),
@@ -23,4 +22,7 @@ urlpatterns = [
     path('api/create/save', create_save),
     path('api/auth/status', auth_status),
     path('api/delete/account', delete_account),
+    path('api/save/win', win),
+    path('api/save/failed', failed),
+    path('api/save/<id_save>', get_save),
 ]
