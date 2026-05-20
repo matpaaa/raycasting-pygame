@@ -50,7 +50,7 @@ class NewPasswordScreen:
             
             if res.status_code == 200:
                 global_var.verify_code_email = None
-                global_var.navigatePage('login')
+                global_var.navigate_page('login')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

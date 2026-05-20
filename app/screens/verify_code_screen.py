@@ -69,7 +69,7 @@ class VerifyCodeScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage(global_var.last_page)
+            global_var.navigate_page(global_var.last_page)
 
         if self.btn_confirm.is_clicked(event):
             Sounds.click()
@@ -80,9 +80,9 @@ class VerifyCodeScreen:
             if res.status_code == 200:
                 if global_var.last_page == 'register':
                     global_var.verify_code_email = None
-                    global_var.navigatePage('login')
+                    global_var.navigate_page('login')
                 else:
-                    global_var.navigatePage('new_password')
+                    global_var.navigate_page('new_password')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

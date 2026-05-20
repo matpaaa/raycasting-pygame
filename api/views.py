@@ -8,7 +8,7 @@ from .models import *
 import json
 import random
 from django.utils.timezone import make_aware
-import string
+from django.utils.timezone import now
 
 @csrf_exempt
 def register(request):
@@ -407,6 +407,7 @@ def get_save(request, id_save):
         "finish": finish_data,
         "puzzles": puzzles_data,
         "open": open_data,
+        "online_code": save_obj.online_code,
         "sprite_doors": sprite_doors_data,
         "sprite_items": sprite_items_data,
         "sprite_enemies": enemies_data
@@ -439,21 +440,23 @@ def save_player(request):
         player.pos_y = pos_y
         player.rotation = rotation
         player.save()
-        
+                        
         if player.is_owner:
             save_obj = player.id_save
             updated_at = make_aware(save_obj.updated_at)
+            print('toto')
             save_obj.duration += int(
                 (now() - updated_at).total_seconds()
             )
             save_obj.save()
 
-        return JsonResponse({})
+        return JsonResponse({}, 200)
 
     except Player.DoesNotExist:
         return JsonResponse({}, status=404)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=500)
     
 
@@ -880,7 +883,9 @@ def save_online(request):
         save.online_code = code
         save.save()
 
-        return JsonResponse({}, status=200)
+        return JsonResponse({
+            'online_code': code
+        }, status=200)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -935,49 +940,32 @@ def join_save(request):
 
         body = json.loads(request.body)
 
-        online_code = body.get("online_code")
-        id_save = body.get("id_save")
-        id_player = body.get("id_player")
-
-        if not online_code or not id_save or not id_player:
+        online_code = int(body.get("online_code"))
+        if not online_code:
             return JsonResponse({}, status=400)
 
-        try:
-            online_code = int(online_code)
-        except ValueError:
-            return JsonResponse({},status=400)
+        save_obj = Save.objects.get(
+            online_code=online_code
+        )
+        
+        game_map = Map.objects.filter(id_map=save_obj.id_map.id_map).first()
+        account_obj = Account.objects.get(id_account=user_id)
+        
+        Player.objects.create(
+            is_owner=False,
+            id_account=account_obj,
+            id_save=save_obj,
+            pos_x=game_map.default_pos_x,
+            pos_y=game_map.default_pos_y
+        )
 
-        try:
-            save = Save.objects.get(
-                id_save=id_save,
-                online_code=online_code
-            )
-
-        except Save.DoesNotExist:
-            return JsonResponse({},status=404)
-
-        try:
-            player = Player.objects.get(
-                id_player=id_player,
-                id_account_id=user_id
-            )
-
-        except Player.DoesNotExist:
-            return JsonResponse({},status=404)
-
-        if player.is_owner:
-            return JsonResponse({},status=403)
-
-        if player.id_save_id == save.id_save:
-            return JsonResponse({},status=400)
-
-        player.id_save = save
-        player.save()
-
-        return JsonResponse({}, status=200)
+        return JsonResponse({
+            'id_save': save_obj.id_save
+        }, status=200)
 
     except Exception as e:
         return JsonResponse({"error": str(e)},status=500)
+    
 def consumable(request):
     if request.method != "POST":
         return JsonResponse({}, status=405)

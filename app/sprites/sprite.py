@@ -6,13 +6,17 @@ class Sprite:
         self._y = y
         self._image = image
         self._id = id
+        self._texture = None
 
 
     def load(self) :
+        if self._texture is None:
+            self._texture = pygame.image.load(self._image).convert_alpha()
+            
         self._sprite = {
             'x': self._x,
             'y': self._y,
-            'texture': pygame.image.load(self._image).convert_alpha()
+            'texture': self._texture
         }
 
     def set_image(self, image: str):
