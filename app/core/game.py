@@ -17,12 +17,14 @@ import app._utils.global_var as global_var
 from app.features.battery import *
 from app.services.save_service import *
 import threading
+from app._utils.wrap_text import *
 
 class Game:
     
     def __init__(self, screen: Surface):
         self.screen = screen
 
+        self.save_loaded = None
         self.map_config = None
         self.sprite_interact = None
         self.event = None
@@ -30,6 +32,9 @@ class Game:
         self.btn_back_menu = Button('RETOUR AU MENU', SCREEN_WIDTH//2 - ELEMENT_WIDTH_LARGE//2, SCREEN_HEIGHT - 150, ELEMENT_WIDTH_LARGE, ELEMENT_HEIGHT)
         self.dead_sound = None
         self.game_menu = False
+        
+        self.menu_puzzle = False
+        self.current_puzzle_index = 0
 
         self.title = Text(
             "SAUVEGARDER LA PARTIE",
@@ -55,6 +60,12 @@ class Game:
             ELEMENT_WIDTH_SMALL,
             ELEMENT_HEIGHT
         )
+        
+        self.arrow_left_x = (SCREEN_WIDTH - Assets.window.get_width())//2 + 32
+        self.arrow_left_y = SCREEN_HEIGHT//2-Assets.arrow_left.get_height()//2
+        
+        self.arrow_right_x = SCREEN_WIDTH - (SCREEN_WIDTH - Assets.window.get_width())//2 - 32 - Assets.arrow_left.get_width()
+        self.arrow_right_y = SCREEN_HEIGHT//2-Assets.arrow_right.get_height()//2
         
     def save_user_async(self):
         thread = threading.Thread(target=save_user, args=(self.user,self.map_config.id_save,))
@@ -100,6 +111,8 @@ class Game:
         self.pygame_actions = PygameActions(self.user, self.screen, self.map_config)
         self.interaction = Interaction(self.screen, self.user)
         
+        self.save_loaded = save_loaded
+        
     def unload_save(self):
         self.map_config = None
         
@@ -134,6 +147,21 @@ class Game:
                 self.game_menu = False
             else:
                 self.game_menu = True
+                
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_m:
+            if self.menu_puzzle:
+                self.menu_puzzle = False
+            else:
+                self.menu_puzzle = True
+        
+        if self.menu_puzzle and self.save_loaded:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT and self.current_puzzle_index > 0:
+                Sounds.click()
+                self.current_puzzle_index = self.current_puzzle_index - 1
+
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and self.current_puzzle_index < len(self.save_loaded['puzzles'])-1:
+                Sounds.click()
+                self.current_puzzle_index = self.current_puzzle_index + 1
 
     def draw(self):
         if self.map_config is None: return
@@ -174,3 +202,36 @@ class Game:
             self.title.draw(self.screen)
             self.btn_back.draw(self.screen)
             self.btn_save.draw(self.screen)
+            
+        puzzles = self.save_loaded['puzzles']
+        if self.menu_puzzle and puzzles:
+            self.screen.blit(Assets.window, ((SCREEN_WIDTH - Assets.window.get_width())//2, (SCREEN_HEIGHT - Assets.window.get_height())//2))
+            
+            puzzle = puzzles[self.current_puzzle_index]
+            finish = [i for i in self.save_loaded['finish'] if i['id_puzzle'] == puzzle['id_puzzle']]
+            title_surf = Fonts.font_title.render(puzzle['title'], True, WHITE)
+            title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 170))
+            self.screen.blit(title_surf, title_rect)
+
+            status_text = "Terminé" if finish else "Pas terminé"
+            status_color = WHITE if finish else DANGER
+
+            status_surf = Fonts.font_title.render(status_text, True, status_color)
+            status_rect = status_surf.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT-((SCREEN_HEIGHT-Assets.window.get_height())//2) - 32))
+            self.screen.blit(status_surf, status_rect)
+
+            lines = wrap_text(puzzle['content'], Fonts.font_puzzle_content, 500)
+
+            y = 250
+            for line in lines:
+                content_surf = Fonts.font_puzzle_content.render(line, True, TEXT_GRAY)
+                content_rect = content_surf.get_rect(center=(SCREEN_WIDTH // 2, y))
+                self.screen.blit(content_surf, content_rect)
+                y += content_surf.get_height() + 5
+            
+            if self.current_puzzle_index > 0:
+                arrow_left  = Assets.arrow_left.copy()
+                self.screen.blit(arrow_left,  (self.arrow_left_x, self.arrow_left_y))
+            if self.current_puzzle_index < len(puzzles)-1:
+                arrow_right = Assets.arrow_right.copy()
+                self.screen.blit(arrow_right, (self.arrow_right_x, self.arrow_right_y))

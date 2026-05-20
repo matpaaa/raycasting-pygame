@@ -94,7 +94,7 @@ class Puzzle(models.Model):
     title = models.CharField(max_length=128)
     content = models.CharField(max_length=128)
     created_at = models.DateTimeField(default=now())
-    id_item = models.ForeignKey(Item,models.SET_NULL,db_column='id_item',null=True,blank=True)
+    id_map = models.ForeignKey(Map, models.DO_NOTHING, db_column='id_map')
 
     class Meta:
         managed = False
