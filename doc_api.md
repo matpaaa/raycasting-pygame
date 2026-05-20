@@ -208,10 +208,12 @@ Sauvegarde du joueur utilisateur de la personne
 ```
 BODY
 {
+    id_save: int
     health: int
     energy: int
     pos_x: float
     pos_y: float
+    rotation: int
 }
 ```
 

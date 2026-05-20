@@ -44,13 +44,14 @@ def load_save(save_id: int):
     global_var.save_store.hydrate_save_loaded(save_id)
     global_var.navigatePage('game')
         
-def save_user(user: User):
+def save_user(user: User, id_save: int):
     data = {
         'health': user.health,
         'energy': user.battery,
         'pos_x': user.pos_x,
         'pos_y': user.pos_y,
-        'rotation': user.rot
+        'rotation': user.rot,
+        'id_save': id_save
     }
     
     res = SaveApi.save_player(data)

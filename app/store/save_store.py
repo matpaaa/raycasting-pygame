@@ -46,10 +46,11 @@ class SaveStore:
             self.save_loaded['sprite_doors']   = []
 
             for sprite in original_doors:
+                is_open = [door for door in self.save_loaded['open'] if door['id_sprite'] == sprite['id_sprite']]
                 if sprite['id_sprite_door_type'] == 'CODE':
-                    self.save_loaded['sprite_doors'].append(DoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['id_sprite']))
+                    self.save_loaded['sprite_doors'].append(FinalDoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['id_sprite'], is_open))
                 else:
-                    self.save_loaded['sprite_doors'].append(FinalDoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['id_sprite']))
+                    self.save_loaded['sprite_doors'].append(DoorSprite(float(sprite['pos_x']), float(sprite['pos_y']), sprite['image'], sprite['id_sprite'], is_open))
 
             for sprite in original_items:
                 item = sprite['item']

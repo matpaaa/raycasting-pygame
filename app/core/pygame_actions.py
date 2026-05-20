@@ -10,6 +10,8 @@ from app.sprites.object_sprite import *
 from app.sprites.door_sprite import *
 import time
 from app.sprites.collision_sprite import *
+from app.services.game_service import *
+import threading
 
 class PygameActions:
 
@@ -20,9 +22,10 @@ class PygameActions:
     _last_action = None
     _last_action_light = None
 
-    def __init__(self, user: User, screen: Surface):
+    def __init__(self, user: User, screen: Surface, map_config):
         self.user = user
         self.screen = screen
+        self.map_config = map_config
 
     @property
     def can_exec_action_e(self):
@@ -42,27 +45,6 @@ class PygameActions:
 
     def one_actions(self, sprite: Sprite | None, event: Event | None):
         if event.type != pygame.KEYDOWN: return
-
-        # if event.key == pygame.K_e:
-        #     if (sprite is not None):
-        #         if isinstance(sprite, HumanSprite):
-        #             self._last_action = time.time()
-        #             sprite.handle_interaction(self.screen)
-
-        #             if event.key == pygame.K_RIGHT:
-        #                 sprite.next_dialog()
-        #             elif event.key == pygame.K_LEFT:
-        #                 sprite.previous_dialog()
-
-        #         elif isinstance(sprite, ObjectSprite):
-        #             sprite.handle_interaction(self.user)
-        #         elif isinstance(sprite, CollisionSprite):
-        #             if self.can_exec_action_e:
-        #                 self._last_action = time.time()
-        #                 sprite.handle_open(self.user)
-
-        #     else:
-        #         self.user.use_item()
 
         if event.key == pygame.K_l:
             self.user.toogle_light()
@@ -140,6 +122,9 @@ class PygameActions:
                     if self._last_action is None or time.time() - self._last_action >= self._min_time_action_e:
                         self._last_action = time.time()
                         sprite.handle_open(self.user)
+                        
+                        thread = threading.Thread(target=open_door, args=(self.map_config.id_save, sprite.id,))
+                        thread.start()
 
             else:
                 self.user.use_item()

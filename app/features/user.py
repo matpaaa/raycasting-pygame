@@ -13,6 +13,7 @@ from app.constants.assets import *
 from app.features.map_config import *
 from app.sprites.collision_sprite import *
 from app.services.game_service import *
+import threading
 
 class User:
 
@@ -121,7 +122,8 @@ class User:
         else:
             Sounds.take_item()
             
-        recover_item(self.map_config.id_save, item.id_item, id_sprite)
+        thread = threading.Thread(target=recover_item, args=(self.map_config.id_save, item.id_item, id_sprite,))
+        thread.start()
     
     def get_item(self, index: int) -> Item | None:
         if len(self.inventory_items)-1 < index: return None
@@ -247,7 +249,9 @@ class User:
         item_used = inventory_items.pop(self.slot_select)
         self._items = inventory_items + self.secret_items + self.ammo_items
         self.map_config.add_item_to_sprite(self.pos_x, self.pos_y, item_used)
-        drop_item(self.map_config.id_save, item_used.id_item, self.pos_x, self.pos_y)
+        
+        thread = threading.Thread(target=drop_item, args=(self.map_config.id_save, item_used.id_item, self.pos_x, self.pos_y,))
+        thread.start()
         
     def set_items(self, items: List[Item]):
         self._items = items

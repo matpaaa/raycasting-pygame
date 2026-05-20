@@ -114,9 +114,11 @@ class SavesScreen:
             return
 
         if self.arrow_left_rect.collidepoint(event.pos):
+            Sounds.click()
             self.current_index = (self.current_index - 1) % self._total_slots
 
         elif self.arrow_right_rect.collidepoint(event.pos):
+            Sounds.click()
             self.current_index = (self.current_index + 1) % self._total_slots
             
         elif self.create_save_btn.is_clicked(event):
