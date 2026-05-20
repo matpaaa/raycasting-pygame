@@ -36,10 +36,12 @@ class User:
     _light_enabled = False
     _battery = MAX_USER_BATTERY
 
-    def __init__(self, pos_x: int, pos_y: int, rot: float, map_config: MapConfig):
+    def __init__(self, pos_x: int, pos_y: int, rot: float, health: int, battery: int, map_config: MapConfig):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rot = rot
+        self._health = health
+        self._battery = battery
         self.map_config = map_config
 
     def _is_collision(self, pos_x: float, pos_y: float):
@@ -163,6 +165,9 @@ class User:
 
         if item_used.id_item == 'CANNED':
             self.heal(item_used.value)
+            
+            thread = threading.Thread(target=user_comsumable, args=(self.map_config.id_save, item_used.id_item,))
+            thread.start()
 
     def handle_effect(self):
         if self.has_speed_boost and time.time() >= self._speed_boost_end:
@@ -197,6 +202,7 @@ class User:
 
             if not sprite_shooted is None:
                 sprite_shooted.receive_damage(self.item_selected.value)
+                shoot_enemy(self.map_config.id_save, sprite_shooted.id)
 
     def get_enemie_shot(self):
         dx = math.cos(self.get_rot)
