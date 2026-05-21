@@ -71,33 +71,33 @@ MAP_SPRITES_MOCKED = [
 
    
 # VODDDDDKAAAAAA
-ObjectSprite(11.5, 16.5, ItemFactory.vodka()),
-ObjectSprite(42.5, 1.5, ItemFactory.vodka()),
-#conserves
-ObjectSprite(1.5, 2.5, ItemFactory.canned()),
-ObjectSprite(38.5, 14.5, ItemFactory.canned()),
-ObjectSprite(31.5, 17.5, ItemFactory.canned()),
-#Gun
-ObjectSprite(31.5, 14.5, ItemFactory.gun()),
-#Munitions
-ObjectSprite(10.5, 9.5, ItemFactory.ammo()),
-ObjectSprite(11.5, 9.5, ItemFactory.ammo()),
-#Batteries 
-ObjectSprite(26.5, 24.5, ItemFactory.battery()),
-ObjectSprite(42.5, 24.5 ,ItemFactory.battery()),
-# CODES
-ObjectSprite(32.5, 14.5, ItemFactory.code(1)),
-ObjectSprite(31.5, 5.5, ItemFactory.code(2)),
-ObjectSprite(1.5, 14.5, ItemFactory.code(3)),
-ObjectSprite(2.5, 5.5, ItemFactory.code(4)),
-ObjectSprite(25.5, 23.5, ItemFactory.code(5)),
+    ObjectSprite(11.5, 16.5, ItemFactory.vodka()),
+    ObjectSprite(42.5, 1.5, ItemFactory.vodka()),
+    #conserves
+    ObjectSprite(1.5, 2.5, ItemFactory.canned()),
+    ObjectSprite(38.5, 14.5, ItemFactory.canned()),
+    ObjectSprite(31.5, 17.5, ItemFactory.canned()),
+    #Gun
+    ObjectSprite(31.5, 14.5, ItemFactory.gun()),
+    #Munitions
+    ObjectSprite(10.5, 9.5, ItemFactory.ammo()),
+    ObjectSprite(11.5, 9.5, ItemFactory.ammo()),
+    #Batteries 
+    ObjectSprite(26.5, 24.5, ItemFactory.battery()),
+    ObjectSprite(42.5, 24.5 ,ItemFactory.battery()),
+    # CODES
+    ObjectSprite(32.5, 14.5, ItemFactory.code(1)),
+    ObjectSprite(31.5, 5.5, ItemFactory.code(2)),
+    ObjectSprite(1.5, 14.5, ItemFactory.code(3)),
+    ObjectSprite(2.5, 5.5, ItemFactory.code(4)),
+    ObjectSprite(25.5, 23.5, ItemFactory.code(5)),
 
-# CLÉS
-ObjectSprite(12.5, 5.5, ItemFactory.key()),
-ObjectSprite(9.5, 23.5, ItemFactory.key()),
-ObjectSprite(18.5, 16.5, ItemFactory.key()),
-ObjectSprite(27.5, 10.5, ItemFactory.key()),
-ObjectSprite(40.5, 18.5, ItemFactory.key()),
+    # CLÉS
+    ObjectSprite(12.5, 5.5, ItemFactory.key()),
+    ObjectSprite(9.5, 23.5, ItemFactory.key()),
+    ObjectSprite(18.5, 16.5, ItemFactory.key()),
+    ObjectSprite(27.5, 10.5, ItemFactory.key()),
+    ObjectSprite(40.5, 18.5, ItemFactory.key()),
 ]
 MAP_TEXTURES_MOCKED = {
     1: './app/assets/textures/wall.png',

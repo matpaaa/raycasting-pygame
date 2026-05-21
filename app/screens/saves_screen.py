@@ -98,7 +98,7 @@ class SavesScreen:
         )
         
         self.btn_back = Button(
-            'BACK',
+            'Retour',
             SCREEN_WIDTH/2 - GAP_BETWEEN_ELEMENT/2 - ELEMENT_WIDTH_SMALL,
             368 + ELEMENT_HEIGHT,
             ELEMENT_WIDTH_SMALL,
@@ -232,7 +232,7 @@ class SavesScreen:
             if self._is_new_game_selected:
                 self.create_save_async()
                 self.saves = []
-            else:   
+            elif not self._selected_save['is_win'] and not self._selected_save['is_failed']: 
                 self.load_save_async()
                 self.saves = []
 

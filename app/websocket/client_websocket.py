@@ -6,6 +6,7 @@ from app.sprites.object_sprite import *
 from app.sprites.player_sprite import *
 from app.api.api_config import *
 from app.sprites.door_sprite import *
+from app.sprites.enemie_sprite import *
 
 class ClientWebsocket:
     
@@ -100,6 +101,24 @@ class ClientWebsocket:
         if isinstance(sprite, DoorSprite):
             sprite.handle_force_open()
             self.user.use_key()
+            
+    def handle_kill_enemy(self, data):
+        id_player = data['id_player']
+        if id_player == self.id_player: return
+        
+        print(data)
+        
+        id_sprite = data['id_sprite']
+        sprite = self.map_config.get_sprite(id_sprite)
+        if isinstance(sprite, EnemieSprite):
+            sprite.dead()
+            
+    def handle_finish_puzzle(self, data):
+        id_player = data['id_player']
+        if id_player == self.id_player: return
+        
+        id_puzzle = data['id_puzzle']
+        self.map_config.handle_finish_puzzle(id_puzzle)
         
     def handle_rcv(self, data_rcv):
         type = data_rcv['type']
@@ -117,6 +136,10 @@ class ClientWebsocket:
             self.handle_join_player(data_rcv)
         elif type == 'open_door':
             self.handle_open_door(data_rcv)
+        elif type == 'kill_enemy':
+            self.handle_kill_enemy(data_rcv)
+        elif type == 'finish_puzzle':
+            self.handle_finish_puzzle(data_rcv)
         
     async def connect(self):
         async with websockets.connect(f"ws://{API_ADDRESS_IP}:8000/ws/save/{self.id_save}/") as ws:
