@@ -1005,6 +1005,11 @@ def win(request):
     
     save_obj = Save.objects.filter(id_save=id_save).first()
     save_obj.is_win = True
+    
+    updated_at = make_aware(save_obj.updated_at)
+    save_obj.duration += int(
+        (now() - updated_at).total_seconds()
+    )
     save_obj.save()
     
     return JsonResponse({},status=200)
@@ -1024,6 +1029,11 @@ def failed(request):
     
     save_obj = Save.objects.filter(id_save=id_save).first()
     save_obj.is_failed = True
+    
+    updated_at = make_aware(save_obj.updated_at)
+    save_obj.duration += int(
+        (now() - updated_at).total_seconds()
+    )
     save_obj.save()
     
     return JsonResponse({},status=200)
