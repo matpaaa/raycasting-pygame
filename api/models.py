@@ -163,6 +163,7 @@ class SpriteItem(models.Model):
     id_save = models.OneToOneField(Save, models.DO_NOTHING, db_column='id_save')
     created_at = models.DateTimeField(default=now())
     id_item = models.ForeignKey(Item, models.DO_NOTHING, db_column='id_item')
+    value = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True,default=None)
 
     class Meta:
         managed = False

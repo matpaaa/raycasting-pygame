@@ -371,6 +371,7 @@ def get_save(request, id_save):
             "id_sprite": sprite_obj.id_sprite,
             "pos_x": sprite_obj.pos_x,
             "pos_y": sprite_obj.pos_y,
+            "value": sprite_item.value,
             "created_at": sprite_item.created_at,
             "item": {
                 "image": item_obj.image,
@@ -380,7 +381,7 @@ def get_save(request, id_save):
                 "id_item_type": item_obj.id_item_type_id
             }
         })
-
+        
     enemies_data = []
     enemies = SpriteEnemy.objects.filter(id_save=id_save)
 
@@ -554,6 +555,24 @@ def recover_item(request):
                 id_item=item_obj,
             )
             
+            if item_obj.id_item == 'CODE':
+                sprite_item = SpriteItem.objects.filter(id_sprite=id_sprite).first()                
+                puzzle_obj = Puzzle.objects.filter(id_puzzle=sprite_item.value).first()
+                
+                ToFinish.objects.create(
+                    id_save=save_obj,
+                    id_puzzle=puzzle_obj
+                )
+                
+                async_to_sync(channel_layer.group_send)(
+                f"save_{id_save}",
+                {
+                    "type": "finish_puzzle",
+                    "id_puzzle": sprite_item.value,
+                    "id_player": player.id_player
+                }
+            )
+            
             async_to_sync(channel_layer.group_send)(
                 f"save_{id_save}",
                 {
@@ -595,6 +614,7 @@ def recover_item(request):
         return JsonResponse({}, status=404)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=500)
     
 @csrf_exempt
@@ -731,12 +751,20 @@ def create_save(request):
             )
 
             item_obj = Item.objects.get(id_item=item["id_item"])
-
-            SpriteItem.objects.create(
-                id_sprite=sprite_obj,
-                id_save=save_obj,
-                id_item=item_obj,
-            )
+            
+            if item_obj.id_item == 'CODE':
+                SpriteItem.objects.create(
+                    id_sprite=sprite_obj,
+                    id_save=save_obj,
+                    id_item=item_obj,
+                    value=item['value']
+                )
+            else:
+                SpriteItem.objects.create(
+                    id_sprite=sprite_obj,
+                    id_save=save_obj,
+                    id_item=item_obj,
+                )
 
         return JsonResponse(model_to_dict(save_obj),status=200)
 

@@ -53,6 +53,7 @@ class Game:
         
         self.players = []
         self.online_code = None
+        self.finish = []
 
         self.title = Text(
             "SAUVEGARDER LA PARTIE",
@@ -144,12 +145,13 @@ class Game:
                 self.players.append(PlayerSprite(player_pos_x, player_pos_y, id_player))
                 
             self.online_code = save_loaded['online_code']
+            self.finish = save_loaded['finish']
                     
             sprites = save_loaded['sprite_items'] + save_loaded['sprite_enemies'] + save_loaded['sprite_doors'] + [sprite for sprite in MAP_SPRITES_MOCKED if isinstance(sprite, HumanSprite)] + self.players
             for sprite in sprites:
                 sprite.load()
                 
-            self.map_config = MapConfig(MAP_MOCKED, sprites, MAP_TEXTURES_MOCKED, save_loaded['id_save'])
+            self.map_config = MapConfig(MAP_MOCKED, sprites, MAP_TEXTURES_MOCKED, save_loaded['id_save'], self.finish)
             self.map_config.load_textures()
             
             user_items = []
@@ -215,6 +217,7 @@ class Game:
         self.is_win = False
         self.is_win_req = False
         self.players = []
+        self.finish = []
 
     def handle_event(self, event: Event):
         try:
@@ -269,7 +272,7 @@ class Game:
     def draw(self):
         try:
             if self.map_config is None: return
-                    
+                                            
             self.screen.fill(SCREEN_BACKGROUND)
             self.ray_casting.launch_fucking_rays(self.user)
             self.ray_casting.draw_sprites(self.user)
@@ -351,7 +354,7 @@ class Game:
                 self.screen.blit(Assets.window, ((SCREEN_WIDTH - Assets.window.get_width())//2, (SCREEN_HEIGHT - Assets.window.get_height())//2))
                 
                 puzzle = puzzles[self.current_puzzle_index]
-                finish = [i for i in self.save_loaded['finish'] if i['id_puzzle'] == puzzle['id_puzzle']]
+                finish = [i for i in self.finish if i['id_puzzle'] == puzzle['id_puzzle']]
                 title_surf = Fonts.font_title.render(puzzle['title'], True, WHITE)
                 title_rect = title_surf.get_rect(center=(SCREEN_WIDTH // 2, 170))
                 self.screen.blit(title_surf, title_rect)
