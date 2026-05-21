@@ -232,7 +232,7 @@ class SavesScreen:
             if self._is_new_game_selected:
                 self.create_save_async()
                 self.saves = []
-            else:   
+            elif not self._selected_save['is_win'] and not self._selected_save['is_failed']: 
                 self.load_save_async()
                 self.saves = []
 

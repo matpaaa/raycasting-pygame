@@ -227,11 +227,16 @@ class Game:
             if not self.is_win and not self.is_failed:
                 self.pygame_actions.one_actions(self.sprite_interact, self.event)
             
+            if self.btn_back_menu.is_clicked(event) and (self.is_win or self.is_failed):
+                Sounds.click()
+                global_var.navigate_page('saves')
+                self.game_menu = False
+                
             if self.game_menu:
                 if self.btn_active_online.is_clicked(event) and self.current_player['is_owner']:
                     self.active_online()
-
-                if self.btn_back_menu.is_clicked(event) or self.btn_back.is_clicked(event):
+                    
+                if self.btn_back.is_clicked(event):
                     Sounds.click()
                     global_var.navigate_page('saves')
                     self.game_menu = False

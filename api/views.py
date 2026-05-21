@@ -990,6 +990,7 @@ def save_online(request):
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
       
+@csrf_exempt
 def win(request):
     if request.method != "POST":
         return JsonResponse({},status=405)
