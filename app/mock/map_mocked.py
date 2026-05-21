@@ -42,41 +42,68 @@ zombie_path = './app/assets/game/pnj/zombie-pnj.png'
 bars_path = './app/assets/textures/bars.png'
 
 MAP_SPRITES_MOCKED = [
-    HumanSprite(1.5, 2, arnaud_pnj_path, [
+    HumanSprite(3.5, 6.5, arnaud_pnj_path, [
         'utilise Y pour plus d"infos de notre part',
         'Mon tunnel... ne va surtout pas là bas',
     ]),
-    HumanSprite(19.5, 2, epstein_pnj_path, [
+    HumanSprite(42.5, 14.5, epstein_pnj_path, [
         "t'es venu me sortir de là ou juste me regarder crever ici ?",
         " impossibles de mettre la main sur ce maudit code."
+    ]),
+      HumanSprite(33.5, 2.5, default_pnj_path, [
+        "à changer"#le vieux
+    ]),
+          HumanSprite(33.5, 2.5, default_pnj_path, [
+        "à changer"
+    ]),
+      HumanSprite(32.5, 20.5, default_pnj_path, [
+        "à changer"
     ]),
     HumanSprite(11.5, 1.5, default_pnj_path, [
         "tu veux un bout de code,tu en as là bas dans la salle de ces zombies .",
         "c'est fini pour moi meme si je sors...",
     ]),
-    DoorSprite(19.5, 4,bars_path ),
-    DoorSprite(16.5, 16, bars_path ),
-    DoorSprite(17.5, 6.5, bars_path),
-    EnemieSprite(8, 17, zombie_path, 50, 20),
-    ObjectSprite(3.5,21, ItemFactory.battery()),
-    ObjectSprite(11.5,17, ItemFactory.vodka()),
-    ObjectSprite(10.5,17.5, ItemFactory.vodka()),
-    ObjectSprite(32, 15.5, ItemFactory.code(1)),
-    ObjectSprite(32,5.5 , ItemFactory.code(2)),  
-    ObjectSprite(1.5, 15, ItemFactory.code(3)),
-    ObjectSprite(2.5,6, ItemFactory.code(4)),
-    ObjectSprite(25,24.5, ItemFactory.code(5)),
-    ObjectSprite(12.5,6, ItemFactory.key()),
-    ObjectSprite(9.5,24 , ItemFactory.key()),
-    ObjectSprite(18.5,17.5,ItemFactory.key()),
-    ObjectSprite(27.5,10.5,ItemFactory.key()),
-    ObjectSprite(41,17.5,ItemFactory.key()),
-    ObjectSprite(1.5, 2.5, ItemFactory.canned()), 
-    ObjectSprite(13.3, 9.5, ItemFactory.gun()),
-    ObjectSprite(10, 9.5, ItemFactory.ammo()),
-    ObjectSprite(10.5, 9.5, ItemFactory.ammo())
-]
+    #Zombies
+    EnemieSprite(38.5, 22.5, zombie_path, 50,20),
+    EnemieSprite(37.5, 22.5, zombie_path, 50, 20),
+    EnemieSprite(10.5, 8.5, zombie_path, 50, 20),
+    EnemieSprite(28.5, 1.5, zombie_path, 50, 20),
+    
+    
+    # EnemieSprite(12.5, 17.5, zombie_path, 20, 20),
+    # ObjectSprite(12, 15, ItemFactory.gun()),
+    # ObjectSprite(12, 14, ItemFactory.ammo()),
+    
+   
+    # VODDDDDKAAAAAA
+    ObjectSprite(11.5, 16.5, ItemFactory.vodka()),
+    ObjectSprite(42.5, 1.5, ItemFactory.vodka()),
+    #conserves
+    ObjectSprite(1.5, 2.5, ItemFactory.canned()),
+    ObjectSprite(38.5, 14.5, ItemFactory.canned()),
+    ObjectSprite(31.5, 17.5, ItemFactory.canned()),
+    #Gun
+    ObjectSprite(31.5, 14.5, ItemFactory.gun()),
+    #Munitions
+    ObjectSprite(10.5, 9.5, ItemFactory.ammo()),
+    ObjectSprite(11.5, 9.5, ItemFactory.ammo()),
+    #Batteries 
+    ObjectSprite(26.5, 24.5, ItemFactory.battery()),
+    ObjectSprite(42.5, 24.5 ,ItemFactory.battery()),
+    # CODES
+    ObjectSprite(32.5, 14.5, ItemFactory.code(1)),
+    ObjectSprite(31.5, 5.5, ItemFactory.code(2)),
+    ObjectSprite(1.5, 14.5, ItemFactory.code(3)),
+    ObjectSprite(2.5, 5.5, ItemFactory.code(4)),
+    ObjectSprite(25.5, 23.5, ItemFactory.code(5)),
 
+    # CLÉS
+    ObjectSprite(12.5, 5.5, ItemFactory.key()),
+    ObjectSprite(9.5, 23.5, ItemFactory.key()),
+    ObjectSprite(18.5, 16.5, ItemFactory.key()),
+    ObjectSprite(27.5, 10.5, ItemFactory.key()),
+    ObjectSprite(40.5, 18.5, ItemFactory.key()),
+]
 MAP_TEXTURES_MOCKED = {
     1: './app/assets/textures/wall.png',
     2: './app/assets/textures/sky.png',

@@ -160,7 +160,7 @@ class User:
                         self._has_sprite_interaction = True
                         return sprite
                     
-                if isinstance(sprite, EnemieSprite):
+                if isinstance(sprite, EnemieSprite) and not sprite.is_dead:
                     self.damage(ZOMBIE_DAMAGE)
                     
                 return sprite

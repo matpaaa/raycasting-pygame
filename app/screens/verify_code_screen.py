@@ -48,7 +48,7 @@ class VerifyCodeScreen:
         )
 
         self.btn_back = Button(
-            'BACK',
+            'Retour',
             SCREEN_WIDTH/2 - GAP_BETWEEN_ELEMENT/2 - ELEMENT_WIDTH_SMALL,
             368 + ELEMENT_HEIGHT,
             ELEMENT_WIDTH_SMALL,
