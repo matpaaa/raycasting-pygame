@@ -23,6 +23,12 @@ class MapConfig:
         new_sprite = ObjectSprite(x, y, item)
         new_sprite.load()
         self._sprites.append(new_sprite)
+        
+    def get_sprite(self, id_sprite: int) -> Sprite | None:
+        return next(sprite for sprite in self.sprites if sprite.id == id_sprite)
+    
+    def add_sprite(self, sprite: Sprite):
+        self._sprites.append(sprite)
 
     @property
     def map(self) -> List[List[int]]:

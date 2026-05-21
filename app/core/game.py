@@ -1,3 +1,5 @@
+import asyncio
+
 from app.core.pygame_actions import PygameActions
 from app.core.ray_casting import RayCasting
 from app.features.minimap import Minimap
@@ -164,20 +166,20 @@ class Game:
             id_player = int(self.current_player['id_player'])
             rotation = self.current_player['rotation'] or DEFAULT_USER_ROT
             
-            self.client_ws = ClientWebsocket(self.players, save_loaded['id_save'], self.current_player['id_player'], self.map_config)
+            self.user = User(pos_x, pos_y, rotation, health, energy, id_player, self.map_config)
+            self.user.set_items(user_items)
+            
+            self.client_ws = ClientWebsocket(self.players, save_loaded['id_save'], self.current_player['id_player'], self.map_config, self.user)
             threading.Thread(
                 target=lambda: asyncio.run(self.client_ws.connect())
             ).start()
-            
-            self.user = User(pos_x, pos_y, rotation, health, energy, id_player, self.map_config, self.client_ws)
-            self.user.set_items(user_items)
             
             self.health = Health(self.user, self.screen)
             self.battery = Battery(self.screen, self.user)
             self.inventory = Inventory(self.user, self.screen)
             self.ray_casting = RayCasting(self.screen, self.user, self.map_config)
             self.minimap = Minimap(self.screen, self.user, self.map_config)
-            self.pygame_actions = PygameActions(self.user, self.screen, self.map_config)
+            self.pygame_actions = PygameActions(self.user, self.screen, self.map_config, self.client_ws)
             self.interaction = Interaction(self.screen, self.user)
             
             self.save_loaded = save_loaded

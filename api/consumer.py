@@ -45,8 +45,31 @@ class ConsumerWebsocket(AsyncWebsocketConsumer):
         
     async def drop_item(self, event):
         await self.send(text_data=json.dumps({
-            "type": "join",
+            "type": "drop_item",
             "pos_x": event["pos_x"],
             "pos_y": event["pos_y"],
-            "item": event["item"]
+            "item": event["item"],
+            "id_player": event["id_player"]
+        }))
+        
+    async def recover_item(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "recover_item",
+            "id_sprite": event["id_sprite"],
+            "id_player": event["id_player"]
+        }))
+        
+    async def recover_item_secret(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "recover_secret_item",
+            "id_player": event["id_player"],
+            "id_sprite": event["id_sprite"],
+            "item": event["item"],
+        }))
+        
+    async def open_door(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "open_door",
+            "id_sprite": event["id_sprite"],
+            "id_player": event["id_player"]
         }))

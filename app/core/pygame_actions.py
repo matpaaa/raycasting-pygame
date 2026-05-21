@@ -1,3 +1,5 @@
+import asyncio
+
 import pygame
 from pygame import Surface
 from app._utils.sounds import *
@@ -22,10 +24,11 @@ class PygameActions:
     _last_action = None
     _last_action_light = None
 
-    def __init__(self, user: User, screen: Surface, map_config):
+    def __init__(self, user: User, screen: Surface, map_config, ws):
         self.user = user
         self.screen = screen
         self.map_config = map_config
+        self.ws = ws
 
     @property
     def can_exec_action_e(self):
@@ -39,9 +42,19 @@ class PygameActions:
 
     def user_move_up(self):
         self.user.move_up()
+        
+        if self.ws:
+            threading.Thread(
+                target=lambda: asyncio.run(self.ws.move())
+            ).start()
 
     def user_move_down(self):
         self.user.move_down()
+        
+        if self.ws:
+            threading.Thread(
+                target=lambda: asyncio.run(self.ws.move())
+            ).start()
 
     def one_actions(self, sprite: Sprite | None, event: Event | None):
         if event.type != pygame.KEYDOWN: return

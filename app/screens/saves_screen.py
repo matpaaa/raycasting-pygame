@@ -149,9 +149,12 @@ class SavesScreen:
 
     @property
     def _selected_save(self):
-        if self._is_new_game_selected:
-            return None
-        return self.saves[self.current_index - 1]
+        try:
+            if self._is_new_game_selected:
+                return None
+            return self.saves[self.current_index - 1]
+        except Exception as e:
+            print(e)
     
     def create_save_async(self):
         global_var.navigate_page('loading')
@@ -269,7 +272,7 @@ class SavesScreen:
 
         if self._is_new_game_selected:
             self.screen.blit(Assets.start_game, (self.start_game_x, self.start_game_y))
-        else:
+        elif self._selected_save:
             self._draw_save_card(self._selected_save)
             
         if self.modal_join_save:

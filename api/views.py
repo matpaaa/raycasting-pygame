@@ -446,7 +446,6 @@ def save_player(request):
         if player.is_owner:
             save_obj = player.id_save
             updated_at = make_aware(save_obj.updated_at)
-            print('toto')
             save_obj.duration += int(
                 (now() - updated_at).total_seconds()
             )
@@ -547,16 +546,41 @@ def recover_item(request):
             return JsonResponse({},status=403)
 
         item_obj = Item.objects.get(id_item=id_item)
+        channel_layer = get_channel_layer()
         
         if item_obj.id_item_type.id_item_type == 'SECRET':
             ItemSecretPossessed.objects.create(
                 id_save=save_obj,
                 id_item=item_obj,
             )
+            
+            async_to_sync(channel_layer.group_send)(
+                f"save_{id_save}",
+                {
+                    "type": "recover_item_secret",
+                    "id_sprite": id_sprite,
+                    "item": {
+                        "image": item_obj.image,
+                        "id_item": item_obj.id_item,
+                        "value": float(item_obj.value) if item_obj.value else None,
+                        "name": item_obj.name,
+                        "id_item_type": item_obj.id_item_type_id
+                    },
+                    "id_player": player.id_player
+                }
+            )
         else:
             ItemPossessed.objects.create(
                 id_player=player,
                 id_item=item_obj,
+            )
+            async_to_sync(channel_layer.group_send)(
+                f"save_{id_save}",
+                {
+                    "type": "recover_item",
+                    "id_sprite": id_sprite,
+                    "id_player": player.id_player
+                }
             )
             
         sprite_obj = Sprite.objects.filter(id_sprite=id_sprite)
@@ -579,6 +603,10 @@ def open_door(request):
         return JsonResponse({}, status=405)
 
     try:
+        user_id = request.session.get("user_id")
+        if not user_id:
+            return JsonResponse({}, status=401)
+        
         body = json.loads(request.body)
 
         id_save = body.get("id_save")
@@ -616,6 +644,21 @@ def open_door(request):
         ToOpen.objects.create(
             id_save=save_obj,
             id_sprite=door,
+        )
+        
+        player_obj = Player.objects.filter(
+            id_save=id_save,
+            id_account=user_id
+        ).first()
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"save_{id_save}",
+            {
+                "type": "open_door",
+                "id_sprite": id_sprite,
+                "id_player": player_obj.id_player
+            }
         )
 
         return JsonResponse({}, status=200)
@@ -722,15 +765,21 @@ def delete_save(request):
             return JsonResponse({},status=400)
 
         save_obj = Save.objects.filter(id_save=id_save).first()
-
-        if not save_obj:
-            return JsonResponse({},status=404)
-
-        save_obj.delete()
+        
+        player = Player.objects.filter(
+            id_save=id_save,
+            id_account=user_id
+        ).first()
+        
+        if player.is_owner:
+            save_obj.delete()
+        else:
+            player.delete()
 
         return JsonResponse({},status=200)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=500) 
 
 def auth_status(request):
@@ -821,7 +870,7 @@ def drop_item(request):
                     "name": item_obj.name,
                     "id_item_type": item_obj.id_item_type_id
                 },
-                "id_player": user_id
+                "id_player": player.id_player
             }
         )
 

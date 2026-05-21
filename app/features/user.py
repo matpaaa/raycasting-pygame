@@ -1,4 +1,3 @@
-import asyncio
 import math
 import time
 from typing import List
@@ -37,7 +36,7 @@ class User:
     _light_enabled = False
     _battery = MAX_USER_BATTERY
 
-    def __init__(self, pos_x: int, pos_y: int, rot: float, health: int, battery: int, id_player: int, map_config: MapConfig, ws):
+    def __init__(self, pos_x: int, pos_y: int, rot: float, health: int, battery: int, id_player: int, map_config: MapConfig):
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.rot = rot
@@ -45,7 +44,6 @@ class User:
         self._battery = battery
         self.id_player = id_player
         self.map_config = map_config
-        self.ws = ws
 
     def _is_collision(self, pos_x: float, pos_y: float):
         collision_sprites: List[CollisionSprite] = list(filter(lambda sprite: isinstance(sprite, CollisionSprite), self.map_config.sprites))
@@ -78,12 +76,7 @@ class User:
 
         if is_collision:
             Sounds.hurt()
-        return is_collision
-    
-    def ws_move(self):
-        threading.Thread(
-            target=lambda: asyncio.run(self.ws.move(self))
-        ).start()
+        return is_collision        
 
     def move_up(self):
         new_pos_x = self.pos_x + self._velocity * math.cos(self.rot)
@@ -94,7 +87,6 @@ class User:
 
         self.pos_x = new_pos_x
         self.pos_y = new_pos_y
-        self.ws_move()
 
     def move_down(self):
         new_pos_x = self.pos_x - self._velocity * math.cos(self.rot)
@@ -105,7 +97,6 @@ class User:
 
         self.pos_x = new_pos_x
         self.pos_y = new_pos_y
-        self.ws_move()
 
     def move_left(self):
         self.rot -= self._rotate_rad
@@ -133,7 +124,7 @@ class User:
         if slot_num < 0 or slot_num > MAX_ITEM_SLOTS or slot_num == self._slot_select: return
         self._slot_select = slot_num
 
-    def add_item(self, item: Item, id_sprite):
+    def add_item(self, item: Item, id_sprite: int, update_req=True):
         if item.id_item_type == 'ELECTRICITY':
             self._battery += item.value
             return
@@ -148,8 +139,9 @@ class User:
         else:
             Sounds.take_item()
             
-        thread = threading.Thread(target=recover_item, args=(self.map_config.id_save, item.id_item, id_sprite,))
-        thread.start()
+        if update_req:
+            thread = threading.Thread(target=recover_item, args=(self.map_config.id_save, item.id_item, id_sprite,))
+            thread.start()
     
     def get_item(self, index: int) -> Item | None:
         if len(self.inventory_items)-1 < index: return None
