@@ -189,7 +189,8 @@ class Game:
             if self.save_loaded['is_win']:
                 self.is_win = True
                 self.win_req()
-        except:
+        except Exception as e:
+            print(e)
             self.navigate_error()
         
     def unload_save(self):
@@ -257,7 +258,8 @@ class Game:
                     elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT and self.current_puzzle_index < len(self.save_loaded['puzzles'])-1:
                         Sounds.click()
                         self.current_puzzle_index = self.current_puzzle_index + 1
-        except:
+        except Exception as e:
+            print(e)
             self.navigate_error()
 
     def draw(self):
@@ -372,5 +374,6 @@ class Game:
                 if self.current_puzzle_index < len(puzzles)-1:
                     arrow_right = Assets.arrow_right.copy()
                     self.screen.blit(arrow_right, (self.arrow_right_x, self.arrow_right_y))
-        except:
+        except Exception as e:
+            print(e)
             self.navigate_error()
