@@ -16,7 +16,7 @@ class HomeScreen:
     def handle_event(self, event):
         if btn_connect.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('login')
+            global_var.navigate_page('login')
 
         if btn_quit.is_clicked(event):
             Sounds.click()

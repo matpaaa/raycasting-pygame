@@ -300,7 +300,41 @@ Un joueur qui est différent de celui d'origine peut rejoindre la partie en entr
 BODY
 {
     online_code: str
+}
+```
+
+### POST /api/save/win
+```
+BODY
+{
     id_save: int
-    id_player: int
+}
+```
+
+### POST /api/save/failed
+```
+BODY
+{
+    id_save: int
+}
+```
+
+### POST /api/save/consumable
+Consommer une item
+```
+BODY
+{
+    id_item: int
+    id_save: int
+}
+```
+
+### POST /api/save/shoot
+Consommer une item
+```
+BODY
+{
+    id_sprite: int
+    id_save: int
 }
 ```

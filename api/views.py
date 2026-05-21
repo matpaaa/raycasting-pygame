@@ -8,6 +8,7 @@ from .models import *
 import json
 import random
 from django.utils.timezone import make_aware
+from django.utils.timezone import now
 
 @csrf_exempt
 def register(request):
@@ -406,6 +407,7 @@ def get_save(request, id_save):
         "finish": finish_data,
         "puzzles": puzzles_data,
         "open": open_data,
+        "online_code": save_obj.online_code,
         "sprite_doors": sprite_doors_data,
         "sprite_items": sprite_items_data,
         "sprite_enemies": enemies_data
@@ -438,21 +440,23 @@ def save_player(request):
         player.pos_y = pos_y
         player.rotation = rotation
         player.save()
-        
+                        
         if player.is_owner:
             save_obj = player.id_save
             updated_at = make_aware(save_obj.updated_at)
+            print('toto')
             save_obj.duration += int(
                 (now() - updated_at).total_seconds()
             )
             save_obj.save()
 
-        return JsonResponse({})
+        return JsonResponse({}, 200)
 
     except Player.DoesNotExist:
         return JsonResponse({}, status=404)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)}, status=500)
     
 
@@ -806,6 +810,7 @@ def drop_item(request):
 
     return JsonResponse({}, status=200)
 
+@csrf_exempt
 def delete_account(request):
     if request.method != "DELETE":
         return JsonResponse({},status=405)
@@ -828,3 +833,211 @@ def delete_account(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)},status=500) 
+
+@csrf_exempt
+def save_online(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse({}, status=401)
+
+        body = json.loads(request.body)
+
+        id_player = body.get("id_player")
+        id_save = body.get("id_save")
+
+        if not id_player or not id_save:
+            return JsonResponse({}, status=400)
+
+        try:
+            player = Player.objects.get(
+                id_player=id_player,
+                id_account_id=user_id
+            )
+
+        except Player.DoesNotExist:
+            return JsonResponse({}, status=404)
+
+        try:
+            save = Save.objects.get(id_save=id_save)
+
+        except Save.DoesNotExist:
+            return JsonResponse({}, status=404)
+
+        if player.id_save_id != save.id_save:
+            return JsonResponse({}, status=403)
+
+        if not player.is_owner:
+            return JsonResponse({}, status=403)
+
+        while True:
+            code = random.randint(100000, 999999)
+
+            if not Save.objects.filter(online_code=code).exists():
+                break
+
+        save.online_code = code
+        save.save()
+
+        return JsonResponse({
+            'online_code': code
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+      
+def win(request):
+    if request.method != "POST":
+        return JsonResponse({},status=405)
+    
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({},status=401)
+    
+    body = json.loads(request.body)
+    id_save = body.get("id_save")
+    
+    save_obj = Save.objects.filter(id_save=id_save).first()
+    save_obj.is_win = True
+    save_obj.save()
+    
+    return JsonResponse({},status=200)
+
+@csrf_exempt
+def failed(request):
+    if request.method != "POST":
+        return JsonResponse({},status=405)
+    
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({},status=401)
+    
+    body = json.loads(request.body)
+    id_save = body.get("id_save")
+    
+    save_obj = Save.objects.filter(id_save=id_save).first()
+    save_obj.is_failed = True
+    save_obj.save()
+    
+    return JsonResponse({},status=200)
+
+@csrf_exempt
+def join_save(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    try:
+        user_id = request.session.get("user_id")
+
+        if not user_id:
+            return JsonResponse({}, status=401)
+
+        body = json.loads(request.body)
+
+        online_code = int(body.get("online_code"))
+        if not online_code:
+            return JsonResponse({}, status=400)
+
+        save_obj = Save.objects.get(
+            online_code=online_code
+        )
+        
+        game_map = Map.objects.filter(id_map=save_obj.id_map.id_map).first()
+        account_obj = Account.objects.get(id_account=user_id)
+        
+        Player.objects.create(
+            is_owner=False,
+            id_account=account_obj,
+            id_save=save_obj,
+            pos_x=game_map.default_pos_x,
+            pos_y=game_map.default_pos_y
+        )
+
+        return JsonResponse({
+            'id_save': save_obj.id_save
+        }, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)},status=500)
+    
+def consumable(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({}, status=401)
+
+    body = json.loads(request.body)
+
+    id_save = body.get("id_save")
+    id_item = body.get("id_item")
+
+    player_obj = Player.objects.filter(
+        id_save=id_save,
+        id_account=user_id
+    ).first()
+
+    item_obj = ItemPossessed.objects.filter(
+        id_item=id_item,
+        id_player=player_obj
+    ).first()
+
+    if not item_obj:
+        return JsonResponse({}, status=404)
+
+    if item_obj.id_item.id_item == "CANNED":
+        player_obj.health = min(160, player_obj.health + item_obj.id_item.value)
+        player_obj.save()
+
+    item_obj.delete()
+
+    return JsonResponse({}, status=200)
+
+@csrf_exempt
+def shoot_enemy(request):
+    if request.method != "POST":
+        return JsonResponse({}, status=405)
+
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse({}, status=401)
+
+    body = json.loads(request.body)
+
+    id_save = body.get("id_save")
+    id_sprite = body.get("id_sprite")
+    
+    player_obj = Player.objects.filter(
+        id_save=id_save,
+        id_account=user_id
+    ).first()
+    
+    gun_obj = ItemPossessed.objects.filter(
+        id_item='GUN',
+        id_player=player_obj
+    ).first()
+    
+    ammo_obj = ItemPossessed.objects.filter(
+        id_item='AMMO',
+        id_player=player_obj
+    ).first()
+    
+    if not gun_obj and not ammo_obj:
+        return JsonResponse({}, status=400)
+    
+    ammo_obj.delete()
+    
+    sprite_shooted_obj = SpriteEnemy.objects.filter(id_sprite=id_sprite).first()
+    sprite_shooted_obj.health = 0
+    sprite_shooted_obj.save()
+    
+    return JsonResponse({}, status=200)

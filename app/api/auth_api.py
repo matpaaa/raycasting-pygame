@@ -19,6 +19,21 @@ class AuthApi:
         return res
     
     @staticmethod
+    def forgot_password(data):
+        res = requests.post(f'{API_URL}api/forgot-password', json=data)
+        return res
+    
+    @staticmethod
+    def reset_password(data):
+        res = requests.post(f'{API_URL}api/reset-password', json=data)
+        return res
+    
+    @staticmethod
     def verify_code(data):
         res = requests.post(f'{API_URL}api/verify-code', json=data)
+        return res
+    
+    @staticmethod
+    def delete_account():
+        res = session.delete(f'{API_URL}api/delete/account')
         return res

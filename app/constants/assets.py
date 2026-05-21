@@ -14,6 +14,7 @@ class Assets:
     arrow_right: Surface | None = None
     start_game: Surface | None = None
     loading: Surface | None = None
+    settings: Surface | None = None
 
     vodka: Surface | None = None
     ammo: Surface | None = None
@@ -41,6 +42,7 @@ class Assets:
         background = pygame.image.load('./app/assets/screens/background.png').convert_alpha()
         Assets.background = pygame.transform.scale(background, (SCREEN_WIDTH, SCREEN_HEIGHT))
         Assets.logo = pygame.image.load('./app/assets/screens/logo.png').convert_alpha()
+        Assets.settings = pygame.image.load('./app/assets/screens/settings.png').convert_alpha()
         Assets.loading = pygame.image.load('./app/assets/screens/loading.png').convert_alpha()
         Assets.arrow_left = pygame.image.load('./app/assets/screens/arrow-left.png').convert_alpha()
         Assets.arrow_right = pygame.image.load('./app/assets/screens/arrow-right.png').convert_alpha()

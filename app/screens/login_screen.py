@@ -43,7 +43,7 @@ class LoginScreen:
 
         if self.btn_back.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('home')
+            global_var.navigate_page('home')
 
         if self.btn_connect.is_clicked(event):
             Sounds.click()
@@ -55,17 +55,17 @@ class LoginScreen:
             if res.status_code == 200:
                 self.username_input.value = ''
                 self.input_password.value = ''
-                global_var.navigatePage('saves')
+                global_var.navigate_page('saves')
             else:
                 self.error_bubble.set_content('Username ou mot de passe invalide')
 
         if self.btn_forgot_password.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('forgot_password')
+            global_var.navigate_page('forgot_password')
 
         if self.btn_create_account.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('register')
+            global_var.navigate_page('register')
 
     def _get_y(self, num):
         return 164 + ELEMENT_HEIGHT*num + GAP_BETWEEN_ELEMENT*num

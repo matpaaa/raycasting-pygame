@@ -16,7 +16,9 @@ class Routing:
             saves_screen,
             verify_code_screen,
             loading,
-            game
+            game,
+            settings,
+            error_screen
         ):
 
         self.home_screen = home_screen
@@ -27,6 +29,8 @@ class Routing:
         self.new_password_screen = new_password_screen
         self.saves_screen = saves_screen
         self.loading = loading
+        self.settings = settings
+        self.error_screen = error_screen
 
         self.game = game
 
@@ -57,9 +61,6 @@ class Routing:
         elif global_var.current_page == 'register':
             self.register_screen.draw()
             return
-        elif global_var.current_page == 'verify_code':
-            self.register_screen.draw()
-            return
         elif global_var.current_page == 'forgot_password':
             self.forgot_password_screen.draw()
             return
@@ -77,8 +78,14 @@ class Routing:
         elif global_var.current_page == 'loading':
             self.loading.draw()
             return
+        elif global_var.current_page == 'settings':
+            self.settings.draw()
+            return
         elif global_var.current_page == 'game':
             self.game.draw()
+            return
+        elif global_var.current_page == 'error':
+            self.error_screen.draw()
             return
         
     def handle_event(self, event):
@@ -103,6 +110,12 @@ class Routing:
         elif global_var.current_page == 'saves':
             self.saves_screen.handle_event(event)
             return
+        elif global_var.current_page == 'settings':
+            self.settings.handle_event(event)
+            return
         elif global_var.current_page == 'game':
             self.game.handle_event(event)
+            return
+        elif global_var.current_page == 'error':
+            self.error_screen.handle_event(event)
             return

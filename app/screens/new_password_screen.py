@@ -5,6 +5,7 @@ from app.ui.input import *
 from app.ui.button import *
 import app._utils.global_var as global_var
 from app._utils.sounds import *
+from app.api.auth_api import *
 
 class NewPasswordScreen:
 
@@ -41,7 +42,15 @@ class NewPasswordScreen:
 
         if self.btn_submit.is_clicked(event):
             Sounds.click()
-            global_var.navigatePage('login')
+            password = self.input_password.value
+            res = AuthApi.reset_password({
+                'email': global_var.verify_code_email,
+                'password': password
+            })
+            
+            if res.status_code == 200:
+                global_var.verify_code_email = None
+                global_var.navigate_page('login')
 
     def draw(self):
         self.screen.fill((0, 0, 0))

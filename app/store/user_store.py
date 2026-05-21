@@ -15,14 +15,22 @@ class UserStore:
         self.hydrate_me()
         self.hydrate_maps()
         
-    def invalid_me(self, options: InvalidStoreOptions):
-        self.me = None
-        if options.refetch:
+    def invalid_me(self, options=None):
+        if options is None:
+            options = {"refetch": None}
+            
+        self.saves = None
+            
+        if options.get("refetch"):
             self.hydrate_me()
             
-    def invalid_maps(self, options: InvalidStoreOptions):
-        self.maps = None
-        if options.refetch:
+    def invalid_maps(self, options=None):
+        if options is None:
+            options = {"refetch": None}
+            
+        self.saves = None
+            
+        if options.get("refetch"):
             self.hydrate_maps()
     
     def hydrate_me(self):
