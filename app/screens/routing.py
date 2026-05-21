@@ -1,0 +1,110 @@
+import app._utils.global_var as global_var
+from app._utils.sounds import *
+import threading
+
+class Routing:
+
+    _playing_sound_home = False
+    _playing_sound_game = False
+    
+    def __init__(
+            self,
+            home_screen,
+            login_screen,
+            register_screen,
+            forgot_password_screen,
+            new_password_screen,
+            saves_screen,
+            verify_code_screen,
+            loading,
+            game,
+            settings,
+            error_screen
+        ):
+
+        self.home_screen = home_screen
+        self.login_screen = login_screen
+        self.register_screen = register_screen
+        self.verify_code_screen = verify_code_screen
+        self.forgot_password_screen = forgot_password_screen
+        self.new_password_screen = new_password_screen
+        self.saves_screen = saves_screen
+        self.loading = loading
+        self.settings = settings
+        self.error_screen = error_screen
+
+        self.game = game
+
+    def load_sound(self):
+        if global_var.current_page == 'game' and not self._playing_sound_game:
+            Sounds.game()
+            self._playing_sound_game = True
+            self._playing_sound_home = False
+        elif global_var.current_page != 'game' and not self._playing_sound_home:
+            Sounds.home()
+            self._playing_sound_home = True
+            self._playing_sound_game = False
+
+    def route(self):
+        self.load_sound()
+        
+        if global_var.current_page == 'game':
+            self.game.load_save()
+        elif global_var.last_page == 'game':
+            self.game.unload_save()
+
+        if global_var.current_page == 'home':
+            self.home_screen.draw()
+            return
+        elif global_var.current_page == 'login':
+            self.login_screen.draw()
+            return
+        elif global_var.current_page == 'register':
+            self.register_screen.draw()
+            return
+        elif global_var.current_page == 'forgot_password':
+            self.forgot_password_screen.draw()
+            return
+        elif global_var.current_page == 'verify_code':
+            self.verify_code_screen.draw()
+            return
+        elif global_var.current_page == 'new_password':
+            self.new_password_screen.draw()
+            return
+        elif global_var.current_page == 'saves':
+            global_var.user_store.hydrate()
+            global_var.save_store.hydrate_saves()
+            self.saves_screen.draw()
+            return
+        elif global_var.current_page == 'loading':
+            self.loading.draw()
+            return
+        elif global_var.current_page == 'settings':
+            self.settings.draw()
+            return
+        elif global_var.current_page == 'game':
+            self.game.draw()
+            return
+        elif global_var.current_page == 'error':
+            self.error_screen.draw()
+            return
+        
+    def handle_event(self, event):
+        screens = {
+            'home':            self.home_screen,
+            'login':           self.login_screen,
+            'register':        self.register_screen,
+            'forgot_password': self.forgot_password_screen,
+            'verify_code':     self.verify_code_screen,
+            'new_password':    self.new_password_screen,
+            'saves':           self.saves_screen,
+            'settings':        self.settings,
+            'game':            self.game,
+            'error':           self.error_screen,
+        }
+
+        screen = screens.get(global_var.current_page)
+        if screen:
+            thread = threading.Thread(target=screen.handle_event, args=(event,))
+            thread.daemon = True
+            thread.start()
