@@ -34,3 +34,19 @@ class ConsumerWebsocket(AsyncWebsocketConsumer):
             "pos_y": event["pos_y"],
             "id_player": event["id_player"]
         }))
+        
+    async def join(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "join",
+            "pos_x": event["pos_x"],
+            "pos_y": event["pos_y"],
+            "id_player": event["id_player"]
+        }))
+        
+    async def drop_item(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "join",
+            "pos_x": event["pos_x"],
+            "pos_y": event["pos_y"],
+            "item": event["item"]
+        }))

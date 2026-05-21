@@ -155,14 +155,12 @@ class SavesScreen:
     
     def create_save_async(self):
         global_var.navigate_page('loading')
-        thread = threading.Thread(target=create_save)
-        thread.start()
+        create_save()
         
     def load_save_async(self):
         global_var.navigate_page('loading')
         save = self._selected_save
-        thread = threading.Thread(target=load_save, args=(save['id_save'],))
-        thread.start()
+        load_save(save['id_save'])
         
     def join_save_async(self):
         online_code = self.input_code.value
@@ -171,8 +169,7 @@ class SavesScreen:
             try:
                 int_online_code = int(online_code)
                 global_var.navigate_page('loading')
-                thread = threading.Thread(target=join_save, args=(int_online_code,))
-                thread.start()
+                join_save(int_online_code)
             except:
                 self.error_bubble.set_content('Code invalide')
 

@@ -9,6 +9,8 @@ import json
 import random
 from django.utils.timezone import make_aware
 from django.utils.timezone import now
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 @csrf_exempt
 def register(request):
@@ -792,6 +794,7 @@ def drop_item(request):
 
         if not item_possessed_obj:
             return JsonResponse({}, status=404)
+        
 
         item_reference = item_possessed_obj.id_item
 
@@ -800,6 +803,26 @@ def drop_item(request):
         sprite_obj = Sprite.objects.create(
             pos_x=pos_x,
             pos_y=pos_y,
+        )
+        
+        item_obj = Item.objects.filter(id_item=id_item).first()
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"save_{id_save}",
+            {
+                "type": "drop_item",
+                "pos_x": sprite_obj.pos_x,
+                "pos_y": sprite_obj.pos_y,
+                "item": {
+                    "image": item_obj.image,
+                    "id_item": item_obj.id_item,
+                    "value": float(item_obj.value) if item_obj.value else None,
+                    "name": item_obj.name,
+                    "id_item_type": item_obj.id_item_type_id
+                },
+                "id_player": user_id
+            }
         )
 
         SpriteItem.objects.create(
@@ -951,12 +974,23 @@ def join_save(request):
         game_map = Map.objects.filter(id_map=save_obj.id_map.id_map).first()
         account_obj = Account.objects.get(id_account=user_id)
         
-        Player.objects.create(
+        player = Player.objects.create(
             is_owner=False,
             id_account=account_obj,
             id_save=save_obj,
             pos_x=game_map.default_pos_x,
             pos_y=game_map.default_pos_y
+        )
+        
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f"save_{save_obj.id_save}",
+            {
+                "type": "join",
+                "pos_x": player.pos_x,
+                "pos_y": player.pos_y,
+                "id_player": player.id_player
+            }
         )
 
         return JsonResponse({
@@ -964,6 +998,7 @@ def join_save(request):
         }, status=200)
 
     except Exception as e:
+        print(e)
         return JsonResponse({"error": str(e)},status=500)
     
 def consumable(request):

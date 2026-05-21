@@ -164,7 +164,7 @@ class Game:
             id_player = int(self.current_player['id_player'])
             rotation = self.current_player['rotation'] or DEFAULT_USER_ROT
             
-            self.client_ws = ClientWebsocket(self.players, save_loaded['id_save'], self.current_player['id_player'])
+            self.client_ws = ClientWebsocket(self.players, save_loaded['id_save'], self.current_player['id_player'], self.map_config)
             threading.Thread(
                 target=lambda: asyncio.run(self.client_ws.connect())
             ).start()
