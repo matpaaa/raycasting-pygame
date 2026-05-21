@@ -58,6 +58,7 @@ MAP_SPRITES_MOCKED = [
     DoorSprite(16.5, 16, bars_path ),
     DoorSprite(17.5, 6.5, bars_path),
     EnemieSprite(8, 17, zombie_path, 50, 20),
+    ObjectSprite(3.5,21, ItemFactory.battery()),
     ObjectSprite(11.5,17, ItemFactory.vodka()),
     ObjectSprite(10.5,17.5, ItemFactory.vodka()),
     ObjectSprite(32, 15.5, ItemFactory.code(1)),

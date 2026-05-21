@@ -124,7 +124,8 @@ class PygameActions:
                 if isinstance(sprite, HumanSprite):
                     sprite.handle_interaction_secret(self.screen)
 
-        if keys[pygame.K_e]:
+        if keys[pygame.K_e] and (self._last_action is None or self._last_action is None or time.time() - self._last_action >= self._min_time_action_e):
+            self._last_action = time.time()
             if (sprite is not None):
                 if isinstance(sprite, HumanSprite):
                     sprite.handle_interaction(self.screen)
@@ -137,12 +138,10 @@ class PygameActions:
                 elif isinstance(sprite, ObjectSprite):
                     sprite.handle_interaction(self.user)
                 elif isinstance(sprite, CollisionSprite):
-                    if self._last_action is None or time.time() - self._last_action >= self._min_time_action_e:
-                        self._last_action = time.time()
-                        sprite.handle_open(self.user)
-                        
-                        thread = threading.Thread(target=open_door, args=(self.map_config.id_save, sprite.id,))
-                        thread.start()
+                    sprite.handle_open(self.user)
+                    
+                    thread = threading.Thread(target=open_door, args=(self.map_config.id_save, sprite.id,))
+                    thread.start()
 
             else:
                 self.user.use_item()

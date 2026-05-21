@@ -126,7 +126,7 @@ class User:
 
     def add_item(self, item: Item, id_sprite: int, update_req=True):
         if item.id_item_type == 'ELECTRICITY':
-            self._battery += item.value
+            self._battery += int(item.value)
             return
 
         if len(self.inventory_items) >= MAX_ITEM_SLOTS: return
@@ -161,7 +161,7 @@ class User:
                         return sprite
                     
                 if isinstance(sprite, EnemieSprite):
-                    self.damage(1)
+                    self.damage(ZOMBIE_DAMAGE)
                     
                 return sprite
                 
