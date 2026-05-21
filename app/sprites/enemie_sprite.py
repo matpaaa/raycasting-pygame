@@ -15,6 +15,7 @@ class EnemieSprite(Sprite):
         user.damage(self.damage)
         
     def dead(self):
+        self.pv = 0
         super().set_image('./app/assets/game/pnj/zombie-dead-pnj.png')
         
     def receive_damage(self, dmg):

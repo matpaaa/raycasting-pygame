@@ -118,6 +118,11 @@ class PygameActions:
 
         if keys[pygame.K_SPACE]:
             self.user.handle_shoot()
+            
+        if keys[pygame.K_y]:
+            if (sprite is not None):
+                if isinstance(sprite, HumanSprite):
+                    sprite.handle_interaction_secret(self.screen)
 
         if keys[pygame.K_e]:
             if (sprite is not None):

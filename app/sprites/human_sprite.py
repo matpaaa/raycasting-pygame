@@ -7,13 +7,14 @@ import time
 
 class HumanSprite(Sprite):
 
-    def __init__(self, x, y, image, dialogs: List[str]):
+    def __init__(self, x, y, image, dialogs: List[str], secret: str = None):
         super().__init__(x, y, image)
         self.is_interact = False
         self.dialogs = dialogs
         self.diablog = Dialog(image)
         self._dialog_index = 0
         self._last_change_dialog = None
+        self.secret = secret
 
     @property
     def can_change_dialog(self):
@@ -47,3 +48,8 @@ class HumanSprite(Sprite):
 
         self.diablog.set_content(current_dialog)
         self.diablog.draw(screen)
+        
+    def handle_interaction_secret(self, screen: Surface):
+        if self.secret:
+            self.diablog.set_content(self.secret)
+            self.diablog.draw(screen)

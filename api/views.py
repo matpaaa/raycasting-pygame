@@ -1124,4 +1124,14 @@ def shoot_enemy(request):
     sprite_shooted_obj.health = 0
     sprite_shooted_obj.save()
     
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        f"save_{id_save}",
+        {
+            "type": "kill_enemy",
+            "id_sprite": sprite_shooted_obj.id_sprite,
+            "id_player": player_obj.id_player
+        }
+    )
+    
     return JsonResponse({}, status=200)

@@ -73,3 +73,10 @@ class ConsumerWebsocket(AsyncWebsocketConsumer):
             "id_sprite": event["id_sprite"],
             "id_player": event["id_player"]
         }))
+        
+    async def kill_enemy(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "kill_enemy",
+            "id_sprite": event["id_sprite"],
+            "id_player": event["id_player"]
+        }))
