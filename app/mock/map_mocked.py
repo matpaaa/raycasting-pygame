@@ -64,13 +64,18 @@ MAP_SPRITES_MOCKED = [
         "c'est fini pour moi meme si je sors...",
     ]),
     #Zombies
-    EnemieSprite(38.5, 22.5, zombie_path, 0,0),
-    EnemieSprite(37.5, 22.5, zombie_path, 0, 0),
-    EnemieSprite(10.5, 8.5, zombie_path, 0, 0),
-    EnemieSprite(28.5, 1.5, zombie_path, 0, 0),
-
+    EnemieSprite(38.5, 22.5, zombie_path, 50,20),
+    EnemieSprite(37.5, 22.5, zombie_path, 50, 20),
+    EnemieSprite(10.5, 8.5, zombie_path, 50, 20),
+    EnemieSprite(28.5, 1.5, zombie_path, 50, 20),
+    
+    
+    # EnemieSprite(12.5, 17.5, zombie_path, 20, 20),
+    # ObjectSprite(12, 15, ItemFactory.gun()),
+    # ObjectSprite(12, 14, ItemFactory.ammo()),
+    
    
-# VODDDDDKAAAAAA
+    # VODDDDDKAAAAAA
     ObjectSprite(11.5, 16.5, ItemFactory.vodka()),
     ObjectSprite(42.5, 1.5, ItemFactory.vodka()),
     #conserves

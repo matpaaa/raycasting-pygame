@@ -10,8 +10,7 @@ class Sprite:
 
 
     def load(self) :
-        if self._texture is None:
-            self._texture = pygame.image.load(self._image).convert_alpha()
+        self._texture = pygame.image.load(self._image).convert_alpha()
             
         self._sprite = {
             'x': self._x,
