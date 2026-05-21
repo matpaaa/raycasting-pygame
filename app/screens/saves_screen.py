@@ -191,7 +191,9 @@ class SavesScreen:
             self.modal_join_save = False
             
         if self.btn_confirm.is_clicked(event) and self.modal_join_save:
+            self.btn_confirm.is_loading = True
             self.join_save_async()
+            self.btn_confirm.is_loading = False
             
         if self.modal_join_save: return
         
@@ -208,11 +210,14 @@ class SavesScreen:
             self.current_index = (self.current_index + 1) % self._total_slots
             
         elif self.create_save_btn.is_clicked(event):
+            self.create_save_btn.is_loading = True
             Sounds.click()
             self.create_save_async()
             self.saves = []
+            self.create_save_btn.is_loading = False
             
         elif self.delete_save_btn.is_clicked(event):
+            self.delete_save_btn.is_loading = True
             if self._selected_save:
                 Sounds.click()
                 try:
@@ -220,6 +225,7 @@ class SavesScreen:
                     self.saves = []
                 except:
                     self.error_bubble.set_content("Erreur lors de la suppression d'une sauvegarde")
+            self.delete_save_btn.is_loading = False
 
         elif self.start_game_rect.collidepoint(event.pos):
             Sounds.click()
@@ -231,6 +237,7 @@ class SavesScreen:
                 self.saves = []
 
         elif self.disconnect_btn.is_clicked(event):
+            self.disconnect_btn.is_loading = True
             res = AuthApi.logout()
             global_var.save_store.invalid_save_loaded()
             global_var.save_store.invalid_saves()
@@ -239,6 +246,7 @@ class SavesScreen:
             self.saves = []
             if res.status_code == 200:
                 global_var.navigate_page('login')
+            self.disconnect_btn.is_loading = False
 
     def draw(self):
         thread = threading.Thread(target=self._load_saves)

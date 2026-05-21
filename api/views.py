@@ -450,7 +450,7 @@ def save_player(request):
             )
             save_obj.save()
 
-        return JsonResponse({}, 200)
+        return JsonResponse({}, status=200)
 
     except Player.DoesNotExist:
         return JsonResponse({}, status=404)

@@ -46,6 +46,7 @@ class LoginScreen:
             global_var.navigate_page('home')
 
         if self.btn_connect.is_clicked(event):
+            self.btn_connect.is_loading = True
             Sounds.click()
             data = {
                 "name": self.username_input.value,
@@ -58,6 +59,7 @@ class LoginScreen:
                 global_var.navigate_page('saves')
             else:
                 self.error_bubble.set_content('Username ou mot de passe invalide')
+            self.btn_connect.is_loading = False
 
         if self.btn_forgot_password.is_clicked(event):
             Sounds.click()

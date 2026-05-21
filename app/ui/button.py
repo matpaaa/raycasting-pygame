@@ -13,6 +13,7 @@ class Button:
         self.variant = variant
 
         self.label = label
+        self.is_loading = False
 
         if label != None:
             self.label_rect = Label(label, x + 4, y, h)
@@ -28,9 +29,15 @@ class Button:
         color = BUTTON_WHITE
         if self.variant == 'danger':
             color = BUTTON_DANGER
+            
+        label = ''
+        if self.is_loading:
+            label = 'Chargement...'
+        else:
+            label = self.text
 
         pygame.draw.rect(surface, color, self.rect, 2, border_radius=4)
-        label = Fonts.font_btn.render(self.text, True, color)
+        label = Fonts.font_btn.render(label, True, color)
         lx = self.rect.centerx - label.get_width()  // 2
         ly = self.rect.centery - label.get_height() // 2
         surface.blit(label, (lx, ly))
@@ -41,4 +48,5 @@ class Button:
     def is_clicked(self, event):
         return (event.type == pygame.MOUSEBUTTONDOWN
             and event.button == 1
-            and self.rect.collidepoint(event.pos))
+            and self.rect.collidepoint(event.pos)
+            and not self.is_loading)

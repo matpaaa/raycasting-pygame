@@ -57,12 +57,24 @@ class User:
                 break
         
         if not is_collision:
-            map_case = self.map_config.map[int(pos_y)][int(pos_x)]
-            if map_case == 9:
-                self._has_win = True
-                return
-            
-            is_collision = map_case != 0
+            margin = 0.03
+
+            corners = [
+                (pos_x - margin, pos_y - margin),
+                (pos_x + margin, pos_y - margin),
+                (pos_x - margin, pos_y + margin),
+                (pos_x + margin, pos_y + margin),
+            ]
+
+            is_collision = False
+            for cx, cy in corners:
+                map_case = self.map_config.map[int(cy)][int(cx)]
+                if map_case == 9:
+                    self._has_win = True
+                    return
+                if map_case != 0:
+                    is_collision = True
+                    break
 
         if is_collision:
             Sounds.hurt()

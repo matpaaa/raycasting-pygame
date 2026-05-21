@@ -232,10 +232,12 @@ class Game:
                     self.game_menu = False
 
                 if self.btn_save.is_clicked(event):
+                    self.btn_save.is_loading = True
                     Sounds.click()
                     self.save_user_async()
                     global_var.save_store.invalid_saves({'refetch': True})
                     self.game_menu = False
+                    self.btn_save.is_loading = False
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 if self.game_menu:

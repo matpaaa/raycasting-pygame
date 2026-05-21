@@ -77,8 +77,10 @@ class RegisterScreen:
             global_var.navigate_page('login')
 
         if self.btn_create.is_clicked(event):
+            self.btn_create.is_loading = True
             Sounds.click()
             self._handle_register()
+            self.btn_create.is_loading = False
 
     def _handle_register(self):
         username = self.username_input.value

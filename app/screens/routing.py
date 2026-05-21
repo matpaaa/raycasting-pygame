@@ -1,5 +1,6 @@
 import app._utils.global_var as global_var
 from app._utils.sounds import *
+import threading
 
 class Routing:
 
@@ -89,33 +90,21 @@ class Routing:
             return
         
     def handle_event(self, event):
-        if global_var.current_page == 'home':
-            self.home_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'login':
-            self.login_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'register':
-            self.register_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'forgot_password':
-            self.forgot_password_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'verify_code':
-            self.verify_code_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'new_password':
-            self.new_password_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'saves':
-            self.saves_screen.handle_event(event)
-            return
-        elif global_var.current_page == 'settings':
-            self.settings.handle_event(event)
-            return
-        elif global_var.current_page == 'game':
-            self.game.handle_event(event)
-            return
-        elif global_var.current_page == 'error':
-            self.error_screen.handle_event(event)
-            return
+        screens = {
+            'home':            self.home_screen,
+            'login':           self.login_screen,
+            'register':        self.register_screen,
+            'forgot_password': self.forgot_password_screen,
+            'verify_code':     self.verify_code_screen,
+            'new_password':    self.new_password_screen,
+            'saves':           self.saves_screen,
+            'settings':        self.settings,
+            'game':            self.game,
+            'error':           self.error_screen,
+        }
+
+        screen = screens.get(global_var.current_page)
+        if screen:
+            thread = threading.Thread(target=screen.handle_event, args=(event,))
+            thread.daemon = True
+            thread.start()

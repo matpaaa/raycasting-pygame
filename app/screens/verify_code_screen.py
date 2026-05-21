@@ -72,6 +72,7 @@ class VerifyCodeScreen:
             global_var.navigate_page(global_var.last_page)
 
         if self.btn_confirm.is_clicked(event):
+            self.btn_confirm.is_loading = True
             Sounds.click()
             res = AuthApi.verify_code({
                 'code': self.input_code.value,
@@ -83,6 +84,7 @@ class VerifyCodeScreen:
                     global_var.navigate_page('login')
                 else:
                     global_var.navigate_page('new_password')
+            self.btn_confirm.is_loading = False
 
     def draw(self):
         self.screen.fill((0, 0, 0))

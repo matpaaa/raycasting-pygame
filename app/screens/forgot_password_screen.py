@@ -41,6 +41,7 @@ class ForgotPasswordScreen:
             Sounds.click()
             global_var.navigate_page('login')
         if self.btn_confirm.is_clicked(event):
+            self.btn_confirm.is_loading = True
             Sounds.click()
             email = self.input_email.value
             res = AuthApi.forgot_password({
@@ -50,6 +51,7 @@ class ForgotPasswordScreen:
             if res.status_code == 200:
                 global_var.verify_code_email = email
                 global_var.navigate_page('verify_code')
+            self.btn_confirm.is_loading = False
 
     def draw(self):
         self.screen.fill((0, 0, 0))

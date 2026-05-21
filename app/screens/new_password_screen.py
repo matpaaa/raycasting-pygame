@@ -41,6 +41,7 @@ class NewPasswordScreen:
         self.input_password_confirm.handle_event(event)
 
         if self.btn_submit.is_clicked(event):
+            self.btn_submit.is_loading = True
             Sounds.click()
             password = self.input_password.value
             res = AuthApi.reset_password({
@@ -51,6 +52,7 @@ class NewPasswordScreen:
             if res.status_code == 200:
                 global_var.verify_code_email = None
                 global_var.navigate_page('login')
+            self.btn_submit.is_loading = False
 
     def draw(self):
         self.screen.fill((0, 0, 0))
