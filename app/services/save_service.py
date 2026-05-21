@@ -77,8 +77,9 @@ def join_save(online_code: int):
     })
     
     if res.status_code == 200:
+        res_data = res.json()
         global_var.save_store.invalid_save_loaded()
-        global_var.save_store.hydrate_save_loaded(res['id_save'])
+        global_var.save_store.hydrate_save_loaded(res_data['id_save'])
         global_var.navigate_page('game')
     else:
         global_var.back_page()
