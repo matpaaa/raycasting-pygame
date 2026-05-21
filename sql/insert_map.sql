@@ -1,15 +1,19 @@
 INSERT INTO map(id_map, name) VALUES (1, 'Last Breath Jail');
 
 INSERT INTO sprite (id_sprite, pos_x, pos_y) VALUES
-
-(1000000000, 19.5, 4),
-(1000000001, 16.5, 16),
-(1000000002, 17.5, 6.5);
+(1000000000, 5.5, 3),
+(1000000001, 10.5, 14),
+(1000000002, 17, 8.5),
+(1000000003, 29, 15.5),
+(1000000004, 16.5, 17),
+(1000000005, 25.5, 13);
 
 INSERT INTO sprite_door (id_sprite, id_sprite_door_type, id_map) VALUES
-(1000000000, 'KEY', 1),
+(1000000000, 'CODE', 1),
 (1000000001, 'KEY', 1),
-(1000000002, 'KEY', 1);
+(1000000002, 'KEY', 1),
+(1000000003, 'KEY', 1),
+(1000000005, 'KEY', 1);
 
 INSERT INTO puzzle (id_puzzle, id_map, title, content) VALUES
 (1, 1, 'Cellule bloquée', 'prisonnier Epstein est enfermé dans une cellule depuis longtemps. la porte est verrouillée, il ne peut pas sortir. il cache quelque chose dans sa cellule (bout de code) mais ne le dit pas.'),
