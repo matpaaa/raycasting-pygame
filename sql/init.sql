@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS sprite_item (
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   id_item VARCHAR(16) NOT NULL,
   id_save INT,
+  value INT DEFAULT NULL,
 
   FOREIGN KEY (id_sprite) REFERENCES sprite(id_sprite) ON DELETE CASCADE,
   FOREIGN KEY (id_item) REFERENCES item(id_item) ON DELETE CASCADE,

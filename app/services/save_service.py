@@ -17,6 +17,7 @@ def create_save():
             'pos_x': sprite._x,
             'pos_y': sprite._y,
             'image': sprite.image,
+            'value': sprite.item.value,
             'id_item': sprite.item.id_item
         })
         

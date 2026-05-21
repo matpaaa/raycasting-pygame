@@ -136,6 +136,8 @@ class User:
             Sounds.take_key()
         elif item.id_item == 'GUN':
             Sounds.take_gun()
+        elif item.id_item == 'CODE':
+            self.map_config.handle_finish_puzzle(item.value)
         else:
             Sounds.take_item()
             

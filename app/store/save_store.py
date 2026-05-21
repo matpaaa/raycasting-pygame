@@ -58,7 +58,12 @@ class SaveStore:
 
             for sprite in original_items:
                 item = sprite['item']
-                value = float(item['value']) if item['value'] is not None else None
+                value = None
+                if item['id_item'] == 'CODE':
+                    value = sprite['value']
+                else:
+                    value = float(item['value']) if item['value'] is not None else None
+                    
                 itemClass = Item(item['id_item'], item['name'], value, item['id_item_type'], item['image'])
                 self.save_loaded['sprite_items'].append(ObjectSprite(float(sprite['pos_x']), float(sprite['pos_y']), itemClass, sprite['id_sprite']))
 
