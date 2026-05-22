@@ -40,40 +40,49 @@ epstein_pnj_path = './app/assets/game/pnj/epstein-pnj.png'
 arnaud_pnj_path = './app/assets/game/pnj/arnaud-pnj.png'
 zombie_path = './app/assets/game/pnj/zombie-pnj.png'
 bars_path = './app/assets/textures/bars.png'
-
 MAP_SPRITES_MOCKED = [
     HumanSprite(3.5, 6.5, arnaud_pnj_path, [
         'utilise Y pour plus d"infos de notre part',
         'Mon tunnel... ne va surtout pas là bas',
     ]),
     HumanSprite(42.5, 14.5, epstein_pnj_path, [
-        "t'es venu me sortir de là ou juste me regarder crever ici ?",
+        "t'es venu pour me sortir d'ici ?",
         " impossibles de mettre la main sur ce maudit code."
     ]),
-      HumanSprite(33.5, 2.5, default_pnj_path, [
-        "à changer"#le vieux
-    ]),
-          HumanSprite(33.5, 2.5, default_pnj_path, [
-        "à changer"
-    ]),
-      HumanSprite(32.5, 20.5, default_pnj_path, [
-        "à changer"
-    ]),
-    HumanSprite(11.5, 1.5, default_pnj_path, [
-        "tu veux un bout de code,tu en as là bas dans la salle de ces zombies .",
+     HumanSprite(11.5, 1.5, default_pnj_path, [
+        "tu veux un bout de code?"
+        "tu en as là bas dans la salle de ces zombies .",
         "c'est fini pour moi meme si je sors...",
+        ]),
+
+    HumanSprite(33.5, 2.5, default_pnj_path, [
+    "Hein ? ... T’es nouveau toi ?",
+    "J’te jure qu’avant ces murs étaient plus propres.",
+    "J’ai perdu quelque chose ici... ou peut-être que non.",
+    "Les codes... toujours ces maudits codes...",
+    "J’entends les zombies la nuit. Ils grattent les murs.",
+    "Faut pas aller dans le noir...",
+    "Un jour la porte s’est ouverte toute seule. Enfin... je crois.",
+    "T’as vu mon frère ? Il devait revenir il y a 20 ans.",
+    "La sortie ? Hahaha... personne sort vraiment d’ici.",
+    "J’avais une lampe avant... ou c’était une arme ?",
+    "Le bloc nord sent la mort.",
+    "Tu me rappelles quelqu’un... je ne sais pas qui.",
+    "Les gardes ont disparu du jour au lendemain.",
+    "Parfois les zombies parlent entre eux ?",
+    "Le code... ah non oublie, j’ai encore mélangé.",
     ]),
+    HumanSprite(35.5, 3.5, default_pnj_path, [
+    "Les gardes étaient 5 avant.",
+    "Ils auraient dû nous les donner...",
+    "Au lieu de nous condamner.",
+      ]),
+
     #Zombies
     EnemieSprite(38.5, 22.5, zombie_path, 50,20),
     EnemieSprite(37.5, 22.5, zombie_path, 50, 20),
     EnemieSprite(10.5, 8.5, zombie_path, 50, 20),
     EnemieSprite(28.5, 1.5, zombie_path, 50, 20),
-    
-    
-    # EnemieSprite(12.5, 17.5, zombie_path, 20, 20),
-    # ObjectSprite(12, 15, ItemFactory.gun()),
-    # ObjectSprite(12, 14, ItemFactory.ammo()),
-    
    
     # VODDDDDKAAAAAA
     ObjectSprite(11.5, 16.5, ItemFactory.vodka()),
