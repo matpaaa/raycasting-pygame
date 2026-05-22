@@ -185,7 +185,7 @@ class User:
             self._speed_boost_end = time.time() + EFFECT_VODKA_TIME
 
         if item_used.id_item == 'CANNED':
-            self.heal(item_used.value)
+            self.heal(int(item_used.value))
             
             thread = threading.Thread(target=user_comsumable, args=(self.map_config.id_save, item_used.id_item,))
             thread.start()
