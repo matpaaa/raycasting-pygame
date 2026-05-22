@@ -1,4 +1,4 @@
-INSERT INTO map(id_map, name) VALUES (1, 'Last Breath Jail');
+INSERT INTO map(id_map, name, default_pos_x, defautl_pos_y) VALUES (1, 'Last Breath Jail', 2.5, 21);
 
 INSERT INTO sprite (id_sprite, pos_x, pos_y) VALUES
 (1000000000, 5.5, 3),
@@ -16,8 +16,13 @@ INSERT INTO sprite_door (id_sprite, id_sprite_door_type, id_map) VALUES
 (1000000005, 'KEY', 1);
 
 INSERT INTO puzzle (id_puzzle, id_map, title, content) VALUES
-(1, 1, 'Cellule bloquée', 'prisonnier Epstein est enfermé dans une cellule depuis longtemps. la porte est verrouillée, il ne peut pas sortir. il cache quelque chose dans sa cellule (bout de code) mais ne le dit pas.'),
-(2, 1, 'Les 5 codes', 'Prisonnier chauve connaît l’existence des codes mais essaie de décourager le joueur tout en lui en donnant un.'),
-(3, 1, 'Bloc dangereux', 'Prisonnier Arnaud a vu une zone très infestée et avertit le joueur . la zone en question possède des zombies avec un bout de code dans le coin au fond de la zone'),
-(4, 1, 'Couloirs sombres', 'Epstein chercher le bout de code de son compagnon de prison mais ne la jamais trouvé.'),
-(5, 1, 'Sortie', 'Prisonnier chauve connaît la sortie mais doute que ce soit une vraie échappatoire.');
+(1, 1, 'Prisonnier inconnu', 
+'Un détenu parle des cinq gardes qui contrôlaient autrefois la prison. Selon lui, ils possédaient quelque chose qui aurait pu sauver les prisonniers avant leur disparition soudaine.'),
+(2, 1, 'Epstein', 
+'Epstein est enfermé dans cette prison depuis des années. Il supplie le joueur de le faire sortir mais évoque aussi un mystérieux morceau de code introuvable dans les couloirs sombres de la prison.'),
+(3, 1, 'Le demi-zombie', 
+'Un prisonnier à moitié transformé affirme qu’un morceau de code se trouve dans une salle infestée de zombies.'),
+(4, 1, 'Arnaud', 
+'Arnaud semble terrifié par une zone au nord de la prison. Il parle d’un tunnel dangereux. Quelque chose se cache dans ce bloc abandonné ?'),
+(5, 1, 'Le vieux prisonnier', 
+'Le vieux prisonnier radote sans arrêt à propos des codes, des zombies et d’une sortie impossible. Malgré sa confusion, certaines de ses phrases semblent cacher des indices importants sur la prison et ses secrets.');
