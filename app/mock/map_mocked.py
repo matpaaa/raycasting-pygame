@@ -42,7 +42,7 @@ zombie_path = './app/assets/game/pnj/zombie-pnj.png'
 bars_path = './app/assets/textures/bars.png'
 MAP_SPRITES_MOCKED = [
     HumanSprite(3.5, 6.5, arnaud_pnj_path, [
-        'utilise Y pour plus d"infos de notre part',
+        'Hello, je suis le fromateur',
         'Mon tunnel... ne va surtout pas là bas',
     ]),
     HumanSprite(42.5, 14.5, epstein_pnj_path, [
@@ -94,8 +94,10 @@ MAP_SPRITES_MOCKED = [
     #Gun
     ObjectSprite(31.5, 14.5, ItemFactory.gun()),
     #Munitions
-    ObjectSprite(10.5, 9.5, ItemFactory.ammo()),
+    ObjectSprite(11, 9.5, ItemFactory.ammo()),
     ObjectSprite(11.5, 9.5, ItemFactory.ammo()),
+    ObjectSprite(7, 20.5, ItemFactory.ammo()),
+    ObjectSprite(7.5, 20.5, ItemFactory.ammo()),
     #Batteries 
     ObjectSprite(26.5, 24.5, ItemFactory.battery()),
     ObjectSprite(42.5, 24.5 ,ItemFactory.battery()),
